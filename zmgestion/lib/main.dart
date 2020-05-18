@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:zmgestion/src/views/HomePage.dart';
+import 'package:zmgestion/src/views/BodyTemplate.dart';
+import 'package:zmgestion/src/views/Loader.dart';
 import 'package:zmgestion/src/bloc/ThemeBloc.dart';
 import 'package:zmgestion/src/bloc/ThemeState.dart';
+import 'package:zmgestion/src/router/Router.dart';
+import 'package:zmgestion/src/router/Locator.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
 
-void main() => runApp(MyApp());
+void main(){
+  setupLocator();
+  runApp(MyApp());
+} 
 
 class MyApp extends StatelessWidget {
   @override
@@ -21,8 +28,14 @@ class MyApp extends StatelessWidget {
   Widget _buildWithTheme(BuildContext context, ThemeState state) {
     return MaterialApp(
       title: 'Material App',
-      home: HomePage(),
+      home: Loader(),
       theme: state.themeData,
+      builder: (context, child) => BodyTemplate(
+        child: child,
+      ),
+      navigatorKey: locator<NavigationService>().navigatorKey,
+      onGenerateRoute: generateRoute,
+      initialRoute: InicioRoute,
     );
   }
 }
