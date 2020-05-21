@@ -10,9 +10,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Preferences'),
-      ),
       body: ListView.builder(
         padding: EdgeInsets.all(8),
         itemCount: AppTheme.values.length,
