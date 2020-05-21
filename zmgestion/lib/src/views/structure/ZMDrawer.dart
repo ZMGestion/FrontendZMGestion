@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-TextStyle listTitleDefaultTextStyle = TextStyle(color: Colors.white70, fontSize: 20.0, fontWeight: FontWeight.w600);
-TextStyle listTitleSelectedTextStyle = TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600);
-Color selectedColor = Color(0xFF4AC8EA);
+TextStyle listTitleDefaultTextStyle = TextStyle(color: Colors.white70, fontSize: 14.0, fontWeight: FontWeight.w600);
+TextStyle listTitleSelectedTextStyle = TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w600);
+Color selectedColor = Color(0xFFFFFFFF);
 Color drawerBackgroundColor = Color(0xFF272D34);
 
 
@@ -14,7 +14,7 @@ class ZMDrawer extends StatefulWidget {
 
 class ZMDrawerState extends State<ZMDrawer>
     with SingleTickerProviderStateMixin {
-  double maxWidth = 210;
+  double maxWidth = 300;
   double minWidth = 70;
   bool isCollapsed = false;
   AnimationController _animationController;
@@ -42,53 +42,69 @@ class ZMDrawerState extends State<ZMDrawer>
     return Material(
       elevation: 80.0,
       color: Theme.of(context).primaryColor,
-      child: Container(
-        width: widthAnimation.value,
-        child: Column(
-          children: <Widget>[
-            CollapsingListTile(title: 'Techie', icon: Icons.person, animationController: _animationController,),
-            Divider(color: Colors.grey, height: 40.0,),
-            Expanded(
-              child: ListView.separated(
-                separatorBuilder: (context, counter) {
-                  return Divider(height: 12.0);
-                },
-                itemBuilder: (context, counter) {
-                  return CollapsingListTile(
-                      onTap: () {
-                        setState(() {
-                          currentSelectedIndex = counter;
-                        });
-                      },
-                      isSelected: currentSelectedIndex == counter,
-                      title: navigationItems[counter].title,
-                      icon: navigationItems[counter].icon,
-                      animationController: _animationController,
-                  );
-                },
-                itemCount: navigationItems.length,
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                setState(() {
+      child: GestureDetector(
+          onTap: (){
+            setState(() {
                   isCollapsed = !isCollapsed;
                   isCollapsed
                       ? _animationController.forward()
                       : _animationController.reverse();
                 });
-              },
-              child: AnimatedIcon(
-                icon: AnimatedIcons.close_menu,
-                progress: _animationController,
-                color: selectedColor,
-                size: 50.0,
+          },
+          child: Container(
+          width: widthAnimation.value,
+          child: Column(
+            children: <Widget>[
+              CollapsingListTile(
+                title: 'Silvia Carolina Zimmerman', 
+                icon: Icons.person, 
+                animationController: _animationController,
+                width: maxWidth - 40,
               ),
-            ),
-            SizedBox(
-              height: 50.0,
-            ),
-          ],
+              Divider(color: Colors.grey, height: 40.0,),
+              Expanded(
+                child: ListView.separated(
+                  separatorBuilder: (context, counter) {
+                    return Divider(height: 12.0);
+                  },
+                  itemBuilder: (context, counter) {
+                    return CollapsingListTile(
+                        onTap: () {
+                          setState(() {
+                            currentSelectedIndex = counter;
+                          });
+                        },
+                        width: maxWidth - 40,
+                        isSelected: currentSelectedIndex == counter,
+                        title: navigationItems[counter].title,
+                        icon: navigationItems[counter].icon,
+                        animationController: _animationController,
+                    );
+                  },
+                  itemCount: navigationItems.length,
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    isCollapsed = !isCollapsed;
+                    isCollapsed
+                        ? _animationController.forward()
+                        : _animationController.reverse();
+                  });
+                },
+                child: AnimatedIcon(
+                  icon: AnimatedIcons.close_menu,
+                  progress: _animationController,
+                  color: selectedColor,
+                  size: 40.0,
+                ),
+              ),
+              SizedBox(
+                height: 50.0,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -101,10 +117,12 @@ class CollapsingListTile extends StatefulWidget {
   final AnimationController animationController;
   final bool isSelected;
   final Function onTap;
+  final double width;
 
   CollapsingListTile(
       {@required this.title,
       @required this.icon,
+      @required this.width,
       @required this.animationController,
       this.isSelected = false,
       this.onTap});
@@ -120,7 +138,7 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
   void initState() {
     super.initState();
     widthAnimation =
-        Tween<double>(begin: 200, end: 70).animate(widget.animationController);
+        Tween<double>(begin: widget.width, end: 70).animate(widget.animationController);
     sizedBoxAnimation =
         Tween<double>(begin: 10, end: 0).animate(widget.animationController);
   }
@@ -140,11 +158,12 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
         margin: EdgeInsets.symmetric(horizontal: 8.0),
         padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: Row(
+          mainAxisAlignment: (widthAnimation.value >= 190) ? MainAxisAlignment.start : MainAxisAlignment.center,
           children: <Widget>[
             Icon(
               widget.icon,
               color: widget.isSelected ? selectedColor : Colors.white30,
-              size: 38.0,
+              size: 32.0,
             ),
             SizedBox(width: sizedBoxAnimation.value),
             (widthAnimation.value >= 190)
@@ -166,7 +185,7 @@ class NavigationModel {
   NavigationModel({this.title, this.icon});
 }
 List<NavigationModel> navigationItems = [
-  NavigationModel(title: "Dashboard", icon: Icons.insert_chart),
+  NavigationModel(title: "Presupuestos", icon: Icons.description),
   NavigationModel(title: "Errors", icon: Icons.error),
   NavigationModel(title: "Search", icon: Icons.search),
   NavigationModel(title: "Notifications", icon: Icons.notifications),
