@@ -8,7 +8,7 @@ enum AppTheme {
 final appThemeData = {
   AppTheme.Light: ThemeData(
     brightness: Brightness.light,
-    primaryColor: Color(0xffC5615B),
+    primaryColor: Color(0xffB34741),
     primaryTextTheme: TextTheme(
       bodyText1: TextStyle(
         color: Color(0xff222222)
@@ -28,6 +28,6 @@ final appThemeData = {
   ),
   AppTheme.Dark: ThemeData(
     brightness: Brightness.dark,
-    primaryColor: Color(0xff733B38),
+    primaryColor: Color(0xff90322E),
   ),
 };

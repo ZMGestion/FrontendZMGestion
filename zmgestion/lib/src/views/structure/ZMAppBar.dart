@@ -5,18 +5,18 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.menu), 
-        onPressed: () {
-        },
-      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+
       title: Padding(
         padding: const EdgeInsets.only(left: 12),
         child: Container(
           child: Text(
               "ZMGestion",
+              textAlign: TextAlign.left,
               style: GoogleFonts.roboto(
-                fontWeight: FontWeight.w600
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).primaryColor
               ),
             ),
         ),

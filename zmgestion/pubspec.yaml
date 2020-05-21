@@ -28,6 +28,7 @@ dependencies:
   equatable: ^0.4.0
   responsive_builder: ^0.2.0+2
   google_fonts: ^1.1.0
+  custom_navigation_drawer: ^0.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
