@@ -23,7 +23,10 @@ class BodyTemplate extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              ZMDrawer(),
+              ZMDrawer(
+                maxWidth: 300,
+                minWidth: 70,
+              ),
               Expanded(
                   child: Stack(
                     children: [

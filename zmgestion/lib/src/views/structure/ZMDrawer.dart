@@ -6,14 +6,23 @@ Color drawerBackgroundColor = Color(0xFF272D34);
 
 
 class ZMDrawer extends StatefulWidget {
+  final double minWidth;
+  final double maxWidth;
+
+  const ZMDrawer({
+    Key key, 
+    this.maxWidth,
+    this.minWidth = 70,
+  }) : super(key: key);
+
+
   @override
   ZMDrawerState createState() {
     return new ZMDrawerState();
   }
 }
 
-class ZMDrawerState extends State<ZMDrawer>
-    with SingleTickerProviderStateMixin {
+class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin {
   double maxWidth = 300;
   double minWidth = 70;
   bool isCollapsed = false;
@@ -24,6 +33,8 @@ class ZMDrawerState extends State<ZMDrawer>
   @override
   void initState() {
     super.initState();
+    maxWidth = widget.maxWidth;
+    minWidth = widget.minWidth;
     _animationController = AnimationController(
         vsync: this, duration: Duration(milliseconds: 300));
     widthAnimation = Tween<double>(begin: maxWidth, end: minWidth)
@@ -68,17 +79,76 @@ class ZMDrawerState extends State<ZMDrawer>
                     return Divider(height: 12.0);
                   },
                   itemBuilder: (context, counter) {
-                    return CollapsingListTile(
-                        onTap: () {
-                          setState(() {
-                            currentSelectedIndex = counter;
-                          });
-                        },
-                        width: maxWidth - 40,
-                        isSelected: currentSelectedIndex == counter,
-                        title: navigationItems[counter].title,
-                        icon: navigationItems[counter].icon,
-                        animationController: _animationController,
+                    return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                          focusColor: Colors.transparent,
+                          onHover: (h){
+                            if(h){
+                              setState(() {
+                                currentSelectedIndex = counter;
+                              });
+                            }
+                          },
+                          /*
+                          onEnter: (_){
+                            setState(() {
+                              currentSelectedIndex = counter;
+                            });
+                          },
+                          onExit: (_){
+                            if(currentSelectedIndex == counter){
+                              setState(() {
+                                currentSelectedIndex = -1;
+                              });
+                            }
+                          },
+                          */
+                          onTap: (){},
+                          child: Column(
+                          children: [
+                            CollapsingListTile(
+                                onTap: () {
+                                  setState(() {
+                                    if(!(currentSelectedIndex == counter)){
+                                      currentSelectedIndex = counter;
+                                    }else{
+                                      currentSelectedIndex = -1;
+                                    }
+                                    
+                                  });
+                                },
+                                width: maxWidth - 40,
+                                isSelected: currentSelectedIndex == counter,
+                                title: navigationItems[counter].title,
+                                icon: navigationItems[counter].icon,
+                                animationController: _animationController,
+                            ),
+                            Visibility(
+                                visible: currentSelectedIndex == counter,
+                                child: Column(
+                                  children: [
+                                    SubCollapsingListTile(
+                                      title: 'Crear',
+                                      icon: Icons.edit, 
+                                      animationController: _animationController,
+                                      width: maxWidth - 40,
+                                      onTap: (){}
+                                    ),
+                                    SubCollapsingListTile(
+                                      title: 'Buscar', 
+                                      icon: Icons.search, 
+                                      isLast: true,
+                                      animationController: _animationController,
+                                      width: maxWidth - 40,
+                                      onTap: (){}
+                                    ),
+                                  ],
+                                ),
+                            ),
+                          ],
+                            ),
+                      ),
                     );
                   },
                   itemCount: navigationItems.length,
@@ -149,9 +219,9 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
           color: widget.isSelected
-              ? Colors.transparent.withOpacity(0.3)
+              ? Colors.transparent.withOpacity(0.1)
               : Colors.transparent,
         ),
         width: widthAnimation.value,
@@ -163,7 +233,84 @@ class _CollapsingListTileState extends State<CollapsingListTile> {
             Icon(
               widget.icon,
               color: widget.isSelected ? selectedColor : Colors.white30,
-              size: 32.0,
+              size: 33.0,
+            ),
+            SizedBox(width: sizedBoxAnimation.value),
+            (widthAnimation.value >= 190)
+                ? Text(widget.title,
+                    style: widget.isSelected
+                        ? listTitleSelectedTextStyle
+                        : listTitleDefaultTextStyle)
+                : Container()
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SubCollapsingListTile extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final AnimationController animationController;
+  final bool isSelected;
+  final Function onTap;
+  final double width;
+  final bool isLast;
+
+  SubCollapsingListTile(
+      {@required this.title,
+      @required this.icon,
+      @required this.width,
+      @required this.animationController,
+      this.isLast = false,
+      this.isSelected = false,
+      this.onTap});
+
+  @override
+  _SubCollapsingListTileState createState() => _SubCollapsingListTileState();
+}
+
+class _SubCollapsingListTileState extends State<SubCollapsingListTile> {
+  Animation<double> widthAnimation, sizedBoxAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    widthAnimation =
+        Tween<double>(begin: widget.width, end: 70).animate(widget.animationController);
+    sizedBoxAnimation =
+        Tween<double>(begin: 10, end: 0).animate(widget.animationController);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: widget.isLast ? BorderRadius.vertical(bottom: Radius.circular(16)) : null,
+          color: widget.isSelected
+              ? Colors.transparent.withOpacity(0.3)
+              : Colors.transparent.withOpacity(0.05),
+        ),
+        width: widthAnimation.value,
+        margin: EdgeInsets.symmetric(horizontal: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: (widthAnimation.value >= 190) ? MainAxisAlignment.start : MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.black12
+              ),
+              child: Icon(
+                widget.icon,
+                color: widget.isSelected ? selectedColor : Colors.white24,
+                size: 20.0,
+              ),
             ),
             SizedBox(width: sizedBoxAnimation.value),
             (widthAnimation.value >= 190)
@@ -186,8 +333,11 @@ class NavigationModel {
 }
 List<NavigationModel> navigationItems = [
   NavigationModel(title: "Presupuestos", icon: Icons.description),
-  NavigationModel(title: "Errors", icon: Icons.error),
-  NavigationModel(title: "Search", icon: Icons.search),
-  NavigationModel(title: "Notifications", icon: Icons.notifications),
-  NavigationModel(title: "Settings", icon: Icons.settings),
+  NavigationModel(title: "Ventas", icon: Icons.payment),
+  NavigationModel(title: "Remitos", icon: Icons.local_shipping),
+  NavigationModel(title: "Produccion", icon: Icons.domain),
+  NavigationModel(title: "Productos", icon: Icons.weekend), //Icons.style
+  NavigationModel(title: "Reportes", icon: Icons.settings),
+  NavigationModel(title: "Ubicaciones", icon: Icons.settings),
+  NavigationModel(title: "Empleados", icon: Icons.people)
 ];
