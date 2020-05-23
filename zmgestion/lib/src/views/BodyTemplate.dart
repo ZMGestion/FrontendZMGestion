@@ -24,8 +24,9 @@ class BodyTemplate extends StatelessWidget {
           Row(
             children: [
               ZMDrawer(
+                context: context,
                 maxWidth: 300,
-                minWidth: 70,
+                minWidth: 80,
               ),
               Expanded(
                   child: Stack(
@@ -39,7 +40,7 @@ class BodyTemplate extends StatelessWidget {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).backgroundColor,
                           borderRadius: BorderRadius.horizontal(
                             left: Radius.circular(25)
                           )
@@ -48,6 +49,8 @@ class BodyTemplate extends StatelessWidget {
                           padding: const EdgeInsets.only(left:30),
                           child: Scaffold(
                             appBar:ZMAppBar(),
+                            backgroundColor: Theme.of(context).backgroundColor,
+                            body: child,
                           ),
                         ),
                       ),

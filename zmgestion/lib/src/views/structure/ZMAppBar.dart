@@ -16,7 +16,7 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
               textAlign: TextAlign.left,
               style: GoogleFonts.roboto(
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).primaryColor
+                color: Theme.of(context).primaryTextTheme.headline1.color
               ),
             ),
         ),

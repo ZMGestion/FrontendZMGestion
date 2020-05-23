@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 
 import 'package:zmgestion/src/views/BodyTemplate.dart';
 import 'package:zmgestion/src/views/Loader.dart';
@@ -9,6 +12,8 @@ import 'package:zmgestion/src/router/Router.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 
+StreamController<bool> mainLoaderStateController = StreamController<bool>();
+RequestScheduler mainRequestScheduler = RequestScheduler(mainLoaderStateController);
 void main(){
   setupLocator();
   runApp(MyApp());

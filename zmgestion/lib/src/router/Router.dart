@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zmgestion/src/views/HomePage.dart';
+import 'package:zmgestion/src/views/Test.dart';
 
 const String InicioRoute = '/inicio';
+const String PresupuestosRoute = '/presupuestos';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case InicioRoute:
       return _getPageRoute(HomePage(), settings);
+    case PresupuestosRoute:
+      return _getPageRoute(Test(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }
