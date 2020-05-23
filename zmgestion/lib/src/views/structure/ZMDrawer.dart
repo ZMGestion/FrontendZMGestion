@@ -1,33 +1,99 @@
 import 'package:flutter/material.dart';
-TextStyle listTitleDefaultTextStyle = TextStyle(color: Colors.white70, fontSize: 14.0, fontWeight: FontWeight.w600);
-TextStyle listTitleSelectedTextStyle = TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w600);
-Color selectedColor = Color(0xFFFFFFFF);
-Color drawerBackgroundColor = Color(0xFF272D34);
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zmgestion/src/router/Locator.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
+import 'package:zmgestion/src/widgets/CollapsingListTile.dart';
+import 'package:zmgestion/src/widgets/NavigationModel.dart';
+import 'package:zmgestion/src/widgets/SubCollapsingListTile.dart';
 
 class ZMDrawer extends StatefulWidget {
+  final BuildContext context;
+  final double minWidth;
+  final double maxWidth;
+
+  const ZMDrawer({
+    Key key, 
+    this.context,
+    this.maxWidth = 300,
+    this.minWidth = 70,
+  }) : super(key: key);
+
+
   @override
   ZMDrawerState createState() {
     return new ZMDrawerState();
   }
 }
 
-class ZMDrawerState extends State<ZMDrawer>
-    with SingleTickerProviderStateMixin {
-  double maxWidth = 300;
-  double minWidth = 70;
+class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin {
+  double maxWidth;
+  double minWidth;
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
   int currentSelectedIndex = 0;
 
+  TextStyle listTitleDefaultTextStyle, listTitleSelectedTextStyle;
+  List<NavigationModel> navigationItems;
+
+
   @override
   void initState() {
     super.initState();
+    maxWidth = widget.maxWidth;
+    minWidth = widget.minWidth;
     _animationController = AnimationController(
         vsync: this, duration: Duration(milliseconds: 300));
     widthAnimation = Tween<double>(begin: maxWidth, end: minWidth)
-        .animate(_animationController);
+        .animate(_animationController);        
+    listTitleDefaultTextStyle = TextStyle(color: Theme.of(widget.context).primaryTextTheme.caption.color.withOpacity(0.7), fontSize: 14.0, fontWeight: FontWeight.w600);
+    listTitleSelectedTextStyle = TextStyle(color: Theme.of(widget.context).primaryTextTheme.caption.color, fontSize: 14.0, fontWeight: FontWeight.w600);
+    navigationItems = [
+      NavigationModel(
+        title: "Presupuestos",
+        icon: Icons.assignment,
+        size: 32,
+        animatedBuilder: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, _){ 
+              return Column(
+                children: [
+                  SubCollapsingListTile(
+                    title: 'Crear',
+                    icon: Icons.edit, 
+                    animationController: _animationController,
+                    width: 260, //maxwidth - 40
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    onTap: (){
+                      final NavigationService _navigationService = locator<NavigationService>();
+                      _navigationService.navigateTo("/presupuestos");
+                    }
+                  ),
+                  SubCollapsingListTile(
+                    title: 'Buscar', 
+                    icon: Icons.search, 
+                    isLast: true,
+                    animationController: _animationController,
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    width: 260, //maxwidth - 40
+                    onTap: (){
+
+                    }
+                  )
+                ]
+            );}
+          )
+        ),
+      NavigationModel(title: "Ventas", icon: Icons.payment, size: 32),
+      NavigationModel(title: "Remitos", icon: Icons.local_shipping, size: 32),
+      NavigationModel(title: "Produccion", icon: FontAwesomeIcons.hammer, size: 26),
+      NavigationModel(title: "Productos", icon: Icons.weekend, size: 32), //Icons.style
+      NavigationModel(title: "Reportes", icon: Icons.insert_chart, size: 32),
+      NavigationModel(title: "Ubicaciones", icon: Icons.location_city, size: 32),
+      NavigationModel(title: "Empleados", icon: Icons.people, size: 32)
+    ];
   }
 
   @override
@@ -59,6 +125,8 @@ class ZMDrawerState extends State<ZMDrawer>
                 title: 'Silvia Carolina Zimmerman', 
                 icon: Icons.person, 
                 animationController: _animationController,
+                selectedTextStyle: listTitleDefaultTextStyle,
+                unselectedTextStyle: listTitleSelectedTextStyle,
                 width: maxWidth - 40,
               ),
               Divider(color: Colors.grey, height: 40.0,),
@@ -67,18 +135,65 @@ class ZMDrawerState extends State<ZMDrawer>
                   separatorBuilder: (context, counter) {
                     return Divider(height: 12.0);
                   },
-                  itemBuilder: (context, counter) {
-                    return CollapsingListTile(
-                        onTap: () {
-                          setState(() {
-                            currentSelectedIndex = counter;
-                          });
-                        },
-                        width: maxWidth - 40,
-                        isSelected: currentSelectedIndex == counter,
-                        title: navigationItems[counter].title,
-                        icon: navigationItems[counter].icon,
-                        animationController: _animationController,
+                  itemBuilder: (context, counter){
+                    return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          /*onHover: (h){
+                            if(h){
+                              setState(() {
+                                currentSelectedIndex = counter;
+                              });
+                            }
+                          },*/
+                          /*
+                          onEnter: (_){
+                            setState(() {
+                              currentSelectedIndex = counter;
+                            });
+                          },
+                          onExit: (_){
+                            if(currentSelectedIndex == counter){
+                              setState(() {
+                                currentSelectedIndex = -1;
+                              });
+                            }
+                          },
+                          */
+                          onTap: (){},
+                          child: Column(
+                          children: [
+                            CollapsingListTile(
+                                onTap: () {
+                                  setState(() {
+                                    if(!(currentSelectedIndex == counter)){
+                                      currentSelectedIndex = counter;
+                                    }else{
+                                      currentSelectedIndex = -1;
+                                    }
+                                    
+                                  });
+                                },
+                                width: maxWidth - 40,
+                                selectedTextStyle: listTitleDefaultTextStyle,
+                                unselectedTextStyle: listTitleSelectedTextStyle,
+                                isSelected: currentSelectedIndex == counter,
+                                title: navigationItems[counter].title,
+                                icon: navigationItems[counter].icon,
+                                iconSize: navigationItems[counter].size,
+                                animationController: _animationController,
+                            ),
+                            Visibility(
+                                visible: currentSelectedIndex == counter,
+                                child: navigationItems[counter].animatedBuilder != null ? navigationItems[counter].animatedBuilder : Container(),
+                            ),
+                          ],
+                            ),
+                      ),
                     );
                   },
                   itemCount: navigationItems.length,
@@ -96,7 +211,7 @@ class ZMDrawerState extends State<ZMDrawer>
                 child: AnimatedIcon(
                   icon: AnimatedIcons.close_menu,
                   progress: _animationController,
-                  color: selectedColor,
+                  color: Theme.of(context).primaryTextTheme.caption.color,
                   size: 40.0,
                 ),
               ),
@@ -110,84 +225,3 @@ class ZMDrawerState extends State<ZMDrawer>
     );
   }
 }
-
-class CollapsingListTile extends StatefulWidget {
-  final String title;
-  final IconData icon;
-  final AnimationController animationController;
-  final bool isSelected;
-  final Function onTap;
-  final double width;
-
-  CollapsingListTile(
-      {@required this.title,
-      @required this.icon,
-      @required this.width,
-      @required this.animationController,
-      this.isSelected = false,
-      this.onTap});
-
-  @override
-  _CollapsingListTileState createState() => _CollapsingListTileState();
-}
-
-class _CollapsingListTileState extends State<CollapsingListTile> {
-  Animation<double> widthAnimation, sizedBoxAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    widthAnimation =
-        Tween<double>(begin: widget.width, end: 70).animate(widget.animationController);
-    sizedBoxAnimation =
-        Tween<double>(begin: 10, end: 0).animate(widget.animationController);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: widget.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(16.0)),
-          color: widget.isSelected
-              ? Colors.transparent.withOpacity(0.3)
-              : Colors.transparent,
-        ),
-        width: widthAnimation.value,
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: (widthAnimation.value >= 190) ? MainAxisAlignment.start : MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              widget.icon,
-              color: widget.isSelected ? selectedColor : Colors.white30,
-              size: 32.0,
-            ),
-            SizedBox(width: sizedBoxAnimation.value),
-            (widthAnimation.value >= 190)
-                ? Text(widget.title,
-                    style: widget.isSelected
-                        ? listTitleSelectedTextStyle
-                        : listTitleDefaultTextStyle)
-                : Container()
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class NavigationModel {
-  String title;
-  IconData icon;
-  NavigationModel({this.title, this.icon});
-}
-List<NavigationModel> navigationItems = [
-  NavigationModel(title: "Presupuestos", icon: Icons.description),
-  NavigationModel(title: "Errors", icon: Icons.error),
-  NavigationModel(title: "Search", icon: Icons.search),
-  NavigationModel(title: "Notifications", icon: Icons.notifications),
-  NavigationModel(title: "Settings", icon: Icons.settings),
-];

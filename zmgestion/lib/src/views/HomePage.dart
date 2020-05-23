@@ -10,6 +10,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
       body: ListView.builder(
         padding: EdgeInsets.all(8),
         itemCount: AppTheme.values.length,
