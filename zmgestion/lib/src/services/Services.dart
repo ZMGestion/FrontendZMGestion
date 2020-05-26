@@ -162,8 +162,7 @@ abstract class Services<T>{
           },
           payload: config.payload,
           scheduler: config.scheduler,
-          onSuccess: (message){
-            List<dynamic> response = message[config.listName];
+          onSuccess: (response){
             response.forEach((item){
               print(item);
               Models itemModel = config.model.fromMap(item);
@@ -171,7 +170,7 @@ abstract class Services<T>{
             });
             if(config.actionsConfiguration != null){
               if(config.actionsConfiguration.onSuccess != null){
-                config.actionsConfiguration.onSuccess(message);
+                config.actionsConfiguration.onSuccess(response);
               }
             }
             responseList = Response<List<Models>>(
