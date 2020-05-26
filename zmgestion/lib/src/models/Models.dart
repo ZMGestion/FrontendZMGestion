@@ -2,16 +2,28 @@ import 'package:flutter/material.dart';
 
 abstract class Models<T>{
 
+  bool selected = false;
+
   Map<String, dynamic> toMap();
 
   T fromMap(Map<String, dynamic> mapModel);
 
-  Map<String, dynamic> getAttributes(List<String> attributesNames){
+  /*
+  "Usuarios": ["Nombres","Apellidos"]
+  */
+  Map<String, dynamic> getAttributes(List<String> attributes){
+    print("Empieza");
     Map<String, dynamic> respuesta = {};
     Map<String, dynamic> mapModel = this.toMap();
-    attributesNames.forEach((attrName){
-      respuesta.addAll({attrName: mapModel[attrName]});
+    print("Se rompio");
+    attributes.forEach((searchedAttr){
+      mapModel.forEach((key, internalMapModel) {
+        if(internalMapModel.containsKey(searchedAttr)){
+          respuesta.addAll({searchedAttr: internalMapModel[searchedAttr]});
+        }
+      });
     });
+    
 
     return respuesta;
   }

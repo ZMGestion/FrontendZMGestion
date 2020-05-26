@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
-import 'package:zmgestion/src/widgets/CollapsingListTile.dart';
-import 'package:zmgestion/src/widgets/NavigationModel.dart';
-import 'package:zmgestion/src/widgets/SubCollapsingListTile.dart';
+import 'package:zmgestion/src/widgets/ZMDrawer/CollapsingListTile.dart';
+import 'package:zmgestion/src/widgets/ZMDrawer/NavigationModel.dart';
+import 'package:zmgestion/src/widgets/ZMDrawer/SubCollapsingListTile.dart';
 
 class ZMDrawer extends StatefulWidget {
   final BuildContext context;
@@ -92,7 +92,43 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
       NavigationModel(title: "Productos", icon: Icons.weekend, size: 32), //Icons.style
       NavigationModel(title: "Reportes", icon: Icons.insert_chart, size: 32),
       NavigationModel(title: "Ubicaciones", icon: Icons.location_city, size: 32),
-      NavigationModel(title: "Empleados", icon: Icons.people, size: 32)
+      NavigationModel(
+        title: "Empleados",
+        icon: Icons.people,
+        size: 32,
+        animatedBuilder: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, _){ 
+              return Column(
+                children: [
+                  SubCollapsingListTile(
+                    title: 'Crear',
+                    icon: Icons.edit, 
+                    animationController: _animationController,
+                    width: 260, //maxwidth - 40
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    onTap: (){
+                      
+                    }
+                  ),
+                  SubCollapsingListTile(
+                    title: 'Buscar', 
+                    icon: Icons.search, 
+                    isLast: true,
+                    animationController: _animationController,
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    width: 260, //maxwidth - 40
+                    onTap: (){
+                      final NavigationService _navigationService = locator<NavigationService>();
+                      _navigationService.navigateTo("/usuarios");
+                    }
+                  )
+                ]
+            );}
+          )
+        ),
     ];
   }
 

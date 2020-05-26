@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:zmgestion/src/helpers/Constants.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 
 enum RequestStatus{
@@ -27,7 +28,7 @@ class Request{
   ActionsConfiguration actionsConfiguration;
 
   Request({
-    this.url = "http://localhost:3000/",
+    this.url = Constants.URL,
     this.method,
     this.path, // usuarios/listar
     this.headers,

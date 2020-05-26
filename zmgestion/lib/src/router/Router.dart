@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zmgestion/src/views/HomePage.dart';
 import 'package:zmgestion/src/views/Test.dart';
+import 'package:zmgestion/src/views/usuarios/IndexUsuarios.dart';
 
 const String InicioRoute = '/inicio';
 const String PresupuestosRoute = '/presupuestos';
+const String UsuariosRoute = '/usuarios';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -12,6 +14,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(HomePage(), settings);
     case PresupuestosRoute:
       return _getPageRoute(Test(), settings);
+    case UsuariosRoute:
+      return _getPageRoute(IndexUsuarios(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

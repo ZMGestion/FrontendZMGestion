@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zmgestion/main.dart';
+import 'package:zmgestion/src/helpers/Constants.dart';
+import 'package:zmgestion/src/helpers/Constants.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 
@@ -34,7 +36,7 @@ class SendRequest{
     this.scheduler,
     this.requestConfiguration
   }){
-    this.url = "http://127.0.0.1:3000";
+    this.url = Constants.URL;
     this.request = Request(
       url: url,
       path: path,
