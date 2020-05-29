@@ -3,8 +3,7 @@ import 'package:zmgestion/src/models/Models.dart';
 
 class ModelDataSource extends DataTableSource {
   final List<Models> models;
-  final List<String> attributes;
-  final Map<String, Widget Function(dynamic)> cellBuilder;
+  final Map<String, Map<String,Widget Function(dynamic)>> cellBuilder;
   /*
   "Nombres": (value){Text(value)}
   
@@ -13,7 +12,6 @@ class ModelDataSource extends DataTableSource {
   ModelDataSource({
     Key key,
     this.models,
-    this.attributes,
     this.cellBuilder
   });
 
@@ -31,16 +29,22 @@ class ModelDataSource extends DataTableSource {
   int _selectedCount = 0;
 
   List<DataCell> bindCell(Models model){
-    Map<String, dynamic> mapModel = model.getAttributes(attributes);
+    print("AAA");
+    Map<String, dynamic> mapModel = model.toMap();
+    print("BBB");
     List<DataCell> _cells = new List<DataCell>();
-
-    mapModel.forEach((column, value) {
-      _cells.add(DataCell(cellBuilder[column](value)));
+    cellBuilder.forEach((parent, mapBuilder) {
+      print("CCC");
+      if(mapModel.containsKey(parent)){
+        mapBuilder.forEach((attrName, attrBuilder) {
+          if(mapModel[parent].containsKey(attrName)){
+            var value = mapModel[parent][attrName];
+            _cells.add(DataCell(attrBuilder(value)));
+          }
+        });
+      }
     });
-    
     return _cells;
-
-
 
   }
 

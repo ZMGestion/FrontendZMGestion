@@ -6,6 +6,7 @@ import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/Roles.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/Services.dart';
 import 'package:zmgestion/src/views/ZMLoader.dart';
@@ -51,17 +52,14 @@ class UsuariosService extends Services{
     throw UnimplementedError();
   }
 
-  ListMethodConfiguration buscarUsuarios(){
+  ListMethodConfiguration buscarUsuarios(Map<String, dynamic> payload){
     return ListMethodConfiguration(
       method: Methods.POST,
-      //model: Usuarios(),
+      authorizationHeader: true,
+      model: Usuarios(),
       path: "/usuarios/buscar",
       scheduler: scheduler,
-      payload: {
-        "Usuarios":{
-          "IdRol": 1
-        }
-      }
+      payload: payload
     );
   }
 
@@ -78,12 +76,23 @@ class UsuariosService extends Services{
           var localStorage = window.localStorage;
           localStorage["tokenType"] = "JWT";
           localStorage["token"] = usuario.token;
+          print(response);
           ZMLoader.of(context).rebuild();
         },
         onError: (error){
           ScreenMessage.push(error["mensaje"], MessageType.Error);
         }
       )
+    );
+  }
+
+  GetMethodConfiguration damePorTokenConfiguration(){
+    return GetMethodConfiguration(
+      method: Methods.GET,
+      authorizationHeader: true,
+      model: Usuarios(),
+      path: "/usuarios/damePorToken",
+      scheduler: scheduler
     );
   }
 

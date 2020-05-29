@@ -51,15 +51,15 @@ class _ZMTableState extends State<ZMTable> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("A");
     _rowsPerPage = widget.rowsPerPage != null ? widget.rowsPerPage : PaginatedDataTable.defaultRowsPerPage;
-    _columnNames = widget.source.attributes;
-    _columnNames.forEach((name){
-      columns.add(
-        DataColumn(
-          label: Text(name)
-        )
-      );
+    widget.source.cellBuilder.forEach((parent, mapBuilder){
+      mapBuilder.keys.forEach((name) {
+        columns.add(
+          DataColumn(
+            label: Text(name)
+          )
+        );
+      });
     });
   }
   /*

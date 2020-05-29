@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
@@ -18,10 +20,14 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    UsuariosService(scheduler: null).listMethod(UsuariosService().buscarUsuarios()).then(
-      (users){
-        if(users != null){
-          usuarios = users.message;
+    UsuariosService(scheduler: null).listMethod(UsuariosService().buscarUsuarios({"Usuarios":{"IdRol": 1}})).then(
+      (response){
+        if(response.status == RequestStatus.SUCCESS){
+          setState(() {
+            usuarios = response.message;
+          });
+        }else{
+          ScreenMessage.push("No se han podido cargar los usuarios.", MessageType.Error);
         }
       }
     );
@@ -35,26 +41,14 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
         rowsPerPage: 20,
         sortAscending: true,
         source: ModelDataSource(
-          attributes: ["Nombres","Apellidos","Documento"],
           cellBuilder: {
-            "Nombres": (value){return Text(value.toString());},
-            "Apellidos": (value){return Text(value.toString());},
-            "Documento": (value){return Text(value.toString());}
+            "Usuarios": {
+              "Nombres": (value){return Text(value.toString());},
+              "Apellidos": (value){return Text(value.toString());},
+              "Documento": (value){return Text(value.toString());}
+            }
           },
-          models: <Usuarios>[
-            Usuarios(
-              nombres: "Nicolas",
-              apellidos: "Bachs",
-              cantidadHijos: 0,
-              documento: "39282822"
-            ),
-            Usuarios(
-              nombres: "Loik",
-              apellidos: "Puto",
-              cantidadHijos: 0,
-              documento: "22222222"
-            )
-          ]
+          models: usuarios
         ),
       ),
     );
