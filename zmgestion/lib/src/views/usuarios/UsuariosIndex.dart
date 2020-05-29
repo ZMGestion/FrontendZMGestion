@@ -5,12 +5,12 @@ import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ModelDataSource.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
-class IndexUsuarios extends StatefulWidget {
+class UsuariosIndex extends StatefulWidget {
   @override
-  _IndexUsuariosState createState() => _IndexUsuariosState();
+  _UsuariosIndexState createState() => _UsuariosIndexState();
 }
 
-class _IndexUsuariosState extends State<IndexUsuarios> {
+class _UsuariosIndexState extends State<UsuariosIndex> {
 
   List<Models> usuarios = new List<Models>();
 

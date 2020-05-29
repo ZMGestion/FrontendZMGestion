@@ -17,7 +17,6 @@ class BodyTemplate extends StatelessWidget {
         /*drawer: sizingInformation.deviceScreenType == DeviceScreenType.Mobile
             ? NavigationDrawer()
             : null,*/
-        
         backgroundColor: Colors.white,
         body: Stack(
         children: <Widget>[
@@ -59,7 +58,6 @@ class BodyTemplate extends StatelessWidget {
               )
             ],
           ),
-          
         ],
       )
       ),

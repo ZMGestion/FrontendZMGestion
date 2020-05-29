@@ -67,14 +67,14 @@ class Usuarios extends Models{
       usuario:          mapModel["Usuarios"]["Usuario"],
       password:         mapModel["Usuarios"]["Password"],
       token:            mapModel["Usuarios"]["Token"],
-      fechaUltIntento:  mapModel["Usuarios"]["FechaUltIntento"],
+      fechaUltIntento:  mapModel["Usuarios"]["FechaUltIntento"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaUltIntento"]) : null,
       intentos:         mapModel["Usuarios"]["Intentos"],
-      fechaNacimiento:  mapModel["Usuarios"]["FechaNacimiento"],
-      fechaInicio:      mapModel["Usuarios"]["FechaInicio"],
-      fechaAlta:        mapModel["Usuarios"]["FechaAlta"],
-      fechaBaja:        mapModel["Usuarios"]["FechaBaja"],
+      fechaNacimiento:  mapModel["Usuarios"]["FechaNacimiento"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaNacimiento"]) : null,
+      fechaInicio:      mapModel["Usuarios"]["FechaInicio"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaInicio"]) : null,
+      fechaAlta:        mapModel["Usuarios"]["FechaAlta"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaAlta"]) : null,
+      fechaBaja:        mapModel["Usuarios"]["FechaBaja"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaBaja"]) : null,
       estado:           mapModel["Usuarios"]["Estado"],
-      rol:              Roles().fromMap(mapModel["Roles"])
+      rol:              mapModel["Roles"] != null ? Roles().fromMap(mapModel["Roles"]) : null
     );
   }
 

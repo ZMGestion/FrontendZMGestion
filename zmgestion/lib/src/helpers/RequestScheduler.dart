@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:zmgestion/src/widgets/ScreenMessage.dart';
+import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 
 import 'Request.dart';
 
@@ -50,7 +50,7 @@ class RequestScheduler{
                 ScreenMessage.push(request.requestConfiguration.successMessage, MessageType.Success);
               }
               if(request.actionsConfiguration.onSuccess != null){
-                return request.actionsConfiguration.onSuccess(responseJson["response"]);
+                return request.actionsConfiguration.onSuccess(responseJson["respuesta"]);
               }
             }else{
               if(request.requestConfiguration.showError){
@@ -61,8 +61,8 @@ class RequestScheduler{
           request.status = RequestStatus.ERROR;
           this._sendState();
           if(responseJson["error"] != null){
-            if(responseJson["error"]["message"] != null){
-              ScreenMessage.push(responseJson["error"]["message"], MessageType.Error);
+            if(responseJson["error"]["mensaje"] != null){
+              ScreenMessage.push(responseJson["error"]["mensaje"], MessageType.Error);
             }
           }else if(request.requestConfiguration.errorMessage != null && request.requestConfiguration.showError){
             ScreenMessage.push(request.requestConfiguration.errorMessage, MessageType.Error);
@@ -74,7 +74,7 @@ class RequestScheduler{
           request.status = RequestStatus.ERROR;
           print("ERROR POR CLOSE");
           if (request.actionsConfiguration.onError != null){
-            return request.actionsConfiguration.onError({"message": "Ha ocurrido un error mientras se procesaba su peticion", "code": "SEND_ERROR"});
+            return request.actionsConfiguration.onError({"mensaje": "Ha ocurrido un error mientras se procesaba su peticion", "codigo": "SEND_ERROR"});
           }
           this._sendState();
         }
@@ -92,7 +92,7 @@ class RequestScheduler{
           * */
         }
         if (request.actionsConfiguration.onError != null){
-          return request.actionsConfiguration.onError({"message": "Ha ocurrido un error mientras se procesaba su peticion", "code": "SEND_ERROR"});
+          return request.actionsConfiguration.onError({"mensaje": "Ha ocurrido un error mientras se procesaba su peticion", "codigo": "SEND_ERROR"});
         }
       }else{
         request.status = RequestStatus.ERROR;

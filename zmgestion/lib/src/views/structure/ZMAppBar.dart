@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zmgestion/src/services/UsuariosService.dart';
 
 class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
@@ -21,6 +22,15 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
             ),
         ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.exit_to_app),
+          color: Theme.of(context).primaryColor,
+          onPressed: (){
+            UsuariosService(context: context).cerrarSesion();
+          },
+        )
+      ],
     );
   }
 
