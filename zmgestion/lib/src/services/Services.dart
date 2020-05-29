@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
@@ -91,8 +93,9 @@ abstract class Services<T>{
       String token, tokenType;
 
       if (config.authorizationHeader) {
-        //token = await Storage.token;
-        //tokenType = await Storage.tokenType;
+        final Storage _localStorage = window.localStorage;
+        token = _localStorage['token'];
+        tokenType = _localStorage['tokenType'];
       }
 
       Map<String, dynamic> payload;
@@ -146,8 +149,9 @@ abstract class Services<T>{
       String token, tokenType;
 
       if(config.authorizationHeader){
-        //token = await Storage.token;
-        //tokenType = await Storage.tokenType;
+        final Storage _localStorage = window.localStorage;
+        token = _localStorage['token'];
+        tokenType = _localStorage['tokenType'];
       }
 
       List<Models> respuesta = [];
@@ -206,8 +210,9 @@ abstract class Services<T>{
       String token, tokenType;
 
       if(config.authorizationHeader){
-        //token = await Storage.token;
-        //tokenType = await Storage.tokenType;
+        final Storage _localStorage = window.localStorage;
+        token = _localStorage['token'];
+        tokenType = _localStorage['tokenType'];
       }
 
       Models respuesta;
