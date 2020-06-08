@@ -3,8 +3,7 @@ import 'package:zmgestion/src/models/Models.dart';
 
 class ModelDataSource extends DataTableSource {
   final List<Models> models;
-  final List<String> attributes;
-  final Map<String, Widget Function(dynamic)> cellBuilder;
+  final Map<String, Map<String,Widget Function(dynamic)>> cellBuilder;
   /*
   "Nombres": (value){Text(value)}
   
@@ -13,34 +12,48 @@ class ModelDataSource extends DataTableSource {
   ModelDataSource({
     Key key,
     this.models,
-    this.attributes,
     this.cellBuilder
   });
 
-  /*void _sort<T>(Comparable<T> Function(Models d) getField, bool ascending) {
-    models.sort((a, b) {
+  void sort<T>(Comparable<T> Function(Map<String, dynamic> mapModel) getField, bool ascending) {
+    print("SI LLEGa");
+    List<Map<String, dynamic>> mapModels = List<Map<String, dynamic>>();
+    models.forEach((element) {
+      mapModels.add(element.toMap());
+    });
+    mapModels.sort((a, b) {
+      print("Si");
+      print(a);
       final aValue = getField(a);
       final bValue = getField(b);
+      print(aValue);
       return ascending
           ? Comparable.compare(aValue, bValue)
           : Comparable.compare(bValue, aValue);
     });
     notifyListeners();
-  }*/
+  }
 
   int _selectedCount = 0;
 
   List<DataCell> bindCell(Models model){
-    Map<String, dynamic> mapModel = model.getAttributes(attributes);
+    Map<String, dynamic> mapModel = model.toMap();
     List<DataCell> _cells = new List<DataCell>();
-
-    mapModel.forEach((column, value) {
-      _cells.add(DataCell(cellBuilder[column](value)));
+    cellBuilder.forEach((parent, mapBuilder) {
+      if(mapModel.containsKey(parent)){
+        mapBuilder.forEach((attrName, attrBuilder) {
+          if(mapModel[parent].containsKey(attrName)){
+            var value = mapModel[parent][attrName];
+            _cells.add(
+              DataCell(
+                attrBuilder(value),
+              )
+            );
+          }
+        });
+      }
     });
-    
     return _cells;
-
-
 
   }
 

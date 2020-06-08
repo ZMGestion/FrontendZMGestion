@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 abstract class Models<T>{
@@ -12,10 +13,8 @@ abstract class Models<T>{
   "Usuarios": ["Nombres","Apellidos"]
   */
   Map<String, dynamic> getAttributes(List<String> attributes){
-    print("Empieza");
     Map<String, dynamic> respuesta = {};
     Map<String, dynamic> mapModel = this.toMap();
-    print("Se rompio");
     attributes.forEach((searchedAttr){
       mapModel.forEach((key, internalMapModel) {
         if(internalMapModel.containsKey(searchedAttr)){

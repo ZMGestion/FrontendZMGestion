@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Roles.dart';
 
-class Usuarios extends Models{
+class Usuarios extends Equatable with Models{
   /* -Mysql Model-*/
   final int       idUsuario;
   final int       idRol;
@@ -50,6 +51,9 @@ class Usuarios extends Models{
     this.estado,
     this.rol
   });
+
+  @override
+  List<Object> get props => [idUsuario];
 
   @override
   fromMap(Map<String, dynamic> mapModel) {

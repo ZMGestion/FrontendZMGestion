@@ -228,7 +228,7 @@ abstract class Services<T>{
           payload: config.payload,
           scheduler: config.scheduler,
           onSuccess: (message){
-            respuesta = config.model.fromMap(message[config.objectName]);
+            respuesta = config.model.fromMap(message);
             if(config.actionsConfiguration != null){
               if(config.actionsConfiguration.onSuccess != null){
                 config.actionsConfiguration.onSuccess(message);
@@ -303,7 +303,6 @@ class DoMethodConfiguration{
 class ListMethodConfiguration{
   final Methods method;
   final String path;
-  final String listName;
   Map<String, dynamic> payload;
   final bool authorizationHeader;
   Models model;
@@ -313,7 +312,6 @@ class ListMethodConfiguration{
 
   ListMethodConfiguration({
     @required this.method,
-    @required this.listName,
     this.path,
     this.payload,
     this.authorizationHeader = false,
@@ -327,7 +325,6 @@ class ListMethodConfiguration{
 class GetMethodConfiguration{
   final Methods method;
   final String path;
-  final String objectName;
   Map<String, dynamic> payload;
   final bool authorizationHeader;
   Models model;
@@ -337,7 +334,6 @@ class GetMethodConfiguration{
 
   GetMethodConfiguration({
     @required this.method,
-    @required this.objectName,
     this.payload,
     this.path,
     this.authorizationHeader = false,

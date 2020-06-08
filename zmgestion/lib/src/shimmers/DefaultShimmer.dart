@@ -11,6 +11,7 @@ class DefaultShimmer extends StatefulWidget {
 class _DefaultShimmerState extends State<DefaultShimmer> {
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return LayoutBuilder(
       builder: (context, constraints){
         double fullWidth = constraints.biggest.width;
