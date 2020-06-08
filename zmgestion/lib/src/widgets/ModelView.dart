@@ -103,16 +103,17 @@ class _ModelViewState extends State<ModelView> {
       // TODO: implement dispose
       super.dispose();
       closed = true;
-
     }
-
 
     @override
     void initState() {
       // TODO: implement initState
       super.initState();
+      print("INIT");
       SchedulerBinding.instance.addPostFrameCallback((_) async{
+        print("PREVIO");
         await loadModel();
+        print("DESPUES");
       });
     }
 
@@ -178,7 +179,7 @@ class _ModelViewState extends State<ModelView> {
 
     Future<void> loadModel() async{
       if(widget.isList){
-        await widget.service.listarPor(widget.listMethodConfiguration, showLoading: false, showError: false).then((response){
+        await widget.service.listMethod(widget.listMethodConfiguration).then((response){
           if(!closed){
             if(response.status == RequestStatus.SUCCESS){
               if(widget.onComplete != null){
@@ -340,7 +341,13 @@ class _ModelViewState extends State<ModelView> {
               child: widget.animatedLoading,
             );
           }else{
-            return DefaultShimmer();
+            return Container(
+              width: 35,
+              height: 35,
+              padding: EdgeInsets.all(4),
+              child: CircularProgressIndicator()
+            );
+            //return DefaultShimmer();
           }
         }
         else{

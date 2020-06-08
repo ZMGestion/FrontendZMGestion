@@ -15,31 +15,40 @@ class ModelDataSource extends DataTableSource {
     this.cellBuilder
   });
 
-  /*void _sort<T>(Comparable<T> Function(Models d) getField, bool ascending) {
-    models.sort((a, b) {
+  void sort<T>(Comparable<T> Function(Map<String, dynamic> mapModel) getField, bool ascending) {
+    print("SI LLEGa");
+    List<Map<String, dynamic>> mapModels = List<Map<String, dynamic>>();
+    models.forEach((element) {
+      mapModels.add(element.toMap());
+    });
+    mapModels.sort((a, b) {
+      print("Si");
+      print(a);
       final aValue = getField(a);
       final bValue = getField(b);
+      print(aValue);
       return ascending
           ? Comparable.compare(aValue, bValue)
           : Comparable.compare(bValue, aValue);
     });
     notifyListeners();
-  }*/
+  }
 
   int _selectedCount = 0;
 
   List<DataCell> bindCell(Models model){
-    print("AAA");
     Map<String, dynamic> mapModel = model.toMap();
-    print("BBB");
     List<DataCell> _cells = new List<DataCell>();
     cellBuilder.forEach((parent, mapBuilder) {
-      print("CCC");
       if(mapModel.containsKey(parent)){
         mapBuilder.forEach((attrName, attrBuilder) {
           if(mapModel[parent].containsKey(attrName)){
             var value = mapModel[parent][attrName];
-            _cells.add(DataCell(attrBuilder(value)));
+            _cells.add(
+              DataCell(
+                attrBuilder(value),
+              )
+            );
           }
         });
       }

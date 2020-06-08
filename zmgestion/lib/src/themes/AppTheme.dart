@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 enum AppTheme {
@@ -7,8 +8,9 @@ enum AppTheme {
 
 final appThemeData = {
   AppTheme.Light: ThemeData(
-    backgroundColor: Color(0xffffffff),
+    backgroundColor: Color(0xffdddddd),
     scaffoldBackgroundColor: Color(0xffffffff),
+    cardColor: Color(0xffffffff),
     brightness: Brightness.light,
     primaryColor: Color(0xffB34741),
     primaryTextTheme: TextTheme(

@@ -45,7 +45,7 @@ class BodyTemplate extends StatelessWidget {
                           )
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(left:30),
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Scaffold(
                             appBar:ZMAppBar(),
                             backgroundColor: Theme.of(context).backgroundColor,
