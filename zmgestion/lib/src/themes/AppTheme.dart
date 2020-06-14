@@ -8,11 +8,11 @@ enum AppTheme {
 
 final appThemeData = {
   AppTheme.Light: ThemeData(
-    backgroundColor: Color(0xffdddddd),
-    scaffoldBackgroundColor: Color(0xffffffff),
+    backgroundColor: Color(0xffcbdded),
+    scaffoldBackgroundColor: Color(0xffcbdded),
     cardColor: Color(0xffffffff),
     brightness: Brightness.light,
-    primaryColor: Color(0xffB34741),
+    primaryColor: Color(0xff0066a5),
     primaryTextTheme: TextTheme(
       bodyText1: TextStyle(
         color: Color(0xff222222)

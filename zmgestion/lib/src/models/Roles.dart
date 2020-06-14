@@ -4,7 +4,7 @@ class Roles extends Models{
   /* -Mysql Model-*/
   final int       idRol;
   final String    rol;
-  final DateTime  fechaAlta;
+  final String  fechaAlta;
   final String    descripcion;
 
   /* -Other-*/
@@ -19,10 +19,10 @@ class Roles extends Models{
   @override
   Roles fromMap(Map<String, dynamic> mapModel) {
     return Roles(
-      idRol:        mapModel["IdRol"],
-      rol:          mapModel["Rol"],
-      fechaAlta:    mapModel["FechaAlta"],
-      descripcion:  mapModel["Descripcion"]
+      idRol:        mapModel["Roles"]["IdRol"],
+      rol:          mapModel["Roles"]["Rol"],
+      fechaAlta:    mapModel["Roles"]["FechaAlta"],
+      descripcion:  mapModel["Roles"]["Descripcion"]
     );
   }
 
@@ -33,7 +33,7 @@ class Roles extends Models{
       "Roles": {
         "IdRol":        this.idRol,
         "Rol":          this.rol,
-        "FechaAlta":    this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
+        "FechaAlta":    this.fechaAlta,
         "Descripcion":  this.descripcion
       }
     };

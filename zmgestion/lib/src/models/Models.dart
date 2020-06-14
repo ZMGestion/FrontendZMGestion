@@ -22,8 +22,6 @@ abstract class Models<T>{
         }
       });
     });
-    
-
     return respuesta;
   }
 
