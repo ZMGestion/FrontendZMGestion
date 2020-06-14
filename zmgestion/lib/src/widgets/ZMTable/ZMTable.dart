@@ -207,7 +207,14 @@ class _ZMTableState extends State<ZMTable> {
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
+                                gradient: RadialGradient(
+                                  center: Alignment.bottomCenter,
+                                  radius: 15,
+                                  colors: [
+                                    Color(0xff5866aa),
+                                    Color(0xff4f5a8e)
+                                  ]
+                                ),
                                 borderRadius: BorderRadius.circular(30)
                               ),
                               child: Row(

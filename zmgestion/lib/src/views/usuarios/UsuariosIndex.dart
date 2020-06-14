@@ -4,7 +4,9 @@ import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
+import 'package:zmgestion/src/views/usuarios/UsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
+import 'package:zmgestion/src/widgets/ZMAlertDialog/ZMFormAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
@@ -68,7 +70,16 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                 size: 20,
               ),
               onPressed: (){
-                
+                // show the dialog
+                showDialog(
+                  context: context,
+                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                  builder: (BuildContext context) {
+                    return UsuariosAlertDialog(
+                      title: "Crear Usuarios"
+                    );
+                  },
+                );
               },
             )
           ],

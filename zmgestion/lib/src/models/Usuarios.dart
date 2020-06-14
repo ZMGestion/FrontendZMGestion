@@ -78,7 +78,7 @@ class Usuarios extends Equatable with Models{
       fechaAlta:        mapModel["Usuarios"]["FechaAlta"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaAlta"]) : null,
       fechaBaja:        mapModel["Usuarios"]["FechaBaja"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaBaja"]) : null,
       estado:           mapModel["Usuarios"]["Estado"],
-      rol:              mapModel["Roles"] != null ? Roles().fromMap(mapModel["Roles"]) : null
+      rol:              mapModel["Roles"] != null ? Roles().fromMap({"Roles": mapModel["Roles"]}) : null
     );
   }
 
