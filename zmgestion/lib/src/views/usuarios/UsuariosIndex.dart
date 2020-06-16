@@ -49,10 +49,14 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
             },
             "Roles": {
               "Rol": (value){return Text(value.toString(), textAlign: TextAlign.center);}
+            },
+            "Ubicaciones": {
+              "Ubicacion": (value){return Text(value.toString(), textAlign: TextAlign.center);}
             }
           },
           tableLabels: {
-            "Telefono": "Teléfono"
+            "Telefono": "Teléfono",
+            "Ubicacion": "Ubicación"
           },
           fixedActions: [
             ZMStdButton(
