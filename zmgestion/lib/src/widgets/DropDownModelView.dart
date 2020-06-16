@@ -209,13 +209,20 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                       maxLines: 2,
                     ),
                   ),
-                  SizedBox(height: SizeConfig.blockSizeHorizontal*1.5,),
-                  Text(
-                    state.hasError ? state.errorText : '',
-                    style: TextStyle(
-                      color: Theme.of(context).errorColor, fontSize: 12.0,
+                  Visibility(
+                    visible: state.hasError,
+                    child: Column(
+                      children: [
+                        SizedBox(height: SizeConfig.blockSizeHorizontal*1.5,),
+                        Text(
+                          state.hasError ? state.errorText : '',
+                          style: TextStyle(
+                            color: Theme.of(context).errorColor, fontSize: 12.0,
+                          ),
+                        )
+                      ],
                     ),
-                  ),
+                  )
                 ],
               ),
             );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
+import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/RolesService.dart';
+import 'package:zmgestion/src/services/TiposDocumentoService.dart';
+import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
@@ -23,6 +26,20 @@ class UsuariosAlertDialog extends StatefulWidget{
 }
 
 class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
+  DateTime selectedDate = DateTime.now();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -119,6 +136,42 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: DropDownModelView(
+                      service: RolesService(),
+                      listMethodConfiguration: RolesService().listar(),
+                      parentName: "Roles",
+                      labelName: "Seleccione un rol",
+                      displayedName: "Rol",
+                      valueName: "IdRol",
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 8)
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12,),
+                  Expanded(
+                    child: DropDownModelView(
+                      service: UbicacionesService(),
+                      listMethodConfiguration: UbicacionesService().listar(),
+                      parentName: "Ubicaciones",
+                      labelName: "Seleccione una ubicación",
+                      displayedName: "Ubicacion",
+                      valueName: "IdUbicacion",
+                      //initialValue: UsuariosProvider.idUbicacion,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 8)
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
                 children: [
                   Expanded(
                       child: TextFormField(
@@ -171,20 +224,52 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                 children: [
                   Expanded(
                     child: DropDownModelView(
-                      service: RolesService(),
-                      listMethodConfiguration: RolesService().listar(),
-                      parentName: "Roles",
-                      labelName: "Seleccione un rol",
-                      displayedName: "Rol",
-                      valueName: "IdRol",
+                      service: TiposDocumentoService(),
+                      listMethodConfiguration: TiposDocumentoService().listar(),
+                      parentName: "TiposDocumento",
+                      labelName: "Seleccione un tipo de documento",
+                      displayedName: "TipoDocumento",
+                      valueName: "IdTipoDocumento",
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 8)
+                      ),
                     ),
                   ),
                   SizedBox(width: 12,),
                   Expanded(
                       child: TextFormField(
                       decoration: InputDecoration(
-                        labelText: "Email",
+                        labelText: "Documento",
                         contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      inputFormatters: [DateTextFormatter()],
+                      decoration: InputDecoration(
+                        labelText: "Fecha nacimiento",
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        hintText: "dd/mm/yyyy"
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12,),
+                  Expanded(
+                    child: TextFormField(
+                      inputFormatters: [DateTextFormatter()],
+                      decoration: InputDecoration(
+                        labelText: "Fecha inicio actividad laboral",
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        hintText: "dd/mm/yyyy"
                       ),
                     ),
                   ),

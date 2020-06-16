@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Roles.dart';
+import 'package:zmgestion/src/models/Ubicaciones.dart';
 
 class Usuarios extends Equatable with Models{
   /* -Mysql Model-*/
@@ -27,6 +28,7 @@ class Usuarios extends Equatable with Models{
 
   /* -Other-*/
   Roles rol;
+  Ubicaciones ubicacion;
 
   Usuarios({
     this.idUsuario,
@@ -49,7 +51,8 @@ class Usuarios extends Equatable with Models{
     this.fechaAlta,
     this.fechaBaja,
     this.estado,
-    this.rol
+    this.rol,
+    this.ubicacion
   });
 
   @override
@@ -78,7 +81,8 @@ class Usuarios extends Equatable with Models{
       fechaAlta:        mapModel["Usuarios"]["FechaAlta"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaAlta"]) : null,
       fechaBaja:        mapModel["Usuarios"]["FechaBaja"] != null ? DateTime.parse(mapModel["Usuarios"]["FechaBaja"]) : null,
       estado:           mapModel["Usuarios"]["Estado"],
-      rol:              mapModel["Roles"] != null ? Roles().fromMap({"Roles": mapModel["Roles"]}) : null
+      rol:              mapModel["Roles"] != null ? Roles().fromMap({"Roles": mapModel["Roles"]}) : null,
+      ubicacion:        mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap({"Ubicaciones": mapModel["Ubicaciones"]}) : null
     );
   }
 
@@ -113,10 +117,12 @@ class Usuarios extends Equatable with Models{
 
 
     Map<String, dynamic> roles = this.rol?.toMap();
+    Map<String, dynamic> ubicaciones = this.ubicacion?.toMap();
 
     Map<String, dynamic> result = {};
     result.addAll(usuarios);
     result.addAll(roles != null ? roles : {});
+    result.addAll(ubicaciones != null ? ubicaciones : {});
 
     return result;
   }
