@@ -25,7 +25,33 @@ class UsuariosService extends Services{
   @override
   DoMethodConfiguration altaConfiguration() {
     // TODO: implement altaConfiguration
-    throw UnimplementedError();
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/crear",
+      authorizationHeader: true,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        successMessage: "El usuario se ha creado con éxito"
+      ),
+      attributes: {
+        "Usuarios": [
+          "IdRol",
+          "IdUbicacion",
+          "IdTipoDocumento",
+          "Documento",
+          "Nombres",
+          "Apellidos",
+          "EstadoCivil",
+          "Telefono",
+          "Email",
+          "CantidadHijos",
+          "Usuario",
+          "Password",
+          "FechaNacimiento",
+          "FechaInicio"
+        ]
+      },
+    );
   }
 
   @override

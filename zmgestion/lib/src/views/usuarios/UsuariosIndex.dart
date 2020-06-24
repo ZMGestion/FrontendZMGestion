@@ -5,6 +5,7 @@ import 'package:getflutter/getflutter.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/views/usuarios/UsuariosAlertDialog.dart';
+import 'package:zmgestion/src/widgets/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ZMAlertDialog/ZMFormAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
@@ -114,34 +115,20 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
             }
             
             return <Widget>[
-              GFIconButton(
-                icon: Icon(
-                  Icons.remove_red_eye,
-                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
-                ),
-                shape: GFIconButtonShape.circle,
-                color: Colors.white,
+              IconButtonTableAction(
+                iconData: Icons.remove_red_eye,
                 onPressed: (){
-                  print("OJO SOBRE "+usuario.idUsuario.toString());
                 },
               ),
-              GFIconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
-                ),
-                shape: GFIconButtonShape.circle,
-                color: Colors.white,
-                onPressed: (){},
+              IconButtonTableAction(
+                iconData: Icons.edit,
+                onPressed: (){
+                },
               ),
-              GFIconButton(
-                icon: Icon(
-                  Icons.delete_outline,
-                  color: Colors.redAccent.withOpacity(0.9),
-                ),
-                shape: GFIconButtonShape.circle,
-                color: Colors.white,
-                onPressed: (){},
+              IconButtonTableAction(
+                iconData: Icons.delete_outline,
+                onPressed: (){
+                },
               )
             ];
           }

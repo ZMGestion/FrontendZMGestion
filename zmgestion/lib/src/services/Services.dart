@@ -264,7 +264,7 @@ abstract class Services<T>{
 class DoMethodConfiguration{
   final Methods method;
   final String path;
-  final List<String> attributes;
+  final Map<String, List<String>> attributes;
   Map<String, dynamic> payload;
   final bool authorizationHeader;
   final BuildContext keyboardContext;

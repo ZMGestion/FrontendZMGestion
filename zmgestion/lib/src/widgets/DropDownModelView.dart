@@ -213,7 +213,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                     visible: state.hasError,
                     child: Column(
                       children: [
-                        SizedBox(height: SizeConfig.blockSizeHorizontal*1.5,),
+                        SizedBox(height: SizeConfig.blockSizeVertical*1,),
                         Text(
                           state.hasError ? state.errorText : '',
                           style: TextStyle(

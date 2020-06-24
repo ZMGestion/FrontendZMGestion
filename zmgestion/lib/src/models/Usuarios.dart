@@ -7,6 +7,7 @@ class Usuarios extends Equatable with Models{
   /* -Mysql Model-*/
   final int       idUsuario;
   final int       idRol;
+  final int       idUbicacion;
   final int       idTipoDocumento;
   final String    documento;
   final String    nombres;
@@ -33,6 +34,7 @@ class Usuarios extends Equatable with Models{
   Usuarios({
     this.idUsuario,
     this.idRol,
+    this.idUbicacion,
     this.idTipoDocumento,
     this.documento,
     this.nombres,
@@ -58,11 +60,20 @@ class Usuarios extends Equatable with Models{
   @override
   List<Object> get props => [idUsuario];
 
+  Map<String, String> mapEstadosCivil(){
+    return {
+      "C": "Casado",
+      "S": "Soltero",
+      "D": "Divorciado"
+    };
+  }
+
   @override
   fromMap(Map<String, dynamic> mapModel) {
     return Usuarios(
       idUsuario:        mapModel["Usuarios"]["IdUsuario"],
       idRol:            mapModel["Usuarios"]["IdRol"],
+      idUbicacion:      mapModel["Usuarios"]["IdUbicacion"],
       idTipoDocumento:  mapModel["Usuarios"]["IdTipoDocumento"],
       documento:        mapModel["Usuarios"]["Documento"],
       nombres:          mapModel["Usuarios"]["Nombres"],
@@ -94,6 +105,7 @@ class Usuarios extends Equatable with Models{
       "Usuarios": {
         "IdUsuario":        this.idUsuario,
         "IdRol":            this.idRol,
+        "IdUbicacion":      this.idUbicacion,
         "IdTipoDocumento":  this.idTipoDocumento,
         "Documento":        this.documento,
         "Nombres":          this.nombres,
