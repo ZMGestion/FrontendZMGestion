@@ -211,8 +211,8 @@ class _ZMTableState extends State<ZMTable> {
                                   center: Alignment.bottomCenter,
                                   radius: 15,
                                   colors: [
-                                    Color(0xff5866aa),
-                                    Color(0xff4f5a8e)
+                                    Theme.of(context).primaryColor.withOpacity(0.7),
+                                    Theme.of(context).primaryColor.withOpacity(0.6)
                                   ]
                                 ),
                                 borderRadius: BorderRadius.circular(30)

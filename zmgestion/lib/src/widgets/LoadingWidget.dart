@@ -10,8 +10,8 @@ class LoadingWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top:25),
           child: Container(
-            width: 30,
-            height: 30,
+            width: 24,
+            height: 24,
             child: CircularProgressIndicator(),
           ),
         ),
