@@ -14,6 +14,7 @@ import 'package:zmgestion/src/router/Router.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
+import 'package:zmgestion/src/widgets/AppLoader.dart';
 
 StreamController<bool> mainLoaderStateController = StreamController<bool>();
 RequestScheduler mainRequestScheduler = RequestScheduler(mainLoaderStateController);
@@ -43,15 +44,21 @@ class MyApp extends StatelessWidget {
             title: 'Material App',
             home: ZMLoader(),
             theme: state.themeData,
-            builder: (context, child) => OKToast(
-                child: ScreenMessage(
-                  child: ZMLoader(
-                    login: Login(),
-                    child: BodyTemplate(
-                      child: child,
+            builder: (context, child) => AppLoader(
+              mainRequestScheduler: mainRequestScheduler,
+              mainLoaderStreamController: mainLoaderStateController,
+              builder: (scheduler){
+                return OKToast(
+                  child: ScreenMessage(
+                    child: ZMLoader(
+                      login: Login(),
+                      child: BodyTemplate(
+                        child: child,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              }
             ),
             navigatorKey: locator<NavigationService>().navigatorKey,
             onGenerateRoute: generateRoute,

@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 
 class NumberInputWithIncrementDecrement extends StatefulWidget {
   final String labelText;
+  final int initialValue;
   final Function(int) onChanged;
 
   const NumberInputWithIncrementDecrement({
     Key key, 
     this.labelText = "",
+    this.initialValue = 0,
     this.onChanged
   }) : super(key: key);
 
@@ -23,7 +25,7 @@ class _NumberInputWithIncrementDecrementState
   @override
   void initState() {
     super.initState();
-    _controller.text = "0"; // Setting the initial value for the field.
+    _controller.text = widget.initialValue.toString(); // Setting the initial value for the field.
   }
 
   @override

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
+import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/RolesService.dart';
@@ -17,23 +17,26 @@ import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
-class UsuariosAlertDialog extends StatefulWidget{
+class ModificarUsuariosAlertDialog extends StatefulWidget{
   final String title;
   final Usuarios usuario;
+  final Function() onSuccess;
+  final Function(dynamic) onError;
 
-  const UsuariosAlertDialog({
+  const ModificarUsuariosAlertDialog({
     Key key,
     this.title,
-    this.usuario
+    this.onSuccess,
+    this.usuario,
+    this.onError
   }) : super(key: key);
 
   @override
-  _UsuariosAlertDialogState createState() => _UsuariosAlertDialogState();
+  _ModificarUsuariosAlertDialogState createState() => _ModificarUsuariosAlertDialogState();
 }
 
-class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
+class _ModificarUsuariosAlertDialogState extends State<ModificarUsuariosAlertDialog> {
   DateTime selectedDate = DateTime.now();
   final _formKey = GlobalKey<FormState>();
   
@@ -45,13 +48,29 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
   final TextEditingController telefonoController = TextEditingController();
   final TextEditingController fechaNacimientoController = TextEditingController();
   final TextEditingController fechaInicioController = TextEditingController();
-  final TextEditingController passController = TextEditingController();
-  final TextEditingController pass2Controller = TextEditingController();
   int idRol;
   int idUbicacion;
   int idTipoDocumento;
   String estadoCivil;
   int cantidadHijos = 0;
+
+  @override
+  initState(){
+    nombresController.text = widget.usuario.nombres;
+    apellidosController.text = widget.usuario.apellidos;
+    idRol = widget.usuario.idRol;
+    idUbicacion = widget.usuario.idUbicacion;
+    usuarioController.text = widget.usuario.usuario;
+    emailController.text = widget.usuario.email;
+    idTipoDocumento = widget.usuario.idTipoDocumento;
+    documentoController.text = widget.usuario.documento;
+    fechaNacimientoController.text = DateFormat('dd/MM/yyyy').format(widget.usuario.fechaNacimiento);
+    fechaInicioController.text = DateFormat('dd/MM/yyyy').format(widget.usuario.fechaInicio);
+    estadoCivil = widget.usuario.estadoCivil;
+    cantidadHijos = widget.usuario.cantidadHijos;
+    telefonoController.text = widget.usuario.telefono;
+    super.initState();
+  }
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -173,6 +192,7 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                         labelName: "Seleccione un rol",
                         displayedName: "Rol",
                         valueName: "IdRol",
+                        initialValue: idRol,
                         errorMessage: "Debe seleccionar un rol",
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.only(left: 8)
@@ -193,6 +213,7 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                         labelName: "Seleccione una ubicación",
                         displayedName: "Ubicacion",
                         valueName: "IdUbicacion",
+                        initialValue: idUbicacion,
                         errorMessage: "Debe seleccionar una ubicación",
                         //initialValue: UsuariosProvider.idUbicacion,
                         decoration: InputDecoration(
@@ -269,6 +290,7 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                         labelName: "Seleccione un tipo de documento",
                         displayedName: "TipoDocumento",
                         valueName: "IdTipoDocumento",
+                        initialValue: idTipoDocumento,
                         errorMessage: "Debe seleccionar un tipo de documento",
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.only(left: 8)
@@ -322,41 +344,6 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: TextFormFieldDialog(
-                        obscureText: true,
-                        controller: passController,
-                        labelText: "Contraseña",
-                        validator: Validator.passStrengthValidator,
-                      ),
-                    ),
-                    SizedBox(width: 12,),
-                    Expanded(
-                      child: TextFormFieldDialog(
-                        obscureText: true,
-                        controller: pass2Controller,
-                        labelText: "Repita contraseña",
-                        validator: (pass2){
-                          String notEmptyError = Validator.notEmptyValidator(pass2);
-                          if(notEmptyError == null){
-                            if(passController.text != pass2Controller.text){
-                              return "Las contraseñas no coinciden";
-                            }
-                          }else{
-                            return notEmptyError;
-                          }
-                          return null;
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
                       child: DropDownMap(
                         map: Usuarios().mapEstadosCivil(),
                         hint: Text("Estado civil"),
@@ -369,6 +356,7 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                     Expanded(
                       child: NumberInputWithIncrementDecrement(
                         labelText: "Cantidad de hijos",
+                        initialValue: cantidadHijos,
                         onChanged: (value){
                           setState(() {
                             cantidadHijos = value;
@@ -414,7 +402,8 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                       color: Colors.blueGrey,
                       onPressed: (){
                         if(_formKey.currentState.validate()){
-                          UsuariosService().alta(Usuarios(
+                          Usuarios usuario = Usuarios(
+                            idUsuario: widget.usuario.idUsuario,
                             idRol: idRol,
                             idUbicacion: idUbicacion,
                             idTipoDocumento: idTipoDocumento,
@@ -426,10 +415,22 @@ class _UsuariosAlertDialogState extends State<UsuariosAlertDialog> {
                             email: emailController.text,
                             cantidadHijos: cantidadHijos,
                             usuario: usuarioController.text,
-                            password: passController.text,
                             fechaNacimiento: fechaNacimientoController.text != "" ? DateTime.parse(Jiffy(fechaNacimientoController.text, "dd/MM/yyyy").format("yyyy-MM-dd")) : null,
                             fechaInicio: fechaInicioController.text != "" ? DateTime.parse(Jiffy(fechaInicioController.text, "dd/MM/yyyy").format("yyyy-MM-dd")) : null
-                          ));
+                          );
+                          UsuariosService().modifica(usuario.toMap()).then(
+                            (response){
+                              if(response.status == RequestStatus.SUCCESS){
+                                if(widget.onSuccess != null){
+                                  widget.onSuccess();
+                                }
+                              }else{
+                                if(widget.onError != null){
+                                  widget.onError(response.message);
+                                }
+                              }
+                            }
+                          );
                         }
                       },
                     ),

@@ -16,6 +16,11 @@ class UbicacionesService extends Services{
     this.context = context;
   }
 
+  @override
+  DoMethodConfiguration crearConfiguration() {
+    // TODO: implement crearConfiguration
+    throw UnimplementedError();
+  }
 
   @override
   DoMethodConfiguration altaConfiguration() {
