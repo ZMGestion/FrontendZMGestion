@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
@@ -31,7 +33,7 @@ class ZMTable extends StatefulWidget {
   final Map<String, String> tableLabels;
   final List<Widget> Function(List<Models>) onSelectActions;
   final List<Widget> fixedActions;
-  final List<Widget> Function(Map<String, dynamic>) rowActions;
+  final List<Widget> Function(Map<String, dynamic>, int index, StreamController<ItemAction>) rowActions;
 
   const ZMTable({
     Key key,
@@ -227,16 +229,16 @@ class _ZMTableState extends State<ZMTable> {
                         Opacity(
                           opacity: 0,
                           child: Row(
-                            children: widget.rowActions != null ? widget.rowActions(null) : [],
+                            children: widget.rowActions != null ? widget.rowActions(null, null, null) : [],
                           ),
                         )
                       ]
                     ),
                     ModelView(
-                    isList: true,
+                      isList: true,
                       service: widget.service,
                       listMethodConfiguration: widget.listMethodConfiguration,
-                      itemBuilder: (mapModel, index){
+                      itemBuilder: (mapModel, index, itemsController){
                         Models model = widget.model.fromMap(mapModel);
                         return Container(
                           decoration: BoxDecoration(
@@ -300,7 +302,7 @@ class _ZMTableState extends State<ZMTable> {
                                 ),
                               ),
                               Row(
-                                children: widget.rowActions != null ? widget.rowActions(mapModel) : [],
+                                children: widget.rowActions != null ? widget.rowActions(mapModel, index, itemsController) : [],
                               )
                             ],
                           ),

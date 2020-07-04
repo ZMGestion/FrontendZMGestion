@@ -23,14 +23,16 @@ class UsuariosService extends Services{
 
 
   @override
-  DoMethodConfiguration altaConfiguration() {
+  DoMethodConfiguration crearConfiguration() {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/usuarios/crear",
       authorizationHeader: true,
+      scheduler: scheduler,
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
+        showLoading: true,
         successMessage: "El usuario se ha creado con éxito"
       ),
       attributes: {
@@ -55,15 +57,51 @@ class UsuariosService extends Services{
   }
 
   @override
+  DoMethodConfiguration altaConfiguration() {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/darAlta",
+      authorizationHeader: true,
+      requestConfiguration: RequestConfiguration(
+        successMessage: "El usuario se ha activado con éxito",
+        showSuccess: true,
+        errorMessage: "No se ha podido activar el usuario, intentelo nuevamente más tarde",
+        showError: true
+      )
+    );
+  }
+
+  @override
   DoMethodConfiguration bajaConfiguration() {
     // TODO: implement bajaConfiguration
-    throw UnimplementedError();
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/darBaja",
+      authorizationHeader: true,
+      requestConfiguration: RequestConfiguration(
+        successMessage: "El usuario se ha dado de baja con éxito",
+        showSuccess: true,
+        errorMessage: "No se ha podido dar de baja el usuario, intentelo nuevamente más tarde",
+        showError: true
+      )
+    );
   }
 
   @override
   DoMethodConfiguration borraConfiguration() {
     // TODO: implement borraConfiguration
-    throw UnimplementedError();
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/borrar",
+      authorizationHeader: true,
+      requestConfiguration: RequestConfiguration(
+        successMessage: "El usuario ha sido eliminado con éxito",
+        showSuccess: true,
+        errorMessage: "No se ha podido eliminar el usuario, intentelo nuevamente más tarde",
+        showError: true
+      )
+    );
   }
 
   @override
@@ -75,7 +113,17 @@ class UsuariosService extends Services{
   @override
   DoMethodConfiguration modificaConfiguration() {
     // TODO: implement modificaConfiguration
-    throw UnimplementedError();
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/modificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El usuario ha sido modificado con éxito"
+      )
+    );
   }
 
   ListMethodConfiguration buscarUsuarios(Map<String, dynamic> payload){
@@ -122,11 +170,25 @@ class UsuariosService extends Services{
     );
   }
 
+  GetMethodConfiguration dameConfiguration(int idUsuario){
+    return GetMethodConfiguration(
+      method: Methods.POST,
+      authorizationHeader: true,
+      model: Usuarios(),
+      path: "/usuarios/dame",
+      payload: {
+        "Usuarios": {
+          "IdUsuario": idUsuario
+        }
+      },
+      scheduler: scheduler
+    );
+  }
+
   cerrarSesion(){
     var localStorage = window.localStorage;
     localStorage.remove("token");
     localStorage.remove("tokenType");
     ZMLoader.of(context).rebuild();
   }
-
 }

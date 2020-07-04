@@ -10,15 +10,23 @@ import 'package:zmgestion/src/models/Models.dart';
 abstract class Services<T>{
 
   Models getModel();
+  DoMethodConfiguration crearConfiguration();
   DoMethodConfiguration altaConfiguration();
   DoMethodConfiguration bajaConfiguration();
   DoMethodConfiguration borraConfiguration();
   DoMethodConfiguration modificaConfiguration();
 
-  Future<Response> alta(Models model) async{
-    DoMethodConfiguration doMethodConfiguration = altaConfiguration();
+  Future<Response> crear(Models model) async{
+    DoMethodConfiguration doMethodConfiguration = crearConfiguration();
     doMethodConfiguration.model = model;
     return await doMethod(doMethodConfiguration);
+  }
+
+  Future<Response> alta(Map<String, dynamic> payload){
+    DoMethodConfiguration doMethodConfiguration = altaConfiguration();
+    doMethodConfiguration.model = getModel();
+    doMethodConfiguration.payload = payload;
+    return doMethod(doMethodConfiguration);
   }
 
   Future<Response> baja(Map<String, dynamic> payload){

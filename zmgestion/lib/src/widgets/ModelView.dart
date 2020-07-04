@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/Services.dart';
 import 'package:zmgestion/src/shimmers/DefaultShimmer.dart';
 import 'package:zmgestion/src/widgets/LoadingWidget.dart';
@@ -25,7 +29,7 @@ class ModelView extends StatefulWidget {
   final bool isList;
   final bool nestedScroll;
   final bool horizontalScroll;
-  final Widget Function(Map<String, dynamic> mapModel, int index) itemBuilder;
+  final Widget Function(Map<String, dynamic> mapModel, int index, StreamController<ItemAction> itemsController) itemBuilder;
   final ListMethodConfiguration listMethodConfiguration;
   final GetMethodConfiguration getMethodConfiguration;
   final bool showAnimatedLoading;
@@ -91,18 +95,39 @@ class ModelView extends StatefulWidget {
   _ModelViewState createState() => _ModelViewState();
 }
 
+class ItemAction{
+  final ItemEvents event;
+  final int index;
+  final GetMethodConfiguration updateMethodConfiguration;
+
+  ItemAction({
+    this.event, 
+    this.index,
+    this.updateMethodConfiguration
+  });
+}
+
+enum ItemEvents{
+  Hide,
+  Update
+}
+
 class _ModelViewState extends State<ModelView> {
 
   bool loading = true;
   Object result;
   bool closed = false;
   bool hasError = false;
+  List<Models> modelsList;
+  Map<String, dynamic> mapModelsList = {};
+  StreamController<ItemAction> itemsController = StreamController<ItemAction>();
 
     @override
     void dispose() {
       // TODO: implement dispose
       super.dispose();
       closed = true;
+      itemsController.close();
     }
 
     @override
@@ -110,12 +135,56 @@ class _ModelViewState extends State<ModelView> {
       // TODO: implement initState
       super.initState();
       print("INIT");
+      itemsController.stream.listen((itemAction) async{
+        if(modelsList != null && itemAction != null){
+          if(itemAction.event != null && itemAction.index != null){
+            if(itemAction.index >= 0){
+              switch(itemAction.event){
+                case ItemEvents.Hide:
+                  setState(() {
+                    modelsList.removeAt(itemAction.index);
+                  });
+                  break;
+                case ItemEvents.Update:
+                  if(itemAction.updateMethodConfiguration != null){
+                    await widget.service.damePor(itemAction.updateMethodConfiguration).then((response) async{
+                      if(!closed){
+                        if(response.status == RequestStatus.SUCCESS){
+                          setState(() {
+                            modelsList[itemAction.index] = response.message;
+                          });
+                        }
+                      }
+                    });
+                  }
+                  break;
+                default:
+                  break;
+              }
+            }
+          }
+        }
+      });
       SchedulerBinding.instance.addPostFrameCallback((_) async{
         print("PREVIO");
         await loadModel();
         print("DESPUES");
       });
     }
+
+
+    /*
+    @override
+    void setState(VoidCallback fn){
+      if(modelsList != null){
+        mapModelsList.clear();
+        modelsList.forEach((model) {
+          mapModelsList.addAll(model.toMap());
+        });
+      }
+      super.setState(fn);
+    }
+    */
 
     _addNestedList(List<Widget> toList, List<dynamic> lista, ListConfiguration configuration){
       if(lista.length > 0){
@@ -190,6 +259,7 @@ class _ModelViewState extends State<ModelView> {
               this.result = response.message;
               hasError = (response.status == RequestStatus.ERROR);
               loading = false;
+              modelsList = result;
             });
           }
         });
@@ -266,9 +336,9 @@ class _ModelViewState extends State<ModelView> {
             //implementar scrollDirection
             itemBuilder: (context, index){
               if(config.itemBuilder != null){
-                return config.itemBuilder(list.elementAt(index), index);
+                return config.itemBuilder(list.elementAt(index), index, itemsController);
               }
-              return widget.itemBuilder(list.elementAt(index), index);
+              return widget.itemBuilder(list.elementAt(index), index, itemsController);
             },
             physics: config.nestedScroll ? ClampingScrollPhysics() : null,
           )
@@ -358,7 +428,11 @@ class _ModelViewState extends State<ModelView> {
           return _onError();
         }else{
           if(widget.isList){
-            List<Models> modelsList = result;
+            /* 
+            setState((){
+              modelsList = result;
+            });
+            */
             if(modelsList.length > 0){
               if(widget.categorize != null){
                 Map<String, List<dynamic>> categorizedResult = {};
@@ -427,12 +501,15 @@ class _ModelViewState extends State<ModelView> {
                   ],
                 );
               }
-
+              print("CONSTRUIDO");
+              modelsList.forEach((element) {
+                print(element.toMap());
+              });
               return ListView.builder(
                 key: Key(modelsList.length.toString()),
                 itemCount: modelsList.length,
                 itemBuilder: (context, index){
-                  return widget.itemBuilder(modelsList.elementAt(index).toMap(), index);
+                  return widget.itemBuilder(modelsList.elementAt(index).toMap(), index, itemsController);
                 },
                 shrinkWrap: true,
                 physics: widget.nestedScroll ? ClampingScrollPhysics() : ScrollPhysics(),
@@ -447,7 +524,7 @@ class _ModelViewState extends State<ModelView> {
             if(model == null){
               return _onEmpty();
             }else{
-              return widget.itemBuilder(model.toMap(), 0);
+              return widget.itemBuilder(model.toMap(), 0, null);
             }
           }
         }
@@ -456,7 +533,7 @@ class _ModelViewState extends State<ModelView> {
   }
 
 class ListConfiguration{
-  final Widget Function(Map<String, dynamic> mapModel, int index) itemBuilder;
+  final Widget Function(Map<String, dynamic> mapModel, int index, StreamController<ItemAction> itemsController) itemBuilder;
   final Widget Function(Widget childWidget) parentWidget;
   final Widget onEmpty;
   final bool horizontalScroll;

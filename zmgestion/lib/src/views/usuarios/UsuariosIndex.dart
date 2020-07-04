@@ -2,9 +2,12 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/getflutter.dart';
+import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
-import 'package:zmgestion/src/views/usuarios/UsuariosAlertDialog.dart';
+import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
+import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ZMAlertDialog/ZMFormAlertDialog.dart';
@@ -37,121 +40,181 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.transparent,
-        body: ZMTable(
-          model: Usuarios(),
-          service: UsuariosService(),
-          listMethodConfiguration: UsuariosService().buscarUsuarios({"Usuarios":{"IdRol": 0}}),
-          cellBuilder: {
-            "Usuarios": {
-              "Nombres": (value){return Text(value.toString(), textAlign: TextAlign.center,);},
-              "Apellidos": (value){return Text(value.toString(), textAlign: TextAlign.center);},
-              "Documento": (value){return Text(value.toString(), textAlign: TextAlign.center);},
-              "Telefono": (value){return Text(value.toString(), textAlign: TextAlign.center);},
-            },
-            "Roles": {
-              "Rol": (value){return Text(value.toString(), textAlign: TextAlign.center);}
-            },
-            "Ubicaciones": {
-              "Ubicacion": (value){return Text(value.toString(), textAlign: TextAlign.center);}
-            }
-          },
-          tableLabels: {
-            "Telefono": "Teléfono",
-            "Ubicacion": "Ubicación"
-          },
-          fixedActions: [
-            ZMStdButton(
-              color: Colors.green,
-              text: Text(
-                "Nuevo usuario",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 20,
-              ),
-              onPressed: (){
-                // show the dialog
-                showDialog(
-                  context: context,
-                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                  builder: (BuildContext context) {
-                    return UsuariosAlertDialog(
-                      title: "Crear Usuarios"
-                    );
-                  },
-                );
+        body: SingleChildScrollView(
+          child: ZMTable(
+            model: Usuarios(),
+            service: UsuariosService(),
+            listMethodConfiguration: UsuariosService().buscarUsuarios({"Usuarios":{"IdRol": 0}}),
+            cellBuilder: {
+              "Usuarios": {
+                "Nombres": (value){return Text(value.toString(), textAlign: TextAlign.center,);},
+                "Apellidos": (value){return Text(value.toString(), textAlign: TextAlign.center);},
+                "Documento": (value){return Text(value.toString(), textAlign: TextAlign.center);},
+                "Telefono": (value){return Text(value.toString(), textAlign: TextAlign.center);},
               },
-            )
-          ],
-          onSelectActions: (usuarios){
-            return <Widget>[
+              "Roles": {
+                "Rol": (value){return Text(value.toString(), textAlign: TextAlign.center);}
+              },
+              "Ubicaciones": {
+                "Ubicacion": (value){return Text(value.toString(), textAlign: TextAlign.center);}
+              }
+            },
+            tableLabels: {
+              "Telefono": "Teléfono",
+              "Ubicacion": "Ubicación"
+            },
+            fixedActions: [
               ZMStdButton(
-                color: Colors.red,
+                color: Colors.green,
                 text: Text(
-                  "Borrar ("+usuarios.length.toString()+")",
+                  "Nuevo usuario",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold
                   ),
                 ),
                 icon: Icon(
-                  Icons.delete_outline,
+                  Icons.add,
                   color: Colors.white,
                   size: 20,
                 ),
-                onPressed: (){},
+                onPressed: (){
+                  // show the dialog
+                  showDialog(
+                    context: context,
+                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                    builder: (BuildContext context) {
+                      return CrearUsuariosAlertDialog(
+                        title: "Crear Usuarios",
+                        onSuccess: (){
+                          Navigator.of(context).pop();
+                        },                      
+                      );
+                    },
+                  );
+                },
               )
-            ];
-          },
-          rowActions: (mapModel){
-            Usuarios usuario;
-            if(mapModel != null){
-              usuario = Usuarios().fromMap(mapModel);
+            ],
+            onSelectActions: (usuarios){
+              return <Widget>[
+                ZMStdButton(
+                  color: Colors.red,
+                  text: Text(
+                    "Borrar ("+usuarios.length.toString()+")",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: (){},
+                )
+              ];
+            },
+            rowActions: (mapModel, index, itemsController){
+              Usuarios usuario;
+              String estado = "A";
+              int idUsuario = 0;
+              if(mapModel != null){
+                usuario = Usuarios().fromMap(mapModel);
+                if(mapModel["Usuarios"] != null){
+                  if(mapModel["Usuarios"]["Estado"] != null){
+                    estado = mapModel["Usuarios"]["Estado"];
+                  }
+                  if(mapModel["Usuarios"]["IdUsuario"] != null){
+                    idUsuario = mapModel["Usuarios"]["IdUsuario"];
+                  }
+
+                }
+              }
+              return <Widget>[
+                IconButtonTableAction(
+                  iconData: Icons.remove_red_eye,
+                  onPressed: (){
+                  },
+                ),
+                IconButtonTableAction(
+                  iconData: estado == "A" ? Icons.arrow_downward : Icons.arrow_upward,
+                  color: estado == "A" ? Colors.redAccent : Colors.green,
+                  onPressed: (){
+                    if(idUsuario != 0){
+                      if(estado == "A"){
+                        UsuariosService().baja({"Usuarios":{"IdUsuario": idUsuario}}).then(
+                          (response){
+                            if(response.status == RequestStatus.SUCCESS){
+                              itemsController.add(ItemAction(
+                                event: ItemEvents.Update,
+                                index: index,
+                                updateMethodConfiguration: UsuariosService().dameConfiguration(usuario.idUsuario)
+                              ));
+                            }
+                          }
+                        );
+                      }else{
+                        UsuariosService().alta({"Usuarios":{"IdUsuario": idUsuario}}).then(
+                          (response){
+                            if(response.status == RequestStatus.SUCCESS){
+                              itemsController.add(ItemAction(
+                                event: ItemEvents.Update,
+                                index: index,
+                                updateMethodConfiguration: UsuariosService().dameConfiguration(usuario.idUsuario)
+                              ));
+                            }
+                          }
+                        );
+                      }
+                      
+                    }
+                  },
+                ),
+                IconButtonTableAction(
+                  iconData: Icons.edit,
+                  onPressed: (){
+                    showDialog(
+                    context: context,
+                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                    builder: (BuildContext context) {
+                      return ModificarUsuariosAlertDialog(
+                        title: "Modificar usuario",
+                        usuario: Usuarios().fromMap(mapModel),
+                        onSuccess: (){
+                          Navigator.of(context).pop();
+                          itemsController.add(ItemAction(
+                            event: ItemEvents.Update,
+                            index: index,
+                            updateMethodConfiguration: UsuariosService().dameConfiguration(usuario.idUsuario)
+                          ));
+                        },                      
+                      );
+                    },
+                  );
+                  },
+                ),
+                IconButtonTableAction(
+                  iconData: Icons.delete_outline,
+                  onPressed: (){
+                    if(idUsuario != 0){
+                      UsuariosService().borra({"Usuarios":{"IdUsuario": idUsuario}}).then(
+                        (response){
+                          if(response.status == RequestStatus.SUCCESS){
+                            itemsController.add(ItemAction(
+                              event: ItemEvents.Hide,
+                              index: index
+                            ));
+                          }
+                        }
+                      );
+                    }
+                  },
+                )
+              ];
             }
-            
-            return <Widget>[
-              IconButtonTableAction(
-                iconData: Icons.remove_red_eye,
-                onPressed: (){
-                },
-              ),
-              IconButtonTableAction(
-                iconData: Icons.edit,
-                onPressed: (){
-                },
-              ),
-              IconButtonTableAction(
-                iconData: Icons.delete_outline,
-                onPressed: (){
-                },
-              )
-            ];
-          }
+          ),
         )
-        
-        /*ZMTable(
-        header: Text("Usuarios tablita"),
-        rowsPerPage: 20,
-        sortAscending: true,
-        service: UsuariosService(scheduler: null),
-        listMethodConfiguration: UsuariosService().buscarUsuarios({"Usuarios":{"IdRol": 1}}),
-        //autocompleteMethodConfiguration: UsuariosService().autocompletar(),
-        cellBuilder: {
-          "Usuarios": {
-            "Nombres": (value){return Text(value.toString());},
-            "Apellidos": (value){return Text(value.toString());},
-            "Documento": (value){return Text(value.toString());},
-          },
-          "Roles": {
-            "Rol": (value){return Text(value.toString());}
-          }
-        }
-      ),*/
     );
   }
 }

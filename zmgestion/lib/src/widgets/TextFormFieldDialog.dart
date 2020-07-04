@@ -5,6 +5,7 @@ class TextFormFieldDialog extends StatelessWidget {
   final String labelText;
   final String hintText;
   final bool obscureText;
+  final String initialValue;
   final List<TextInputFormatter> inputFormatters;
   final TextEditingController controller;
   final String Function(String) validator;
@@ -14,6 +15,7 @@ class TextFormFieldDialog extends StatelessWidget {
     this.labelText, 
     this.hintText,
     this.obscureText = false,
+    this.initialValue,
     this.inputFormatters,
     this.controller, 
     this.validator
@@ -26,6 +28,7 @@ class TextFormFieldDialog extends StatelessWidget {
         validator: validator,
         obscureText: obscureText,
         inputFormatters: inputFormatters,
+        initialValue: initialValue,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,

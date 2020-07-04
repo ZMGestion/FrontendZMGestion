@@ -5,11 +5,13 @@ import 'package:getflutter/shape/gf_icon_button_shape.dart';
 class IconButtonTableAction extends StatelessWidget {
   final IconData iconData;
   final Function onPressed;
+  final Color color;
 
   const IconButtonTableAction({
     Key key, 
     this.iconData,
-    this.onPressed
+    this.onPressed,
+    this.color
   }) : super(key: key);
 
   @override
@@ -17,7 +19,7 @@ class IconButtonTableAction extends StatelessWidget {
     return GFIconButton(
       icon: Icon(
         iconData != null ? iconData : Icons.image,
-        color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.6),
+        color: color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.6),
       ),
       shape: GFIconButtonShape.circle,
       color: Colors.white,
