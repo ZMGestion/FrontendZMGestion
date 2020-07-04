@@ -15,12 +15,14 @@ class DropDownModelView extends StatefulWidget {
   final String labelName;
   final String valueName;
   final String displayedName;
+  final bool addAllOption;
   final String Function(Map<String, dynamic> mapModel) displayedNameFunction;
   final Function(dynamic value) onSaved;
   final String errorMessage;
   final dynamic initialValue;
   final Function (List<Models> resultSet) onComplete;
   final Function(dynamic value) onChanged;
+  final Function(dynamic value) onSelectAll;
   final bool disable;
   final InputDecoration decoration;
 
@@ -32,12 +34,14 @@ class DropDownModelView extends StatefulWidget {
     this.labelName,
     this.valueName,
     this.displayedName,
+    this.addAllOption,
     this.displayedNameFunction,
     this.onSaved,
     this.errorMessage,
     this.initialValue,
     this.onComplete,
     this.onChanged,
+    this.onSelectAll,
     this.disable = false,
     this.decoration,
 

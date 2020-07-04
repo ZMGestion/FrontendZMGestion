@@ -30,8 +30,9 @@ class ZMTable extends StatefulWidget {
   final Models model;
   final ListMethodConfiguration listMethodConfiguration;
   final Map<String, Map<String, Function(dynamic)>> cellBuilder;
-  final Map<String, String> tableLabels;
+  final Map<String, Map<String, String>> tableLabels;
   final List<Widget> Function(List<Models>) onSelectActions;
+  final Widget searchArea;
   final List<Widget> fixedActions;
   final List<Widget> Function(Map<String, dynamic>, int index, StreamController<ItemAction>) rowActions;
 
@@ -40,6 +41,7 @@ class ZMTable extends StatefulWidget {
     this.cellBuilder,
     this.tableLabels,
     this.onSelectActions, 
+    this.searchArea,
     this.rowActions, 
     this.service, 
     this.listMethodConfiguration,
@@ -72,15 +74,17 @@ class _ZMTableState extends State<ZMTable> {
 
   List<String> getColumnNames() {
     List<String> _result = new List<String>();
-
     widget.cellBuilder.forEach((parent, columnMap){ 
       columnMap.forEach((columnName, builer){
-        _result.add(
-          widget.tableLabels != null ? (widget.tableLabels.containsKey(columnName) ? widget.tableLabels[columnName] : columnName) : columnName
-        );
+        var _columnName = columnName;
+        if(widget.tableLabels.containsKey(parent)){
+          if(widget.tableLabels[parent].containsKey(columnName)){
+            _columnName = widget.tableLabels[parent][columnName];
+          }
+        }
+        _result.add(_columnName);
       });
     });
-
     return _result;
   }
 
@@ -132,6 +136,9 @@ class _ZMTableState extends State<ZMTable> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  Expanded(
+                    child: widget.searchArea != null ? widget.searchArea : Container()
+                  ),
                   Visibility(
                     visible: models.length > 0,
                     child: Card(

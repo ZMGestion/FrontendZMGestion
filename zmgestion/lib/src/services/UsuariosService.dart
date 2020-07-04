@@ -79,6 +79,7 @@ class UsuariosService extends Services{
       method: Methods.POST,
       path: "/usuarios/darBaja",
       authorizationHeader: true,
+      scheduler: scheduler,
       requestConfiguration: RequestConfiguration(
         successMessage: "El usuario se ha dado de baja con éxito",
         showSuccess: true,
@@ -133,7 +134,11 @@ class UsuariosService extends Services{
       model: Usuarios(),
       path: "/usuarios/buscar",
       scheduler: scheduler,
-      payload: payload
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se buscaba el usuario"
+      )
     );
   }
 
