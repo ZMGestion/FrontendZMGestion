@@ -15,12 +15,16 @@ class DropDownModelView extends StatefulWidget {
   final String labelName;
   final String valueName;
   final String displayedName;
+  final bool allOption;
+  final dynamic allOptionValue;
+  final String allOptionText;
   final String Function(Map<String, dynamic> mapModel) displayedNameFunction;
   final Function(dynamic value) onSaved;
   final String errorMessage;
   final dynamic initialValue;
   final Function (List<Models> resultSet) onComplete;
   final Function(dynamic value) onChanged;
+  final Function(dynamic value) onSelectAll;
   final bool disable;
   final InputDecoration decoration;
 
@@ -32,12 +36,16 @@ class DropDownModelView extends StatefulWidget {
     this.labelName,
     this.valueName,
     this.displayedName,
+    this.allOption = false,
+    this.allOptionText = "",
+    this.allOptionValue,
     this.displayedNameFunction,
     this.onSaved,
     this.errorMessage,
     this.initialValue,
     this.onComplete,
     this.onChanged,
+    this.onSelectAll,
     this.disable = false,
     this.decoration,
 
@@ -86,6 +94,20 @@ class _DropDownModelViewState extends State<DropDownModelView> {
           if(response.status == RequestStatus.SUCCESS){
             if(widget.onComplete != null){
               widget.onComplete(response.message);
+            }
+            if(widget.allOption){
+              _items.add(
+                  DropdownMenuItem(
+                    value: widget.allOptionValue,
+                    child: Text(
+                      widget.allOptionText,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: TextStyle(
+                      ),
+                    ),
+                  )
+              );
             }
             response.message.forEach((model){
               Map<String, dynamic> mapModel = model.toMap();

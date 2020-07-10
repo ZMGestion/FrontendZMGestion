@@ -11,6 +11,7 @@ import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/TiposDocumentoService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
+import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
@@ -97,76 +98,8 @@ class _ModificarUsuariosAlertDialogState extends State<ModificarUsuariosAlertDia
       scrollable: true,
       backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      title: Material(
-          child: Container(
-          constraints: BoxConstraints(
-            minWidth: 300,
-            maxWidth: 700
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22))
-          ),
-          width: SizeConfig.blockSizeHorizontal * 40,
-          child: Column(
-            children: [
-              Container(
-                height: 60,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 60,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.title.trim(),
-                            style: TextStyle(
-                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.1),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 60,
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                              color: Theme.of(context).primaryTextTheme.headline1.color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 0,
-                      child: GFIconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
-                        ),
-                        shape: GFIconButtonShape.circle,
-                        color: Theme.of(context).cardColor,
-                        onPressed: (){
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
-                  ]
-                ),
-              ),
-            ],
-          ),
-        ),
+      title: AlertDialogTitle(
+        title: widget.title
       ),
       content: Container(
         padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
@@ -347,6 +280,7 @@ class _ModificarUsuariosAlertDialogState extends State<ModificarUsuariosAlertDia
                       child: DropDownMap(
                         map: Usuarios().mapEstadosCivil(),
                         hint: Text("Estado civil"),
+                        initialValue: estadoCivil,
                         onChanged: (idSelected){
                           estadoCivil = idSelected;
                         }

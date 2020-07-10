@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract class Models<T>{
 
   bool selected = false;
@@ -5,6 +7,8 @@ abstract class Models<T>{
   Map<String, dynamic> toMap();
 
   T fromMap(Map<String, dynamic> mapModel);
+
+  Widget viewModel(BuildContext context);
 
   /*
   "Usuarios": ["Nombres","Apellidos"]

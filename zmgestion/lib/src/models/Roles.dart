@@ -1,3 +1,4 @@
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:zmgestion/src/models/Models.dart';
 
 class Roles extends Models{
@@ -39,4 +40,11 @@ class Roles extends Models{
     };
   }
 
+  @override
+  Widget viewModel(BuildContext context) {
+    // TODO: implement viewModel
+    throw UnimplementedError();
+  }
+
+  
 }

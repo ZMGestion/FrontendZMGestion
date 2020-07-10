@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Roles.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
+import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class Usuarios extends Equatable with Models{
   /* -Mysql Model-*/
@@ -65,6 +67,13 @@ class Usuarios extends Equatable with Models{
       "C": "Casado",
       "S": "Soltero",
       "D": "Divorciado"
+    };
+  }
+
+  Map<String, String> mapEstados(){
+    return {
+      "A": "Activo",
+      "B": "Baja"
     };
   }
 
@@ -139,4 +148,26 @@ class Usuarios extends Equatable with Models{
     return result;
   }
 
+  @override
+  Widget viewModel(BuildContext context) {
+    // TODO: implement viewModel
+    SizeConfig().init(context);
+    return Column(
+      children: [
+        Container(
+          width: SizeConfig.blockSizeHorizontal * 50,
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Text(
+                  this.nombres != null ? this.nombres : "..."
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
