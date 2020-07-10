@@ -134,6 +134,7 @@ class _ZMTableState extends State<ZMTable> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded(
@@ -142,6 +143,7 @@ class _ZMTableState extends State<ZMTable> {
                   Visibility(
                     visible: models.length > 0,
                     child: Card(
+                      color: Theme.of(context).primaryColor.withOpacity(0.7),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Row(
@@ -150,6 +152,7 @@ class _ZMTableState extends State<ZMTable> {
                               models.length.toString() + " seleccionado"+(models.length > 1 ? "s" : ""),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white,
                                 fontSize: 15
                               ),
                             ),

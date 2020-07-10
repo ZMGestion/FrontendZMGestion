@@ -58,7 +58,7 @@ class RolesService extends Services{
     return ListMethodConfiguration(
       method: Methods.GET, 
       model: Roles(),
-      path: "/roles/listar",
+      path: "/roles",
       scheduler: scheduler
     );
   }

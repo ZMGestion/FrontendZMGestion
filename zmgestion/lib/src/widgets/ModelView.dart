@@ -411,17 +411,22 @@ class _ModelViewState extends State<ModelView> {
               child: widget.animatedLoading,
             );
           }else{
-            return Container(
-              width: 35,
-              height: 35,
-              padding: EdgeInsets.all(4),
-              child: CircularProgressIndicator()
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12,12,12,24),
+              child: Center(
+                child: LoadingWidget()
+              ),
             );
             //return DefaultShimmer();
           }
         }
         else{
-          return LoadingWidget();
+          return Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Center(
+              child: LoadingWidget()
+            ),
+          );
         }
       }else{
         if(hasError){
@@ -501,10 +506,6 @@ class _ModelViewState extends State<ModelView> {
                   ],
                 );
               }
-              print("CONSTRUIDO");
-              modelsList.forEach((element) {
-                print(element.toMap());
-              });
               return ListView.builder(
                 key: Key(modelsList.length.toString()),
                 itemCount: modelsList.length,

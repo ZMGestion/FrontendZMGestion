@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/Models.dart';
 
@@ -59,4 +60,9 @@ class Ubicaciones extends Models{
     return result;
   }
 
+  @override
+  Widget viewModel(BuildContext context) {
+    // TODO: implement viewModel
+    throw UnimplementedError();
+  }
 }

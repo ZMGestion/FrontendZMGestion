@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
@@ -14,6 +16,7 @@ import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/TiposDocumentoService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
+import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
@@ -107,76 +110,8 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
             scrollable: true,
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            title: Material(
-                child: Container(
-                constraints: BoxConstraints(
-                  minWidth: 300,
-                  maxWidth: 700
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(22))
-                ),
-                width: SizeConfig.blockSizeHorizontal * 40,
-                child: Column(
-                  children: [
-                    Container(
-                      height: 60,
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 60,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.title.trim(),
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.1),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 40
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 60,
-                            child: Row(
-                              children: [
-                                Text(
-                                  widget.title,
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryTextTheme.headline1.color,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            right: 0,
-                            child: GFIconButton(
-                              icon: Icon(
-                                Icons.close,
-                                color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
-                              ),
-                              shape: GFIconButtonShape.circle,
-                              color: Theme.of(context).cardColor,
-                              onPressed: (){
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ),
-                        ]
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            title: AlertDialogTitle(
+              title: widget.title
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
@@ -392,6 +327,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                             child: DropDownMap(
                               map: Usuarios().mapEstadosCivil(),
                               hint: Text("Estado civil"),
+                              initialValue: estadoCivil,
                               onChanged: (idSelected){
                                 estadoCivil = idSelected;
                               }
@@ -401,6 +337,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                           Expanded(
                             child: NumberInputWithIncrementDecrement(
                               labelText: "Cantidad de hijos",
+                              initialValue: cantidadHijos,
                               onChanged: (value){
                                 setState(() {
                                   cantidadHijos = value;
@@ -436,14 +373,30 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ZMStdButton(
-                            text: Text(
-                              scheduler.isLoading() ? "Cargando..." : "Aceptar",
-                              style: TextStyle(
-                                color: Colors.white
-                              ),
-                            ),
-                            color: Colors.blueGrey,
+                          ProgressButton.icon(
+                            radius: 7,
+                            iconedButtons: {
+                              ButtonState.idle:
+                                IconedButton(
+                                    text: "Crear usuario",
+                                    icon: Icon(Icons.person_add, color: Colors.white),
+                                    color: Colors.blueAccent),
+                              ButtonState.loading:
+                                IconedButton(
+                                    text: "Cargando",
+                                    color: Colors.grey.shade400),
+                              ButtonState.fail:
+                                IconedButton(
+                                    text: "Error",
+                                    icon: Icon(Icons.cancel,color: Colors.white),
+                                    color: Colors.red.shade300),
+                              ButtonState.success:
+                                IconedButton(
+                                    text: "Éxito",
+                                    icon: Icon(Icons.check_circle,color: Colors.white,),
+                                    color: Colors.green.shade400)
+                            },
+                            padding: EdgeInsets.all(4),
                             onPressed: scheduler.isLoading() ? null : (){
                               if(_formKey.currentState.validate()){
                                 Usuarios usuario = Usuarios(
@@ -477,6 +430,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                                 );
                               }
                             },
+                            state: scheduler.isLoading() ? ButtonState.loading : ButtonState.idle,
                           ),
                         ],
                       ),

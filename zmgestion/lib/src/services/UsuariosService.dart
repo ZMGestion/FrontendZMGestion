@@ -90,12 +90,13 @@ class UsuariosService extends Services{
   }
 
   @override
-  DoMethodConfiguration borraConfiguration() {
+  DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
     // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/usuarios/borrar",
       authorizationHeader: true,
+      payload: payload,
       requestConfiguration: RequestConfiguration(
         successMessage: "El usuario ha sido eliminado con éxito",
         showSuccess: true,
@@ -132,7 +133,7 @@ class UsuariosService extends Services{
       method: Methods.POST,
       authorizationHeader: true,
       model: Usuarios(),
-      path: "/usuarios/buscar",
+      path: "/usuarios",
       scheduler: scheduler,
       payload: payload,
       requestConfiguration: RequestConfiguration(

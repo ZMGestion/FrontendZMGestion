@@ -22,7 +22,7 @@ class IconButtonTableAction extends StatelessWidget {
         color: color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.6),
       ),
       shape: GFIconButtonShape.circle,
-      color: Colors.white,
+      color: Colors.transparent,
       hoverColor: Colors.black.withOpacity(0.1),
       onPressed: onPressed
     );

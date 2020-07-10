@@ -1,3 +1,4 @@
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:zmgestion/src/models/Models.dart';
 
 class TiposDocumento extends Models{
@@ -33,6 +34,12 @@ class TiposDocumento extends Models{
         "Descripcion":        this.descripcion
       }
     };
+  }
+
+  @override
+  Widget viewModel(BuildContext context) {
+    // TODO: implement viewModel
+    throw UnimplementedError();
   }
 
 }

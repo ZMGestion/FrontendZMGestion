@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:zmgestion/src/models/Models.dart';
 
 class Domicilios extends Models{
@@ -58,6 +59,12 @@ class Domicilios extends Models{
     result.addAll(domicilios);
 
     return result;
+  }
+
+  @override
+  Widget viewModel(BuildContext context) {
+    // TODO: implement viewModel
+    throw UnimplementedError();
   }
 
 }
