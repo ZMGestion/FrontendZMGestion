@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/Services.dart';
 import 'package:zmgestion/src/shimmers/DefaultShimmer.dart';
@@ -49,6 +50,7 @@ class ModelView extends StatefulWidget {
   final ListConfiguration uncategorizedListConfiguration;
   final String uncategorizedTitle;
   final bool showUncategorized;
+  final Function(Paginaciones pageInfo) onPageInfo;
 
   /**
    * Ejemplo de categorize:
@@ -86,7 +88,8 @@ class ModelView extends StatefulWidget {
     this.categorizedListConfiguration,
     this.uncategorizedListConfiguration,
     this.uncategorizedTitle,
-    this.showUncategorized
+    this.showUncategorized,
+    this.onPageInfo
   }): assert(itemBuilder != null || categorizedListConfiguration != null),
       assert(onComplete == null || onCategorizeComplete == null),
       super(key:key);
@@ -121,6 +124,7 @@ class _ModelViewState extends State<ModelView> {
   List<Models> modelsList;
   Map<String, dynamic> mapModelsList = {};
   StreamController<ItemAction> itemsController = StreamController<ItemAction>();
+  ScrollController scrollController;
 
     @override
     void dispose() {
@@ -134,7 +138,7 @@ class _ModelViewState extends State<ModelView> {
     void initState() {
       // TODO: implement initState
       super.initState();
-      print("INIT");
+      scrollController = ScrollController();
       itemsController.stream.listen((itemAction) async{
         if(modelsList != null && itemAction != null){
           if(itemAction.event != null && itemAction.index != null){
@@ -166,9 +170,7 @@ class _ModelViewState extends State<ModelView> {
         }
       });
       SchedulerBinding.instance.addPostFrameCallback((_) async{
-        print("PREVIO");
         await loadModel();
-        print("DESPUES");
       });
     }
 
@@ -199,7 +201,7 @@ class _ModelViewState extends State<ModelView> {
           );
         }else{
           toList.add(
-           _NestedList(
+            _NestedList(
               list: lista,
               config: configuration,
             )
@@ -236,15 +238,15 @@ class _ModelViewState extends State<ModelView> {
       }
     }
 
-  ListConfiguration _defaultConfiguration(String title){
-    ListConfiguration configuracion = ListConfiguration(
-      itemBuilder: widget.itemBuilder,
-    );
+    ListConfiguration _defaultConfiguration(String title){
+      ListConfiguration configuracion = ListConfiguration(
+        itemBuilder: widget.itemBuilder,
+      );
 
-    configuracion.title = title;
+      configuracion.title = title;
 
-    return configuracion;
-  }
+      return configuracion;
+    }
 
     Future<void> loadModel() async{
       if(widget.isList){
@@ -255,11 +257,16 @@ class _ModelViewState extends State<ModelView> {
                 widget.onComplete(response.message);
               }
             }
+            if(response.pageInfo != null){
+              if(widget.onPageInfo != null){
+                widget.onPageInfo(response.pageInfo);
+              }
+            }
             setState(() {
               this.result = response.message;
               hasError = (response.status == RequestStatus.ERROR);
               loading = false;
-              modelsList = result;
+              modelsList = this.result;
             });
           }
         });
@@ -433,90 +440,97 @@ class _ModelViewState extends State<ModelView> {
           return _onError();
         }else{
           if(widget.isList){
-            /* 
             setState((){
               modelsList = result;
             });
-            */
-            if(modelsList.length > 0){
-              if(widget.categorize != null){
-                Map<String, List<dynamic>> categorizedResult = {};
-                List<dynamic> uncategorized = [];
-                bool categorized = false;
-                modelsList.forEach((model){
-                  categorized = false;
-                  widget.categorize.forEach((categorizeKey, categorizeFunction){
-                    if(!categorizedResult.containsKey(categorizeKey)){
-                      categorizedResult.addAll({
-                        categorizeKey: []
-                      });
-                    }
-                    if(!categorized){
-                      if(categorizeFunction(model.toMap())){
-                        categorizedResult[categorizeKey].add(model.toMap());
-                        categorized = true;
+            if(modelsList != null){
+              if(modelsList.length > 0){
+                if(widget.categorize != null){
+                  Map<String, List<dynamic>> categorizedResult = {};
+                  List<dynamic> uncategorized = [];
+                  bool categorized = false;
+                  modelsList.forEach((model){
+                    categorized = false;
+                    widget.categorize.forEach((categorizeKey, categorizeFunction){
+                      if(!categorizedResult.containsKey(categorizeKey)){
+                        categorizedResult.addAll({
+                          categorizeKey: []
+                        });
                       }
-                    }
-                  });
-                  if(!categorized){
-                    uncategorized.add(model.toMap());
-                  }
-                });
-                if(widget.onCategorizeComplete != null){
-                  widget.onCategorizeComplete(categorizedResult, uncategorized);
-                }
-
-                List<Widget> nestedLists = [];
-
-                //Mostramos los que fueron categorizados segun tenga o no configuracion
-                widget.categorize.keys.forEach((categoria) {
-                  if (widget.categorizedListConfiguration != null) {
-                    widget.categorizedListConfiguration.forEach((nombreCategoria, configuracion) {
-                      configuracion.title = nombreCategoria;
-                      if (nombreCategoria == categoria) {
-                        _addNestedList(nestedLists, categorizedResult[categoria], configuracion);
-                      } else {
-                        _addNestedList(nestedLists, categorizedResult[categoria], _defaultConfiguration(categoria));
+                      if(!categorized){
+                        if(categorizeFunction(model.toMap())){
+                          categorizedResult[categorizeKey].add(model.toMap());
+                          categorized = true;
+                        }
                       }
                     });
-                  }else{
-                    _addNestedList(nestedLists, categorizedResult[categoria], _defaultConfiguration(categoria));
+                    if(!categorized){
+                      uncategorized.add(model.toMap());
+                    }
+                  });
+                  if(widget.onCategorizeComplete != null){
+                    widget.onCategorizeComplete(categorizedResult, uncategorized);
                   }
-                });
 
-                if(widget.showUncategorized){
-                  //Mostramos los no categorizados segun tenga o no configuracion
-                  if(widget.uncategorizedListConfiguration != null){
-                    widget.uncategorizedListConfiguration.title = widget.uncategorizedTitle;
-                    _addNestedList(nestedLists, uncategorized, widget.uncategorizedListConfiguration);
-                  }else{
-                    _addNestedList(nestedLists, uncategorized, _defaultConfiguration(widget.uncategorizedTitle));
+                  List<Widget> nestedLists = [];
+
+                  //Mostramos los que fueron categorizados segun tenga o no configuracion
+                  widget.categorize.keys.forEach((categoria) {
+                    if (widget.categorizedListConfiguration != null) {
+                      widget.categorizedListConfiguration.forEach((nombreCategoria, configuracion) {
+                        configuracion.title = nombreCategoria;
+                        if (nombreCategoria == categoria) {
+                          _addNestedList(nestedLists, categorizedResult[categoria], configuracion);
+                        } else {
+                          _addNestedList(nestedLists, categorizedResult[categoria], _defaultConfiguration(categoria));
+                        }
+                      });
+                    }else{
+                      _addNestedList(nestedLists, categorizedResult[categoria], _defaultConfiguration(categoria));
+                    }
+                  });
+
+                  if(widget.showUncategorized){
+                    //Mostramos los no categorizados segun tenga o no configuracion
+                    if(widget.uncategorizedListConfiguration != null){
+                      widget.uncategorizedListConfiguration.title = widget.uncategorizedTitle;
+                      _addNestedList(nestedLists, uncategorized, widget.uncategorizedListConfiguration);
+                    }else{
+                      _addNestedList(nestedLists, uncategorized, _defaultConfiguration(widget.uncategorizedTitle));
+                    }
                   }
+
+                  return CustomScrollView(
+                    slivers: <Widget>[
+                      SliverList(
+                        delegate: SliverChildListDelegate([
+                          Column(
+                            children: nestedLists,
+                          )
+                        ]),
+                      )
+                    ],
+                  );
                 }
-
-                return CustomScrollView(
-                  slivers: <Widget>[
-                    SliverList(
-                      delegate: SliverChildListDelegate([
-                        Column(
-                          children: nestedLists,
-                        )
-                      ]),
-                    )
-                  ],
+                return Scrollbar(
+                  controller: scrollController,
+                  isAlwaysShown: true,
+                  child: ListView.builder(
+                    controller: scrollController,
+                    key: Key(modelsList.length.toString()),
+                    itemCount: modelsList.length,
+                    itemBuilder: (context, index){
+                      return widget.itemBuilder(modelsList.elementAt(index).toMap(), index, itemsController);
+                    },
+                    shrinkWrap: true,
+                    physics: widget.nestedScroll ? ClampingScrollPhysics() : ScrollPhysics(),
+                    scrollDirection: widget.horizontalScroll ? Axis.horizontal : Axis.vertical,
+                  ),
                 );
-              }
-              return ListView.builder(
-                key: Key(modelsList.length.toString()),
-                itemCount: modelsList.length,
-                itemBuilder: (context, index){
-                  return widget.itemBuilder(modelsList.elementAt(index).toMap(), index, itemsController);
-                },
-                shrinkWrap: true,
-                physics: widget.nestedScroll ? ClampingScrollPhysics() : ScrollPhysics(),
-                scrollDirection: widget.horizontalScroll ? Axis.horizontal : Axis.vertical,
-              );
 
+              }else{
+                return _onEmpty();
+              }
             }else{
               return _onEmpty();
             }
