@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
@@ -13,12 +14,12 @@ import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
-import 'package:zmgestion/src/widgets/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
+import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 class UsuariosIndex extends StatefulWidget {
@@ -393,6 +394,8 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                         "Estado": searchIdEstado
                       }
                     }),
+                    pageLength: 12,
+                    paginate: true,
                     cellBuilder: {
                       "Usuarios": {
                         "Nombres": (value){return Text(value.toString(), textAlign: TextAlign.center,);},

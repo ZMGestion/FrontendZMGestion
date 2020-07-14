@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ModelViewDialog extends StatefulWidget {
+  /*
+    Widget utilizado para renderizar los modelos en un alert dialog (utilizado por el 'ojo' en los actions de las tablas)
+  */
   final Widget content;
 
   const ModelViewDialog({

@@ -6,6 +6,7 @@ import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/Response.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/Paginaciones.dart';
 
 abstract class Services<T>{
 
@@ -165,6 +166,14 @@ abstract class Services<T>{
       List<Models> respuesta = [];
       Response<List<Models>> responseList;
 
+      Map<String, dynamic> newPayload = new Map<String, dynamic>();
+      if(config.paginacion != null){
+        newPayload.addAll(config.payload);
+        newPayload.addAll(config.paginacion.toMap());
+      }else{
+        newPayload = config.payload;
+      }
+
       await SendRequest(
           method: config.method,
           path: config.path,
@@ -172,22 +181,43 @@ abstract class Services<T>{
             'Content-Type': 'application/json',
             'Authorization': config.authorizationHeader ? '$tokenType $token' : ''
           },
-          payload: config.payload,
+          payload: newPayload,
           scheduler: config.scheduler,
           onSuccess: (response){
-            response.forEach((item){
-              print(item);
-              Models itemModel = config.model.fromMap(item);
-              respuesta.add(itemModel);
-            });
-            if(config.actionsConfiguration != null){
-              if(config.actionsConfiguration.onSuccess != null){
-                config.actionsConfiguration.onSuccess(response);
+            Paginaciones pageInfo;
+            if(response != null){
+              print(response);
+              if (response is List) { 
+                /* Normal sin paginación */
+                response.forEach((item){
+                  print(item);
+                  Models itemModel = config.model.fromMap(item);
+                  respuesta.add(itemModel);
+                });
+              }
+              else{
+                /* El resultset se encuentra dentro de "resultado":[] */
+                if(response["Resultado"] != null){
+                  pageInfo = Paginaciones().fromMap({"Paginaciones": response["Paginaciones"]});
+                  if(response["Resultado"] != null){
+                    response["Resultado"].forEach((item){
+                      print(item);
+                      Models itemModel = config.model.fromMap(item);
+                      respuesta.add(itemModel);
+                    });
+                  }
+                }
+              }
+              if(config.actionsConfiguration != null){
+                if(config.actionsConfiguration.onSuccess != null){
+                  config.actionsConfiguration.onSuccess(response);
+                }
               }
             }
             responseList = Response<List<Models>>(
               status: RequestStatus.SUCCESS,
-              message: respuesta
+              message: respuesta,
+              pageInfo: pageInfo
             );
           },
           onError: (error){
@@ -317,6 +347,7 @@ class ListMethodConfiguration{
   final RequestScheduler scheduler;
   RequestConfiguration requestConfiguration;
   final ActionsConfiguration actionsConfiguration;
+  final Paginaciones paginacion;
 
   ListMethodConfiguration({
     @required this.method,
@@ -326,7 +357,8 @@ class ListMethodConfiguration{
     this.model,
     this.scheduler,
     this.requestConfiguration,
-    this.actionsConfiguration
+    this.actionsConfiguration,
+    this.paginacion
   });
 }
 
