@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zmgestion/src/views/HomePage.dart';
 import 'package:zmgestion/src/views/Test.dart';
+import 'package:zmgestion/src/views/clientes/ClientesIndex.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
 import 'package:zmgestion/src/views/usuarios/UsuariosIndex.dart';
 
 const String InicioRoute = '/inicio';
 const String PresupuestosRoute = '/presupuestos';
 const String UsuariosRoute = '/usuarios';
+const String ClientesRoute = '/clientes';
 const String LoginRoute = '/login';
 const String LoaderRoute = '/';
 
@@ -21,6 +23,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(Test(), settings);
     case UsuariosRoute:
       return _getPageRoute(UsuariosIndex(), settings);
+    case ClientesRoute:
+      return _getPageRoute(ClientesIndex(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

@@ -6,9 +6,7 @@ import 'package:zmgestion/src/services/Services.dart';
 import 'package:zmgestion/src/widgets/LoadingWidget.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
-
 class DropDownModelView extends StatefulWidget {
-
   final Services service;
   final ListMethodConfiguration listMethodConfiguration;
   final String parentName;
@@ -22,7 +20,7 @@ class DropDownModelView extends StatefulWidget {
   final Function(dynamic value) onSaved;
   final String errorMessage;
   final dynamic initialValue;
-  final Function (List<Models> resultSet) onComplete;
+  final Function(List<Models> resultSet) onComplete;
   final Function(dynamic value) onChanged;
   final Function(dynamic value) onSelectAll;
   final bool disable;
@@ -48,16 +46,13 @@ class DropDownModelView extends StatefulWidget {
     this.onSelectAll,
     this.disable = false,
     this.decoration,
-
-
-  }): super(key:key);
+  }) : super(key: key);
 
   @override
   _DropDownModelViewState createState() => _DropDownModelViewState();
 }
 
 class _DropDownModelViewState extends State<DropDownModelView> {
-
   bool loading = true;
   Object result;
   bool closed = false;
@@ -72,61 +67,56 @@ class _DropDownModelViewState extends State<DropDownModelView> {
     closed = true;
   }
 
-  String _displayedName(Map<String, dynamic> mapModel){
-    if(widget.displayedName != null){
+  String _displayedName(Map<String, dynamic> mapModel) {
+    if (widget.displayedName != null) {
       return mapModel[widget.parentName][widget.displayedName];
     }
 
-    if(widget.displayedNameFunction != null){
+    if (widget.displayedNameFunction != null) {
       return widget.displayedNameFunction(mapModel);
     }
 
     return "";
   }
 
-  _loadItems() async{
-    if(!widget.disable){
+  _loadItems() async {
+    if (!widget.disable) {
       setState(() {
         loading = true;
       });
-      await widget.service.listarPor(widget.listMethodConfiguration, showLoading: false).then((response){
-        if(!closed){
-          if(response.status == RequestStatus.SUCCESS){
-            if(widget.onComplete != null){
+      await widget.service
+          .listarPor(widget.listMethodConfiguration, showLoading: false)
+          .then((response) {
+        if (!closed) {
+          if (response.status == RequestStatus.SUCCESS) {
+            if (widget.onComplete != null) {
               widget.onComplete(response.message);
             }
-            if(widget.allOption){
-              _items.add(
-                  DropdownMenuItem(
-                    value: widget.allOptionValue,
-                    child: Text(
-                      widget.allOptionText,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: TextStyle(
-                      ),
-                    ),
-                  )
-              );
+            if (widget.allOption) {
+              _items.add(DropdownMenuItem(
+                value: widget.allOptionValue,
+                child: Text(
+                  widget.allOptionText,
+                  overflow: TextOverflow.clip,
+                  maxLines: 1,
+                  style: TextStyle(),
+                ),
+              ));
             }
-            response.message.forEach((model){
+            response.message.forEach((model) {
               Map<String, dynamic> mapModel = model.toMap();
               print(mapModel);
-              _items.add(
-                  DropdownMenuItem(
-                    value: mapModel[widget.parentName][widget.valueName],
-                    child: Text(
-                      _displayedName(mapModel),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: TextStyle(
-                      ),
-                    ),
-                  )
-              );
+              _items.add(DropdownMenuItem(
+                value: mapModel[widget.parentName][widget.valueName],
+                child: Text(
+                  _displayedName(mapModel),
+                  overflow: TextOverflow.clip,
+                  maxLines: 1,
+                  style: TextStyle(),
+                ),
+              ));
             });
-
-          }else{
+          } else {
             result = null;
             setState(() {
               hasError = true;
@@ -137,7 +127,6 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             loading = false;
           });
         }
-
       });
     }
   }
@@ -146,10 +135,10 @@ class _DropDownModelViewState extends State<DropDownModelView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.initialValue != null){
+    if (widget.initialValue != null) {
       _tipoSeleccionado = widget.initialValue;
     }
-    SchedulerBinding.instance.addPostFrameCallback((_) async{
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
       await _loadItems();
     });
   }
@@ -157,10 +146,10 @@ class _DropDownModelViewState extends State<DropDownModelView> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    if(loading && !widget.disable){
+    if (loading && !widget.disable) {
       return LoadingWidget();
-    }else{
-      if(hasError){
+    } else {
+      if (hasError) {
         return Container(
           height: SizeConfig.blockSizeVertical * 7,
           child: Row(
@@ -169,38 +158,35 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             children: <Widget>[
               Expanded(
                 child: MaterialButton(
-                  onPressed: () async{
-                    _loadItems();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.replay
+                    onPressed: () async {
+                      _loadItems();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Icon(Icons.replay),
                         ),
-                      ),
-                      Text(
-                        "Reintentar",
-                      ),
-                    ],
-                  )
-                ),
+                        Text(
+                          "Reintentar",
+                        ),
+                      ],
+                    )),
               ),
             ],
           ),
         );
-      }else{
+      } else {
         return FormField(
-          validator: (value){
-            if(_tipoSeleccionado == null){
+          validator: (value) {
+            if (_tipoSeleccionado == null) {
               return widget.errorMessage;
-            }else{
+            } else {
               return null;
             }
           },
-          builder: (FormFieldState state){
+          builder: (FormFieldState state) {
             return DropdownButtonHideUnderline(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,23 +194,24 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                   DropdownButtonFormField(
                     items: _items,
                     onSaved: widget.onSaved,
-                    onChanged: (newValue){
-                      if(!widget.disable){
-                        if(newValue != null){
+                    isExpanded: true,
+                    onChanged: (newValue) {
+                      if (!widget.disable) {
+                        if (newValue != null) {
                           state.didChange(newValue);
-                          setState((){
+                          setState(() {
                             _tipoSeleccionado = newValue;
                           });
                           state.validate();
-                          if(widget.onChanged != null){
+                          if (widget.onChanged != null) {
                             widget.onChanged(_tipoSeleccionado);
                           }
                         }
                       }
                     },
-                    decoration: widget.decoration != null ? widget.decoration : InputDecoration(
-                        border: InputBorder.none
-                    ),
+                    decoration: widget.decoration != null
+                        ? widget.decoration
+                        : InputDecoration(border: InputBorder.none),
                     value: _tipoSeleccionado,
                     hint: Text(
                       widget.labelName != null ? widget.labelName : "",
@@ -235,11 +222,14 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                     visible: state.hasError,
                     child: Column(
                       children: [
-                        SizedBox(height: SizeConfig.blockSizeVertical*1,),
+                        SizedBox(
+                          height: SizeConfig.blockSizeVertical * 1,
+                        ),
                         Text(
                           state.hasError ? state.errorText : '',
                           style: TextStyle(
-                            color: Theme.of(context).errorColor, fontSize: 12.0,
+                            color: Theme.of(context).errorColor,
+                            fontSize: 12.0,
                           ),
                         )
                       ],
@@ -251,7 +241,6 @@ class _DropDownModelViewState extends State<DropDownModelView> {
           },
         );
       }
-
     }
   }
 }
