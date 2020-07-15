@@ -8,8 +8,7 @@ import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Paginaciones.dart';
 
-abstract class Services<T>{
-
+abstract class Services<T> {
   Models getModel();
   DoMethodConfiguration crearConfiguration();
   DoMethodConfiguration altaConfiguration();
@@ -17,88 +16,87 @@ abstract class Services<T>{
   DoMethodConfiguration borraConfiguration();
   DoMethodConfiguration modificaConfiguration();
 
-  Future<Response> crear(Models model) async{
+  Future<Response> crear(Models model) async {
     DoMethodConfiguration doMethodConfiguration = crearConfiguration();
     doMethodConfiguration.model = model;
     return await doMethod(doMethodConfiguration);
   }
 
-  Future<Response> alta(Map<String, dynamic> payload){
+  Future<Response> alta(Map<String, dynamic> payload) {
     DoMethodConfiguration doMethodConfiguration = altaConfiguration();
     doMethodConfiguration.model = getModel();
     doMethodConfiguration.payload = payload;
     return doMethod(doMethodConfiguration);
   }
 
-  Future<Response> baja(Map<String, dynamic> payload){
+  Future<Response> baja(Map<String, dynamic> payload) {
     DoMethodConfiguration doMethodConfiguration = bajaConfiguration();
     doMethodConfiguration.model = getModel();
     doMethodConfiguration.payload = payload;
     return doMethod(doMethodConfiguration);
   }
 
-  Future<Response> borra(Map<String, dynamic> payload){
+  Future<Response> borra(Map<String, dynamic> payload) {
     DoMethodConfiguration doMethodConfiguration = borraConfiguration();
     doMethodConfiguration.model = getModel();
     doMethodConfiguration.payload = payload;
     return doMethod(doMethodConfiguration);
   }
 
-  Future<Response> modifica(Map<String, dynamic> payload, {showLoading = true, showError = true, showSuccess = false}){
+  Future<Response> modifica(Map<String, dynamic> payload,
+      {showLoading = true, showError = true, showSuccess = false}) {
     DoMethodConfiguration doMethodConfiguration = modificaConfiguration();
     doMethodConfiguration.model = getModel();
     doMethodConfiguration.payload = payload;
-    if(doMethodConfiguration.requestConfiguration != null){
-      RequestConfiguration requestConfiguration = doMethodConfiguration.requestConfiguration;
+    if (doMethodConfiguration.requestConfiguration != null) {
+      RequestConfiguration requestConfiguration =
+          doMethodConfiguration.requestConfiguration;
       requestConfiguration.showLoading = showLoading;
       requestConfiguration.showError = showError;
       requestConfiguration.showSuccess = showSuccess;
       doMethodConfiguration.requestConfiguration = requestConfiguration;
-    }else{
+    } else {
       doMethodConfiguration.requestConfiguration = RequestConfiguration(
-        showLoading: showLoading,
-        showError: showError,
-        showSuccess: showSuccess
-      );
+          showLoading: showLoading,
+          showError: showError,
+          showSuccess: showSuccess);
     }
     return doMethod(doMethodConfiguration);
   }
 
-  Future<Response<List<Models>>> listarPor(ListMethodConfiguration config, {showLoading = true, showError = true}){
+  Future<Response<List<Models>>> listarPor(ListMethodConfiguration config,
+      {showLoading = true, showError = true}) {
     ListMethodConfiguration listMethodConfiguration = config;
     listMethodConfiguration.model = getModel();
-    if(config.requestConfiguration != null){
+    if (config.requestConfiguration != null) {
       RequestConfiguration requestConfiguration = config.requestConfiguration;
       requestConfiguration.showLoading = showLoading;
       requestConfiguration.showError = showError;
       listMethodConfiguration.requestConfiguration = requestConfiguration;
-    }else{
-      listMethodConfiguration.requestConfiguration = RequestConfiguration(
-        showLoading: showLoading,
-        showError: showError
-      );
+    } else {
+      listMethodConfiguration.requestConfiguration =
+          RequestConfiguration(showLoading: showLoading, showError: showError);
     }
     return listMethod(listMethodConfiguration);
   }
 
-
-  Future<Response<Models>> damePor(GetMethodConfiguration config, {showLoading = true}){
+  Future<Response<Models>> damePor(GetMethodConfiguration config,
+      {showLoading = true}) {
     GetMethodConfiguration getMethodConfiguration = config;
     getMethodConfiguration.model = getModel();
-    if(config.requestConfiguration != null){
+    if (config.requestConfiguration != null) {
       RequestConfiguration requestConfiguration = config.requestConfiguration;
       requestConfiguration.showLoading = showLoading;
       getMethodConfiguration.requestConfiguration = requestConfiguration;
-    }else{
-      getMethodConfiguration.requestConfiguration = RequestConfiguration(
-          showLoading: showLoading
-      );
+    } else {
+      getMethodConfiguration.requestConfiguration =
+          RequestConfiguration(showLoading: showLoading);
     }
     return getMethod(getMethodConfiguration);
   }
 
-  Future<Response> doMethod(DoMethodConfiguration config) async{
-    if(config != null) {
+  Future<Response> doMethod(DoMethodConfiguration config) async {
+    if (config != null) {
       String token, tokenType;
 
       if (config.authorizationHeader) {
@@ -108,7 +106,7 @@ abstract class Services<T>{
       }
 
       Map<String, dynamic> payload;
-      if (config.attributes != null){
+      if (config.attributes != null) {
         payload = config.model.getAttributes(config.attributes);
       } else {
         payload = config.payload;
@@ -125,27 +123,21 @@ abstract class Services<T>{
         scheduler: config.scheduler,
         payload: payload,
         requestConfiguration: config.requestConfiguration,
-        onSuccess: (message) async{
-          if(config.actionsConfiguration != null){
-            if(config.actionsConfiguration.onSuccess != null){
+        onSuccess: (message) async {
+          if (config.actionsConfiguration != null) {
+            if (config.actionsConfiguration.onSuccess != null) {
               await config.actionsConfiguration.onSuccess(message);
             }
           }
-          respuesta = Response(
-            status: RequestStatus.SUCCESS,
-            message: message
-          );
+          respuesta = Response(status: RequestStatus.SUCCESS, message: message);
         },
-        onError: (error) async{
-          if(config.actionsConfiguration != null){
-            if(config.actionsConfiguration.onError != null){
+        onError: (error) async {
+          if (config.actionsConfiguration != null) {
+            if (config.actionsConfiguration.onError != null) {
               await config.actionsConfiguration.onError(error);
             }
           }
-          respuesta = Response(
-              status: RequestStatus.ERROR,
-              message: error
-          );
+          respuesta = Response(status: RequestStatus.ERROR, message: error);
         },
       ).send();
       return respuesta;
@@ -153,11 +145,12 @@ abstract class Services<T>{
     throw Exception("DoMethodConfiguration is not assigned.");
   }
 
-  Future<Response<List<Models>>> listMethod(ListMethodConfiguration config) async{
-    if(config != null){
+  Future<Response<List<Models>>> listMethod(
+      ListMethodConfiguration config) async {
+    if (config != null) {
       String token, tokenType;
 
-      if(config.authorizationHeader){
+      if (config.authorizationHeader) {
         final Storage _localStorage = window.localStorage;
         token = _localStorage['token'];
         tokenType = _localStorage['tokenType'];
@@ -167,87 +160,80 @@ abstract class Services<T>{
       Response<List<Models>> responseList;
 
       Map<String, dynamic> newPayload = new Map<String, dynamic>();
-      if(config.paginacion != null){
+      if (config.paginacion != null) {
         newPayload.addAll(config.payload);
         newPayload.addAll(config.paginacion.toMap());
-      }else{
+      } else {
         newPayload = config.payload;
       }
 
       await SendRequest(
-          method: config.method,
-          path: config.path,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': config.authorizationHeader ? '$tokenType $token' : ''
-          },
-          payload: newPayload,
-          scheduler: config.scheduler,
-          onSuccess: (response){
-            Paginaciones pageInfo;
-            if(response != null){
-              print(response);
-              if (response is List) { 
-                /* Normal sin paginación */
-                response.forEach((item){
-                  print(item);
-                  Models itemModel = config.model.fromMap(item);
-                  respuesta.add(itemModel);
-                });
-              }
-              else{
-                /* El resultset se encuentra dentro de "resultado":[] */
-                if(response["Resultado"] != null){
-                  pageInfo = Paginaciones().fromMap({"Paginaciones": response["Paginaciones"]});
-                  if(response["Resultado"] != null){
-                    response["Resultado"].forEach((item){
-                      print(item);
+              method: config.method,
+              path: config.path,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization':
+                    config.authorizationHeader ? '$tokenType $token' : ''
+              },
+              payload: newPayload,
+              scheduler: config.scheduler,
+              onSuccess: (response) {
+                Paginaciones pageInfo;
+                if (response != null) {
+                  if (response is List) {
+                    /* Normal sin paginación */
+                    response.forEach((item) {
                       Models itemModel = config.model.fromMap(item);
                       respuesta.add(itemModel);
                     });
+                  } else {
+                    /* El resultset se encuentra dentro de "resultado":[] */
+                    if (response["resultado"] != null) {
+                      pageInfo = Paginaciones()
+                          .fromMap({"Paginaciones": response["Paginaciones"]});
+                      if (response["resultado"] != null) {
+                        response["resultado"].forEach((item) {
+                          Models itemModel = config.model.fromMap(item);
+                          respuesta.add(itemModel);
+                        });
+                      }
+                    }
+                  }
+                  if (config.actionsConfiguration != null) {
+                    if (config.actionsConfiguration.onSuccess != null) {
+                      config.actionsConfiguration.onSuccess(response);
+                    }
                   }
                 }
-              }
-              if(config.actionsConfiguration != null){
-                if(config.actionsConfiguration.onSuccess != null){
-                  config.actionsConfiguration.onSuccess(response);
+                responseList = Response<List<Models>>(
+                    status: RequestStatus.SUCCESS,
+                    message: respuesta,
+                    pageInfo: pageInfo);
+              },
+              onError: (error) {
+                if (config.requestConfiguration.showError) {
+                  if (config.actionsConfiguration != null) {
+                    if (config.actionsConfiguration.onError != null) {
+                      config.actionsConfiguration.onError(error);
+                      return;
+                    }
+                  }
                 }
-              }
-            }
-            responseList = Response<List<Models>>(
-              status: RequestStatus.SUCCESS,
-              message: respuesta,
-              pageInfo: pageInfo
-            );
-          },
-          onError: (error){
-            if(config.requestConfiguration.showError){
-              if(config.actionsConfiguration != null){
-                if(config.actionsConfiguration.onError != null){
-                  config.actionsConfiguration.onError(error);
-                  return;
-                }
-              }
-            }
-            responseList = Response<List<Models>>(
-              status: RequestStatus.ERROR,
-              message: null
-            );
-          },
-          requestConfiguration: config.requestConfiguration
-      ).send();
-      print("^"*100);
-      print(respuesta);
+                responseList = Response<List<Models>>(
+                    status: RequestStatus.ERROR, message: null);
+              },
+              requestConfiguration: config.requestConfiguration)
+          .send();
       return responseList;
     }
     throw Exception("ListMethodConfiguration is not assigned.");
   }
 
-  Future<Response<Models>> getMethod(GetMethodConfiguration config) async{
-    if(config != null){
+  Future<Response<Models>> getMethod(GetMethodConfiguration config) async {
+    if (config != null) {
       String token, tokenType;
 
-      if(config.authorizationHeader){
+      if (config.authorizationHeader) {
         final Storage _localStorage = window.localStorage;
         token = _localStorage['token'];
         tokenType = _localStorage['tokenType'];
@@ -257,49 +243,46 @@ abstract class Services<T>{
       Response<Models> response;
 
       await SendRequest(
-          method: config.method,
-          path: config.path,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': config.authorizationHeader ? '$tokenType $token' : ''
-          },
-          payload: config.payload,
-          scheduler: config.scheduler,
-          onSuccess: (message){
-            respuesta = config.model.fromMap(message);
-            if(config.actionsConfiguration != null){
-              if(config.actionsConfiguration.onSuccess != null){
-                config.actionsConfiguration.onSuccess(message);
-              }
-            }
-            response = Response<Models>(
-                status: RequestStatus.SUCCESS,
-                message: respuesta
-            );
-          },
-          onError: (error){
-            if(config.requestConfiguration.showError){
-              if(config.actionsConfiguration != null){
-                if(config.actionsConfiguration.onError != null){
-                  config.actionsConfiguration.onError(error);
-                  return;
+              method: config.method,
+              path: config.path,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization':
+                    config.authorizationHeader ? '$tokenType $token' : ''
+              },
+              payload: config.payload,
+              scheduler: config.scheduler,
+              onSuccess: (message) {
+                respuesta = config.model.fromMap(message);
+                if (config.actionsConfiguration != null) {
+                  if (config.actionsConfiguration.onSuccess != null) {
+                    config.actionsConfiguration.onSuccess(message);
+                  }
                 }
-              }
-            }
-            response = Response<Models>(
-                status: RequestStatus.ERROR,
-                message: null
-            );
-          },
-          requestConfiguration: config.requestConfiguration
-      ).send();
+                response = Response<Models>(
+                    status: RequestStatus.SUCCESS, message: respuesta);
+              },
+              onError: (error) {
+                if (config.requestConfiguration.showError) {
+                  if (config.actionsConfiguration != null) {
+                    if (config.actionsConfiguration.onError != null) {
+                      config.actionsConfiguration.onError(error);
+                      return;
+                    }
+                  }
+                }
+                response = Response<Models>(
+                    status: RequestStatus.ERROR, message: null);
+              },
+              requestConfiguration: config.requestConfiguration)
+          .send();
       return response;
     }
     throw Exception("ListMethodConfiguration is not assigned.");
   }
 }
 
-class DoMethodConfiguration{
+class DoMethodConfiguration {
   final Methods method;
   final String path;
   final Map<String, List<String>> attributes;
@@ -332,13 +315,12 @@ class DoMethodConfiguration{
     this.actionsConfiguration,
   });
 
-  setModel (Models model){
+  setModel(Models model) {
     this.model = model;
   }
-
 }
 
-class ListMethodConfiguration{
+class ListMethodConfiguration {
   final Methods method;
   final String path;
   Map<String, dynamic> payload;
@@ -349,20 +331,19 @@ class ListMethodConfiguration{
   final ActionsConfiguration actionsConfiguration;
   final Paginaciones paginacion;
 
-  ListMethodConfiguration({
-    @required this.method,
-    this.path,
-    this.payload,
-    this.authorizationHeader = false,
-    this.model,
-    this.scheduler,
-    this.requestConfiguration,
-    this.actionsConfiguration,
-    this.paginacion
-  });
+  ListMethodConfiguration(
+      {@required this.method,
+      this.path,
+      this.payload,
+      this.authorizationHeader = false,
+      this.model,
+      this.scheduler,
+      this.requestConfiguration,
+      this.actionsConfiguration,
+      this.paginacion});
 }
 
-class GetMethodConfiguration{
+class GetMethodConfiguration {
   final Methods method;
   final String path;
   Map<String, dynamic> payload;
@@ -372,14 +353,13 @@ class GetMethodConfiguration{
   RequestConfiguration requestConfiguration;
   final ActionsConfiguration actionsConfiguration;
 
-  GetMethodConfiguration({
-    @required this.method,
-    this.payload,
-    this.path,
-    this.authorizationHeader = false,
-    this.model,
-    this.scheduler,
-    this.requestConfiguration,
-    this.actionsConfiguration
-  });
+  GetMethodConfiguration(
+      {@required this.method,
+      this.payload,
+      this.path,
+      this.authorizationHeader = false,
+      this.model,
+      this.scheduler,
+      this.requestConfiguration,
+      this.actionsConfiguration});
 }
