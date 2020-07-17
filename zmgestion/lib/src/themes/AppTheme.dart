@@ -13,6 +13,9 @@ final appThemeData = {
     cardColor: Color(0xffffffff),
     brightness: Brightness.light,
     primaryColor: Color(0xff0066a5),
+    primaryColorDark: Color(0xff333333),
+    primaryColorLight: Color(0xff0066a5),
+    canvasColor: Color(0xfff2f2f2),
     primaryTextTheme: TextTheme(
       bodyText1: TextStyle(
         color: Color(0xff222222)
@@ -41,6 +44,8 @@ final appThemeData = {
     scaffoldBackgroundColor: Color(0xff222222),
     brightness: Brightness.dark,
     primaryColor: Color(0xff333333),//0xff753434
+    primaryColorDark: Color(0xff333333),
+    primaryColorLight: Color(0xff0066a5),
     primaryTextTheme: TextTheme(
       headline1: TextStyle(
         color: Color(0xffc14949)

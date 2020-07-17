@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:zmgestion/src/models/Usuarios.dart';
+import 'package:zmgestion/src/providers/UsuariosProvider.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
+import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/ZMDrawer/CollapsingListTile.dart';
 import 'package:zmgestion/src/widgets/ZMDrawer/NavigationModel.dart';
 import 'package:zmgestion/src/widgets/ZMDrawer/SubCollapsingListTile.dart';
@@ -15,7 +21,7 @@ class ZMDrawer extends StatefulWidget {
     Key key,
     this.context,
     this.maxWidth = 300,
-    this.minWidth = 70,
+    this.minWidth = 70
   }) : super(key: key);
 
   @override
@@ -24,27 +30,32 @@ class ZMDrawer extends StatefulWidget {
   }
 }
 
-class ZMDrawerState extends State<ZMDrawer>
-    with SingleTickerProviderStateMixin {
+class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin {
   double maxWidth;
   double minWidth;
   bool isCollapsed = false;
   AnimationController _animationController;
   Animation<double> widthAnimation;
-  int currentSelectedIndex = 0;
+  int currentSelectedIndex = -1;
 
   TextStyle listTitleDefaultTextStyle, listTitleSelectedTextStyle;
   List<NavigationModel> navigationItems;
-
+  
   @override
   void initState() {
-    super.initState();
     maxWidth = widget.maxWidth;
     minWidth = widget.minWidth;
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    widthAnimation = Tween<double>(begin: maxWidth, end: minWidth)
-        .animate(_animationController);
+    
+    _animationController = AnimationController(
+      vsync: this, 
+      duration: Duration(milliseconds: 100)
+    );
+
+    widthAnimation = Tween<double>(
+      begin: maxWidth, 
+      end: minWidth
+    ).animate(_animationController);
+
     listTitleDefaultTextStyle = TextStyle(
         color: Theme.of(widget.context)
             .primaryTextTheme
@@ -59,95 +70,160 @@ class ZMDrawerState extends State<ZMDrawer>
         fontWeight: FontWeight.w600);
     navigationItems = [
       NavigationModel(
+          title: "Inicio",
+          icon: Icons.home,
+          size: 32,
+          onTap: (){
+            final NavigationService _navigationService = locator<NavigationService>();
+            _navigationService.navigateTo("/inicio");
+          }
+      ),
+      NavigationModel(
           title: "Presupuestos",
           icon: Icons.assignment,
           size: 32,
-          animatedBuilder: AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, _) {
-                return Column(children: [
-                  SubCollapsingListTile(
-                      title: 'Crear',
-                      icon: Icons.edit,
-                      animationController: _animationController,
-                      width: 260, //maxwidth - 40
-                      selectedTextStyle: listTitleDefaultTextStyle,
-                      unselectedTextStyle: listTitleSelectedTextStyle,
-                      onTap: () {
-                        final NavigationService _navigationService =
-                            locator<NavigationService>();
-                        _navigationService.navigateTo("/presupuestos");
-                      }),
-                  SubCollapsingListTile(
-                      title: 'Buscar',
-                      icon: Icons.search,
-                      isLast: true,
-                      animationController: _animationController,
-                      selectedTextStyle: listTitleDefaultTextStyle,
-                      unselectedTextStyle: listTitleSelectedTextStyle,
-                      width: 260, //maxwidth - 40
-                      onTap: () {})
-                ]);
-              })),
-      NavigationModel(title: "Ventas", icon: Icons.payment, size: 32),
-      NavigationModel(title: "Remitos", icon: Icons.local_shipping, size: 32),
+          onTap: (){
+            final NavigationService _navigationService = locator<NavigationService>();
+            _navigationService.navigateTo("/presupuestos");
+          }
+      ),
       NavigationModel(
-          title: "Produccion", icon: FontAwesomeIcons.hammer, size: 26),
+        title: "Ventas", 
+        icon: Icons.payment, 
+        size: 32,
+        onTap: (){
+          final NavigationService _navigationService = locator<NavigationService>();
+          _navigationService.navigateTo("/ventas");
+        }
+      ),
       NavigationModel(
-          title: "Productos", icon: Icons.weekend, size: 32), //Icons.style
-      NavigationModel(title: "Reportes", icon: Icons.insert_chart, size: 32),
+        title: "Remitos", 
+        icon: Icons.local_shipping, 
+        size: 32,
+        onTap: (){
+          final NavigationService _navigationService = locator<NavigationService>();
+          _navigationService.navigateTo("/remitos");
+        }
+      ),
       NavigationModel(
-          title: "Ubicaciones", icon: Icons.location_city, size: 32),
+        title: "Produccion", 
+        icon: FontAwesomeIcons.hammer, 
+        size: 26,
+        onTap: (){
+          final NavigationService _navigationService = locator<NavigationService>();
+          _navigationService.navigateTo("/ordenes-produccion");
+        }
+      ),
       NavigationModel(
-          title: "Empleados",
-          icon: Icons.people,
-          size: 32,
-          animatedBuilder: AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, _) {
-                return Column(children: [
-                  SubCollapsingListTile(
-                      title: 'Crear',
-                      icon: Icons.edit,
-                      animationController: _animationController,
-                      width: 260, //maxwidth - 40
-                      selectedTextStyle: listTitleDefaultTextStyle,
-                      unselectedTextStyle: listTitleSelectedTextStyle,
-                      onTap: () {
-                        final NavigationService _navigationService =
-                            locator<NavigationService>();
-                        _navigationService.navigateTo("/clientes");
-                      }),
-                  SubCollapsingListTile(
-                      title: 'Buscar',
-                      icon: Icons.search,
-                      isLast: true,
-                      animationController: _animationController,
-                      selectedTextStyle: listTitleDefaultTextStyle,
-                      unselectedTextStyle: listTitleSelectedTextStyle,
-                      width: 260, //maxwidth - 40
-                      onTap: () {
-                        final NavigationService _navigationService =
-                            locator<NavigationService>();
-                        _navigationService.navigateTo("/usuarios");
-                      })
-                ]);
-              })),
+        title: "Clientes", 
+        icon: FontAwesomeIcons.users, //Icons.face, 
+        size: 23,
+        onTap: (){
+          final NavigationService _navigationService = locator<NavigationService>();
+          _navigationService.navigateTo("/clientes");
+        }
+      ),
+      NavigationModel(
+        title: "Productos", 
+        icon: Icons.local_offer, //FontAwesomeIcons.archive
+        size: 22,
+        animatedBuilder: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, _) {
+            return Column(children: [
+              SubCollapsingListTile(
+                  title: 'Productos finales',
+                  icon: Icons.weekend,
+                  animationController: _animationController,
+                  width: widget.maxWidth - 40, //maxwidth - 40
+                  selectedTextStyle: listTitleDefaultTextStyle,
+                  unselectedTextStyle: listTitleSelectedTextStyle,
+                  onTap: () {
+                    final NavigationService _navigationService =
+                        locator<NavigationService>();
+                    _navigationService.navigateTo("/productos-finales");
+                  },
+              ),
+              SubCollapsingListTile(
+                  title: 'Esqueletos',
+                  icon: Icons.event_seat,
+                  animationController: _animationController,
+                  width: widget.maxWidth - 40, //maxwidth - 40
+                  selectedTextStyle: listTitleDefaultTextStyle,
+                  unselectedTextStyle: listTitleSelectedTextStyle,
+                  onTap: () {
+                    final NavigationService _navigationService =
+                        locator<NavigationService>();
+                    _navigationService.navigateTo("/productos");
+                  },
+              ),
+              SubCollapsingListTile(
+                  title: 'Telas',
+                  icon: Icons.gesture,
+                  iconSize: 22,
+                  animationController: _animationController,
+                  width: widget.maxWidth - 40, //maxwidth - 40
+                  selectedTextStyle: listTitleDefaultTextStyle,
+                  unselectedTextStyle: listTitleSelectedTextStyle,
+                  onTap: () {
+                    final NavigationService _navigationService =
+                        locator<NavigationService>();
+                    _navigationService.navigateTo("/telas");
+                  },
+                  isLast: true,
+              )
+            ]);
+          }
+        )
+      ),
+      NavigationModel(
+        title: "Empleados", 
+        icon: Icons.work, 
+        size: 30,
+        onTap: (){
+          final NavigationService _navigationService = locator<NavigationService>();
+          _navigationService.navigateTo("/usuarios");
+        },
+      ),
+      NavigationModel(
+        title: "Reportes", 
+        icon: Icons.insert_chart, 
+        size: 32,
+        onTap: () {},
+      ),
+
+      NavigationModel(
+        title: "Ubicaciones", 
+        icon: Icons.pin_drop, 
+        size: 32,
+        onTap: () {},
+      ),
+      
     ];
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return AnimatedBuilder(
       animation: _animationController,
-      builder: (context, widget) => getWidget(context, widget),
+      builder: (context, widget) => Positioned(
+        top: 0,
+        left: 0,
+        width: widthAnimation.value,
+        height: SizeConfig.blockSizeVertical * 100,
+        child: getWidget(context, widget)
+      ),
     );
   }
 
   Widget getWidget(context, widget) {
+    final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
+    Usuarios usuario = _usuariosProvider.usuario;
     return Material(
-      elevation: 80.0,
-      color: Theme.of(context).primaryColor,
+      elevation: 2.5,
+      color: Theme.of(context).primaryColor.withOpacity(0.97),
       child: GestureDetector(
         onTap: () {
           setState(() {
@@ -161,57 +237,77 @@ class ZMDrawerState extends State<ZMDrawer>
           width: widthAnimation.value,
           child: Column(
             children: <Widget>[
-              CollapsingListTile(
-                title: 'Silvia Carolina Zimmerman',
-                icon: Icons.person,
-                animationController: _animationController,
-                selectedTextStyle: listTitleDefaultTextStyle,
-                unselectedTextStyle: listTitleSelectedTextStyle,
-                width: maxWidth - 40,
+              Material(
+                color: Theme.of(context).primaryColor,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.1)
+                      )
+                    )
+                  ),
+                  child: CollapsingListTile(
+                    title: "ZMGestion",
+                    leading: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: AnimatedIcon(
+                        icon: AnimatedIcons.close_menu,
+                        progress: _animationController,
+                        color: Theme.of(context).primaryTextTheme.caption.color,
+                        size: 32.0,
+                      ),
+                    ),
+                    animationController: _animationController,
+                    isSelected: false,
+                    selectedTextStyle: TextStyle(
+                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24
+                    ),
+                    unselectedTextStyle: TextStyle(
+                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24
+                    ),
+                    width: maxWidth - 40,
+                  ),
+                ),
               ),
-              Divider(
-                color: Colors.grey,
-                height: 40.0,
+              
+              Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      isCollapsed = !isCollapsed;
+                      isCollapsed
+                          ? _animationController.forward()
+                          : _animationController.reverse();
+                    });
+                  },
+                  child: SizedBox(
+                    height: 40.0,
+                    width: maxWidth,
+                  ),
+                ),
               ),
               Expanded(
-                child: ListView.separated(
-                  separatorBuilder: (context, counter) {
-                    return Divider(height: 12.0);
-                  },
+                child: ListView.builder(
                   itemBuilder: (context, counter) {
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        focusColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        /*onHover: (h){
-                            if(h){
-                              setState(() {
-                                currentSelectedIndex = counter;
-                              });
-                            }
-                          },*/
-                        /*
-                          onEnter: (_){
-                            setState(() {
-                              currentSelectedIndex = counter;
-                            });
-                          },
-                          onExit: (_){
-                            if(currentSelectedIndex == counter){
-                              setState(() {
-                                currentSelectedIndex = -1;
-                              });
-                            }
-                          },
-                          */
-                        onTap: () {},
-                        child: Column(
-                          children: [
-                            CollapsingListTile(
-                              onTap: () {
+                    return InkWell(
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      onTap: () {},
+                      child: Column(
+                        children: [
+                          CollapsingListTile(
+                            onTap: () {
+                              if(navigationItems[counter].onTap != null){
+                                navigationItems[counter].onTap();
+                              }else{
                                 setState(() {
                                   if (!(currentSelectedIndex == counter)) {
                                     currentSelectedIndex = counter;
@@ -219,49 +315,31 @@ class ZMDrawerState extends State<ZMDrawer>
                                     currentSelectedIndex = -1;
                                   }
                                 });
-                              },
-                              width: maxWidth - 40,
-                              selectedTextStyle: listTitleDefaultTextStyle,
-                              unselectedTextStyle: listTitleSelectedTextStyle,
-                              isSelected: currentSelectedIndex == counter,
-                              title: navigationItems[counter].title,
-                              icon: navigationItems[counter].icon,
-                              iconSize: navigationItems[counter].size,
-                              animationController: _animationController,
-                            ),
-                            Visibility(
-                              visible: currentSelectedIndex == counter,
-                              child: navigationItems[counter].animatedBuilder !=
-                                      null
-                                  ? navigationItems[counter].animatedBuilder
-                                  : Container(),
-                            ),
-                          ],
-                        ),
+                              }
+                            },
+                            width: maxWidth - 40,
+                            selectedTextStyle: listTitleDefaultTextStyle,
+                            unselectedTextStyle: listTitleSelectedTextStyle,
+                            isSelected: currentSelectedIndex == counter,
+                            title: navigationItems[counter].title,
+                            icon: navigationItems[counter].icon,
+                            iconSize: navigationItems[counter].size,
+                            animationController: _animationController,
+                            expandable: navigationItems[counter].animatedBuilder != null,
+                          ),
+                          Visibility(
+                            visible: currentSelectedIndex == counter,
+                            child: navigationItems[counter].animatedBuilder !=
+                                    null
+                                ? navigationItems[counter].animatedBuilder
+                                : Container(),
+                          ),
+                        ],
                       ),
                     );
                   },
                   itemCount: navigationItems.length,
                 ),
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    isCollapsed = !isCollapsed;
-                    isCollapsed
-                        ? _animationController.forward()
-                        : _animationController.reverse();
-                  });
-                },
-                child: AnimatedIcon(
-                  icon: AnimatedIcons.close_menu,
-                  progress: _animationController,
-                  color: Theme.of(context).primaryTextTheme.caption.color,
-                  size: 40.0,
-                ),
-              ),
-              SizedBox(
-                height: 50.0,
               ),
             ],
           ),
