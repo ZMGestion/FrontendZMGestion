@@ -1,20 +1,24 @@
 import 'dart:math';
 
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
+import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
+import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
+import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
@@ -36,7 +40,8 @@ class _ClientesIndexState extends State<ClientesIndex> {
   int searchIdRol = 0;
   int searchIdUbicacion = 0;
   String searchIdEstado = "T";
-  String searchIdTipo = "T";
+  String searchTipo = "T";
+  String searchIdPais = "AR";
   /*Search filters*/
   bool showFilters = false;
   bool searchByNombres = true;
@@ -58,6 +63,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
@@ -132,7 +138,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                     initialValue: "T",
                                     onChanged: (value) {
                                       setState(() {
-                                        searchIdTipo = value;
+                                        searchTipo = value;
                                       });
                                     },
                                   ),
@@ -289,6 +295,8 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                         padding: const EdgeInsets.fromLTRB(
                                             12, 6, 12, 12),
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
                                             Expanded(
                                                 flex: 1,
@@ -297,7 +305,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                                   textAlign: TextAlign.right,
                                                 )),
                                             Expanded(
-                                              flex: 5,
+                                              flex: 1,
                                               child: Row(
                                                 children: [
                                                   Container(
@@ -319,6 +327,41 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                                   ),
                                                 ],
                                               ),
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  TopLabel(
+                                                    labelText: "Nacionalidad",
+                                                    padding: EdgeInsets.all(0),
+                                                  ),
+                                                  CountryCodePicker(
+                                                    onChanged: print,
+                                                    countryFilter: ["AR"],
+                                                    // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+                                                    initialSelection:
+                                                        searchIdPais,
+                                                    // optional. Shows only country name and flag
+                                                    showCountryOnly: true,
+                                                    // optional. Shows only country name and flag when popup is closed.
+                                                    showOnlyCountryWhenClosed:
+                                                        true,
+                                                    // optional. aligns the flag and the Text left
+                                                    alignLeft: false,
+                                                    hideMainText: false,
+
+                                                    dialogSize: Size(
+                                                        SizeConfig
+                                                                .blockSizeHorizontal *
+                                                            20,
+                                                        SizeConfig
+                                                                .blockSizeVertical *
+                                                            25),
+                                                  ),
+                                                ],
+                                              ),
                                             )
                                           ],
                                         ),
@@ -331,13 +374,15 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       ]),
                     ),
               AppLoader(builder: (scheduler) {
+                print(searchIdEstado);
                 return ZMTable(
                   key: Key(searchText +
+                      searchIdPais +
                       searchIdEstado.toString() +
                       refreshValue.toString() +
                       searchByNombres.toString() +
                       searchByApellidos.toString() +
-                      searchIdTipo.toString() +
+                      searchTipo.toString() +
                       searchByRazonSocial.toString() +
                       searchByEmail.toString() +
                       searchByDocumento.toString() +
@@ -352,7 +397,8 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       "Email": searchByEmail ? searchText : null,
                       "Documento": searchByDocumento ? searchText : null,
                       "Telefono": searchByTelefono ? searchText : null,
-                      "Estado": searchIdEstado
+                      "Estado": searchIdEstado,
+                      "Tipo": searchTipo
                     }
                   }),
                   pageLength: 12,
@@ -361,12 +407,12 @@ class _ClientesIndexState extends State<ClientesIndex> {
                     "Clientes": {
                       "Nombres": (value) {
                         return Text(
-                          value.toString(),
+                          value != null ? value.toString() : "-",
                           textAlign: TextAlign.center,
                         );
                       },
                       "Apellidos": (value) {
-                        return Text(value.toString(),
+                        return Text(value != null ? value.toString() : "-",
                             textAlign: TextAlign.center);
                       },
                       "RazonSocial": (value) {
@@ -413,10 +459,13 @@ class _ClientesIndexState extends State<ClientesIndex> {
                               .backgroundColor
                               .withOpacity(0.5),
                           builder: (BuildContext context) {
-                            return CrearUsuariosAlertDialog(
+                            return CrearClientesAlertDialog(
                               title: "Crear Cliente",
                               onSuccess: () {
                                 Navigator.of(context).pop();
+                                setState(() {
+                                  searchText = "";
+                                });
                               },
                             );
                           },
@@ -697,14 +746,29 @@ class _ClientesIndexState extends State<ClientesIndex> {
                         iconData: Icons.delete_outline,
                         onPressed: () {
                           if (idCliente != 0) {
-                            ClientesService().borra({
-                              "Clientes": {"IdCliente": idCliente}
-                            }).then((response) {
-                              if (response.status == RequestStatus.SUCCESS) {
-                                itemsController.add(ItemAction(
-                                    event: ItemEvents.Hide, index: index));
-                              }
-                            });
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return DeleteAlertDialog(
+                                  title: "Borrar Cliente",
+                                  message:
+                                      "¿Está seguro que desea eliminar el cliente?",
+                                  onAccept: () async {
+                                    await ClientesService().borra({
+                                      "Clientes": {"IdCliente": idCliente}
+                                    }).then((response) {
+                                      if (response.status ==
+                                          RequestStatus.SUCCESS) {
+                                        itemsController.add(ItemAction(
+                                            event: ItemEvents.Hide,
+                                            index: index));
+                                      }
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            );
                           }
                         },
                       )

@@ -67,7 +67,9 @@ abstract class Services<T> {
   Future<Response<List<Models>>> listarPor(ListMethodConfiguration config,
       {showLoading = true, showError = true}) {
     ListMethodConfiguration listMethodConfiguration = config;
-    listMethodConfiguration.model = getModel();
+    if (listMethodConfiguration.model == null) {
+      listMethodConfiguration.model = getModel();
+    }
     if (config.requestConfiguration != null) {
       RequestConfiguration requestConfiguration = config.requestConfiguration;
       requestConfiguration.showLoading = showLoading;
@@ -83,7 +85,9 @@ abstract class Services<T> {
   Future<Response<Models>> damePor(GetMethodConfiguration config,
       {showLoading = true}) {
     GetMethodConfiguration getMethodConfiguration = config;
-    getMethodConfiguration.model = getModel();
+    if (getMethodConfiguration.model == null) {
+      getMethodConfiguration.model = getModel();
+    }
     if (config.requestConfiguration != null) {
       RequestConfiguration requestConfiguration = config.requestConfiguration;
       requestConfiguration.showLoading = showLoading;

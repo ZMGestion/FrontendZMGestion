@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:zmgestion/src/views/structure/ZMAppBar.dart';
 import 'package:zmgestion/src/views/structure/ZMDrawer.dart';
+<<<<<<< HEAD
+=======
 import 'package:zmgestion/src/views/structure/ZMNavigationBar.dart';
 import 'package:custom_navigation_drawer/custom_navigation_drawer.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
+>>>>>>> f876762c792cd89ff9f8690e5952f82b46ff7aa8
 
 class BodyTemplate extends StatefulWidget {
   final Widget child;

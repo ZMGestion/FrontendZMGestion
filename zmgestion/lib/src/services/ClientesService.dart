@@ -23,34 +23,22 @@ class ClientesService extends Services {
   @override
   DoMethodConfiguration crearConfiguration() {
     // TODO: implement altaConfiguration
+    return DoMethodConfiguration();
+  }
+
+  DoMethodConfiguration crearClienteConfiguration(
+      Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
-      method: Methods.POST,
-      path: "/usuarios/crear",
-      authorizationHeader: true,
-      scheduler: scheduler,
-      requestConfiguration: RequestConfiguration(
-          showSuccess: true,
-          showLoading: true,
-          successMessage: "El usuario se ha creado con éxito"),
-      attributes: {
-        "Usuarios": [
-          "IdRol",
-          "IdUbicacion",
-          "IdTipoDocumento",
-          "Documento",
-          "Nombres",
-          "Apellidos",
-          "EstadoCivil",
-          "Telefono",
-          "Email",
-          "CantidadHijos",
-          "Usuario",
-          "Password",
-          "FechaNacimiento",
-          "FechaInicio"
-        ]
-      },
-    );
+        method: Methods.POST,
+        path: "/clientes/crear",
+        authorizationHeader: true,
+        scheduler: scheduler,
+        requestConfiguration: RequestConfiguration(
+            showSuccess: true,
+            showLoading: true,
+            successMessage: "El cliente se ha creado con éxito"),
+        payload: payload);
   }
 
   @override
@@ -58,13 +46,13 @@ class ClientesService extends Services {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
-        path: "/usuarios/darAlta",
+        path: "/clientes/darAlta",
         authorizationHeader: true,
         requestConfiguration: RequestConfiguration(
-            successMessage: "El usuario se ha activado con éxito",
+            successMessage: "El cliente se ha activado con éxito",
             showSuccess: true,
             errorMessage:
-                "No se ha podido activar el usuario, intentelo nuevamente más tarde",
+                "No se ha podido activar el cliente, intentelo nuevamente más tarde",
             showError: true));
   }
 
@@ -73,14 +61,14 @@ class ClientesService extends Services {
     // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
-        path: "/usuarios/darBaja",
+        path: "/clientes/darBaja",
         authorizationHeader: true,
         scheduler: scheduler,
         requestConfiguration: RequestConfiguration(
-            successMessage: "El usuario se ha dado de baja con éxito",
+            successMessage: "El cliente se ha dado de baja con éxito",
             showSuccess: true,
             errorMessage:
-                "No se ha podido dar de baja el usuario, intentelo nuevamente más tarde",
+                "No se ha podido dar de baja el cliente, intentelo nuevamente más tarde",
             showError: true));
   }
 
@@ -89,14 +77,14 @@ class ClientesService extends Services {
     // TODO: implement borraConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
-        path: "/usuarios/borrar",
+        path: "/clientes/borrar",
         authorizationHeader: true,
         payload: payload,
         requestConfiguration: RequestConfiguration(
-            successMessage: "El usuario ha sido eliminado con éxito",
+            successMessage: "El cliente ha sido eliminado con éxito",
             showSuccess: true,
             errorMessage:
-                "No se ha podido eliminar el usuario, intentelo nuevamente más tarde",
+                "No se ha podido eliminar el cliente, intentelo nuevamente más tarde",
             showError: true));
   }
 
@@ -134,50 +122,15 @@ class ClientesService extends Services {
                 "Ha ocurrido un error mientras se buscaba el cliente"));
   }
 
-  DoMethodConfiguration iniciarSesion(Map<String, dynamic> payload) {
-    return DoMethodConfiguration(
-        method: Methods.POST,
-        path: "/usuarios/iniciarSesion",
-        scheduler: scheduler,
-        model: Usuarios(),
-        payload: payload,
-        actionsConfiguration: ActionsConfiguration(onSuccess: (response) {
-          Usuarios usuario = Usuarios().fromMap(response);
-          var localStorage = window.localStorage;
-          localStorage["tokenType"] = "JWT";
-          localStorage["token"] = usuario.token;
-          print(response);
-          ZMLoader.of(context).rebuild();
-        }, onError: (error) {
-          ScreenMessage.push(error["mensaje"], MessageType.Error);
-        }));
-  }
-
-  GetMethodConfiguration damePorTokenConfiguration() {
-    return GetMethodConfiguration(
-        method: Methods.GET,
-        authorizationHeader: true,
-        model: Usuarios(),
-        path: "/usuarios/damePorToken",
-        scheduler: scheduler);
-  }
-
-  GetMethodConfiguration dameConfiguration(int idUsuario) {
+  GetMethodConfiguration dameConfiguration(int idCliente) {
     return GetMethodConfiguration(
         method: Methods.POST,
         authorizationHeader: true,
-        model: Usuarios(),
-        path: "/usuarios/dame",
+        model: Clientes(),
+        path: "/clientes/dame",
         payload: {
-          "Usuarios": {"IdUsuario": idUsuario}
+          "Clientes": {"IdCliente": idCliente}
         },
         scheduler: scheduler);
-  }
-
-  cerrarSesion() {
-    var localStorage = window.localStorage;
-    localStorage.remove("token");
-    localStorage.remove("tokenType");
-    ZMLoader.of(context).rebuild();
   }
 }
