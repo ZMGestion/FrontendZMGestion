@@ -1,18 +1,28 @@
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/ScreenMessage.dart';
+import 'package:zmgestion/src/models/Usuarios.dart';
+import 'package:zmgestion/src/providers/UsuariosProvider.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 
 class ZMLoader extends StatefulWidget {
   static _ZMLoaderState of(BuildContext context) => context.findAncestorStateOfType<_ZMLoaderState>();
-  
+
+  final BuildContext context;
   final Widget child;
   final Widget login;
 
-  const ZMLoader({Key key, this.child, this.login}) : super(key: key);
+  const ZMLoader({
+    Key key, 
+    this.context,
+    this.child, 
+    this.login
+  }) : super(key: key);
 
   @override
   _ZMLoaderState createState() => _ZMLoaderState();
@@ -32,8 +42,10 @@ class _ZMLoaderState extends State<ZMLoader> {
   @override
   void initState() {
     // TODO: implement initState
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _checkSession();
+    });
     super.initState();
-    _checkSession();
   }
 
   _checkSession() async{
@@ -50,7 +62,9 @@ class _ZMLoaderState extends State<ZMLoader> {
         await UsuariosService().damePor(UsuariosService().damePorTokenConfiguration()).then(
           (response){
             if(response.status == RequestStatus.SUCCESS){
-              //Setear provider con el response.message (Usuarios)
+              Usuarios _usuario = Usuarios().fromMap(response.message.toMap());
+              final usuarioProvider = widget.context.read<UsuariosProvider>();
+              usuarioProvider.usuario = _usuario;
               renderResponse = widget.child;
               return;
             }else{

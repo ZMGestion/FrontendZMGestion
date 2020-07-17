@@ -16,7 +16,7 @@ class ZMTextButton extends StatelessWidget {
     this.disabledColor = Colors.grey,
     this.icon, 
     this.onPressed,
-    this.outlineBorder
+    this.outlineBorder = false
   }) : super(key: key);
 
   @override
