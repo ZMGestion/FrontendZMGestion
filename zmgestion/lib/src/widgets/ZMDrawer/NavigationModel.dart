@@ -5,10 +5,12 @@ class NavigationModel {
   double size;
   IconData icon;
   AnimatedBuilder animatedBuilder;
+  Function onTap;
   NavigationModel({
     this.title,
     this.size,
     this.icon,
-    this.animatedBuilder
+    this.animatedBuilder,
+    this.onTap
   });
 }

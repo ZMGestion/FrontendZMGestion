@@ -115,32 +115,56 @@ class _PageInfoHandlerState extends State<PageInfoHandler> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left
-          ),
-          onPressed: currentPageInfo.pagina <= 1 ? null : (){
-            setState((){
-              pagina--;
-            });
-          },
+        Expanded(
+          child: Container(),
         ),
         Row(
-          children: _getPageIcons() != null ? _getPageIcons() : [],
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left
+              ),
+              onPressed: currentPageInfo.pagina <= 1 ? null : (){
+                setState((){
+                  pagina--;
+                });
+              },
+            ),
+            Row(
+              children: _getPageIcons() != null ? _getPageIcons() : [],
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_right
+              ),
+              onPressed: currentPageInfo.pagina >= _getPageLength() ? null : (){
+                setState((){
+                  pagina++;
+                });
+              },
+            ),
+          ],
         ),
-        IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_right
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Text(
+                  "Mostrando ${pagina < _getPageLength() ? currentPageInfo.longitudPagina.toString() : (currentPageInfo.cantidadTotal - (pagina - 1) * currentPageInfo.longitudPagina).toString()} resultados de ${currentPageInfo.cantidadTotal.toString()}",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
+                    fontSize: 12
+                  ),
+                ),
+              )
+            ],
           ),
-          onPressed: currentPageInfo.pagina >= _getPageLength() ? null : (){
-            setState((){
-              pagina++;
-            });
-          },
-        ),
+        )
       ],
     );
   }
