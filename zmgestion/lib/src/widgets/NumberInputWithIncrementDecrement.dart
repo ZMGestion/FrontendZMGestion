@@ -79,8 +79,11 @@ class _NumberInputWithIncrementDecrementState
                     setState(() {
                       currentValue++;
                       _controller.text = (currentValue)
-                          .toString(); // incrementing value
+                          .toString(); // incrementing value                          
                     });
+                    if(widget.onChanged != null){
+                      widget.onChanged(currentValue);
+                    }
                   },
                 ),
               ),
@@ -97,6 +100,9 @@ class _NumberInputWithIncrementDecrementState
                         (currentValue > 0 ? currentValue : 0)
                             .toString(); // decrementing value
                   });
+                  if(widget.onChanged != null){
+                    widget.onChanged(currentValue);
+                  }
                 },
               ),
             ],

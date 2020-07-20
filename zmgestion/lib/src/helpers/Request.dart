@@ -47,13 +47,13 @@ class Request{
             url+path,
             headers: headers != null ? headers : {'Content-Type': 'application/json'},
             body: body).
-          timeout(Duration(seconds: 5));
+          timeout(Duration(seconds: 10));
           break;
         case Methods.GET:
           response = await http.get(
             url+path,
             headers: headers != null ? headers : {'Content-Type': 'application/json'}).
-          timeout(Duration(seconds: 5));
+          timeout(Duration(seconds: 10));
           break;
         default:
           break;

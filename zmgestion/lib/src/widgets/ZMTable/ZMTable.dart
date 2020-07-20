@@ -119,9 +119,11 @@ class _ZMTableState extends State<ZMTable> {
     widget.cellBuilder.forEach((parent, columnMap) {
       columnMap.forEach((columnName, builer) {
         var _columnName = columnName;
-        if (widget.tableLabels.containsKey(parent)) {
-          if (widget.tableLabels[parent].containsKey(columnName)) {
-            _columnName = widget.tableLabels[parent][columnName];
+        if(widget.tableLabels != null){
+          if (widget.tableLabels.containsKey(parent)) {
+            if (widget.tableLabels[parent].containsKey(columnName)) {
+              _columnName = widget.tableLabels[parent][columnName];
+            }
           }
         }
         _result.add(_columnName);

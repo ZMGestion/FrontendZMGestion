@@ -6,10 +6,12 @@ import 'SizeConfig.dart';
 
 class AlertDialogTitle extends StatelessWidget {
   final String title;
+  final double width;
 
   const AlertDialogTitle({
     Key key, 
-    this.title
+    this.title,
+    this.width
   }) : super(key: key);
 
   @override
@@ -22,7 +24,7 @@ class AlertDialogTitle extends StatelessWidget {
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(22))
           ),
-          width: SizeConfig.blockSizeHorizontal * 40,
+          width: width != null ? width : SizeConfig.blockSizeHorizontal * 40,
           child: Column(
             children: [
               Container(

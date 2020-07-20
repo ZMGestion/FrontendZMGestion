@@ -46,6 +46,7 @@ class RequestScheduler{
             if(responseJson["error"] == null) {
               request.status = RequestStatus.SUCCESS;
               this._sendState();
+              print(responseJson["respuesta"]);
               if(request.requestConfiguration.successMessage != null && request.requestConfiguration.showSuccess){
                 ScreenMessage.push(request.requestConfiguration.successMessage, MessageType.Success);
               }
