@@ -12,6 +12,7 @@ import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
+import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
@@ -508,12 +509,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                             ZMStdButton(
                               color: Colors.white,
                               text: Text(
-                                (estado == "A"
-                                        ? "Dar de baja"
-                                        : "Dar de alta") +
-                                    " (" +
-                                    usuarios.length.toString() +
-                                    ")",
+                                (estado == "A" ? "Dar de baja" : "Dar de alta") + " (" + usuarios.length.toString() + ")",
                                 style: TextStyle(
                                     color: Colors.black87,
                                     fontWeight: FontWeight.bold),
@@ -535,12 +531,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                   builder: (BuildContext context) {
                                     return MultipleRequestView(
                                       models: usuarios,
-                                      title: (estado == "A"
-                                              ? "Dar de baja"
-                                              : "Dar de alta") +
-                                          " " +
-                                          usuarios.length.toString() +
-                                          " usuarios",
+                                      title: (estado == "A" ? "Dar de baja" : "Dar de alta")+" "+usuarios.length.toString()+" usuarios",
                                       service: UsuariosService(),
                                       doMethodConfiguration: estado == "A"
                                           ? UsuariosService()
@@ -550,16 +541,12 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                       payload: (mapModel) {
                                         return {
                                           "Usuarios": {
-                                            "IdUsuario": mapModel["Usuarios"]
-                                                ["IdUsuario"]
+                                            "IdUsuario": mapModel["Usuarios"]["IdUsuario"]
                                           }
                                         };
                                       },
                                       itemBuilder: (mapModel) {
-                                        return Text(mapModel["Usuarios"]
-                                                ["Nombres"] +
-                                            " " +
-                                            mapModel["Usuarios"]["Apellidos"]);
+                                        return Text(mapModel["Usuarios"]["Nombres"]+" "+mapModel["Usuarios"]["Apellidos"]);
                                       },
                                       onFinished: () {
                                         setState(() {
@@ -649,28 +636,30 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                       IconButtonTableAction(
                         iconData: Icons.remove_red_eye,
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return ModelViewDialog(
-                                content: ModelView(
-                                  service: UsuariosService(),
-                                  getMethodConfiguration: UsuariosService()
-                                      .dameConfiguration(idUsuario),
-                                  isList: false,
-                                  itemBuilder:
-                                      (mapModel, index, itemController) {
-                                    return Usuarios()
-                                        .fromMap(mapModel)
-                                        .viewModel(context);
-                                  },
-                                ),
-                              );
-                            },
-                          );
+                          if (idUsuario != 0) {
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return ModelViewDialog(
+                                  content: ModelView(
+                                    service: UsuariosService(),
+                                    getMethodConfiguration: UsuariosService()
+                                        .dameConfiguration(idUsuario),
+                                    isList: false,
+                                    itemBuilder:
+                                        (mapModel, index, itemController) {
+                                      return Usuarios()
+                                          .fromMap(mapModel)
+                                          .viewModel(context);
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                       IconButtonTableAction(
@@ -713,41 +702,66 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                       IconButtonTableAction(
                         iconData: Icons.edit,
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return ModificarUsuariosAlertDialog(
-                                title: "Modificar usuario",
-                                usuario: Usuarios().fromMap(mapModel),
-                                onSuccess: () {
-                                  Navigator.of(context).pop();
-                                  itemsController.add(ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration:
-                                          UsuariosService().dameConfiguration(
-                                              usuario.idUsuario)));
-                                },
-                              );
-                            },
-                          );
+                          if (idUsuario != 0) {
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return ModelView(
+                                  service: UsuariosService(),
+                                  getMethodConfiguration: UsuariosService().dameConfiguration(idUsuario),
+                                  isList: false,
+                                  itemBuilder: (updatedMapModel, index, itemController) => ModificarUsuariosAlertDialog(
+                                    title: "Modificar usuario",
+                                    usuario: Usuarios().fromMap(updatedMapModel),
+                                    onSuccess: () {
+                                      Navigator.of(context).pop();
+                                      itemsController.add(ItemAction(
+                                          event: ItemEvents.Update,
+                                          index: index,
+                                          updateMethodConfiguration:
+                                              UsuariosService().dameConfiguration(
+                                                  usuario.idUsuario)));
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                       IconButtonTableAction(
                         iconData: Icons.delete_outline,
                         onPressed: () {
                           if (idUsuario != 0) {
-                            UsuariosService().borra({
-                              "Usuarios": {"IdUsuario": idUsuario}
-                            }).then((response) {
-                              if (response.status == RequestStatus.SUCCESS) {
-                                itemsController.add(ItemAction(
-                                    event: ItemEvents.Hide, index: index));
-                              }
-                            });
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return DeleteAlertDialog(
+                                  title: "Borrar empleado",
+                                  message:
+                                      "¿Está seguro que desea eliminar el empleado?",
+                                  onAccept: () async {
+                                    await UsuariosService().borra({
+                                      "Usuarios": {"IdUsuario": idUsuario}
+                                    }).then((response) {
+                                      if (response.status ==
+                                          RequestStatus.SUCCESS) {
+                                        itemsController.add(ItemAction(
+                                            event: ItemEvents.Hide,
+                                            index: index));
+                                      }
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            );
                           }
                         },
                       )

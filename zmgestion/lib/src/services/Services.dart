@@ -187,6 +187,7 @@ abstract class Services<T> {
                   if (response is List) {
                     /* Normal sin paginación */
                     response.forEach((item) {
+                      print(item);
                       Models itemModel = config.model.fromMap(item);
                       respuesta.add(itemModel);
                     });
