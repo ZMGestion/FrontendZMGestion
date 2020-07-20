@@ -99,13 +99,13 @@ class ClientesService extends Services {
     // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
-        path: "/usuarios/modificar",
+        path: "/clientes/modificar",
         authorizationHeader: true,
         scheduler: scheduler,
         requestConfiguration: RequestConfiguration(
             showSuccess: true,
             showLoading: true,
-            successMessage: "El usuario ha sido modificado con éxito"));
+            successMessage: "El cliente ha sido modificado con éxito"));
   }
 
   ListMethodConfiguration buscarClientes(Map<String, dynamic> payload) {

@@ -8,6 +8,7 @@ import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
+import 'package:zmgestion/src/views/clientes/ModificarClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -19,6 +20,7 @@ import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
+import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
@@ -655,28 +657,30 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       IconButtonTableAction(
                         iconData: Icons.remove_red_eye,
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return ModelViewDialog(
-                                content: ModelView(
-                                  service: ClientesService(),
-                                  getMethodConfiguration: ClientesService()
-                                      .dameConfiguration(idCliente),
-                                  isList: false,
-                                  itemBuilder:
-                                      (mapModel, index, itemController) {
-                                    return Clientes()
-                                        .fromMap(mapModel)
-                                        .viewModel(context);
-                                  },
-                                ),
-                              );
-                            },
-                          );
+                          if (idCliente != 0) {
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return ModelViewDialog(
+                                  content: ModelView(
+                                    service: ClientesService(),
+                                    getMethodConfiguration: ClientesService()
+                                        .dameConfiguration(idCliente),
+                                    isList: false,
+                                    itemBuilder:
+                                        (mapModel, index, itemController) {
+                                      return Clientes()
+                                          .fromMap(mapModel)
+                                          .viewModel(context);
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                       IconButtonTableAction(
@@ -719,27 +723,39 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       IconButtonTableAction(
                         iconData: Icons.edit,
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return ModificarUsuariosAlertDialog(
-                                title: "Modificar Cliente",
-                                usuario: Clientes().fromMap(mapModel),
-                                onSuccess: () {
-                                  Navigator.of(context).pop();
-                                  itemsController.add(ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration:
-                                          ClientesService().dameConfiguration(
-                                              cliente.idCliente)));
-                                },
-                              );
-                            },
-                          );
+                          if (idCliente != 0) {
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return ModelView(
+                                  service: ClientesService(),
+                                  getMethodConfiguration: ClientesService()
+                                      .dameConfiguration(idCliente),
+                                  isList: false,
+                                  itemBuilder: (mapModel, internalIndex,
+                                      itemController) {
+                                    return ModificarClientesAlertDialog(
+                                      title: "Modificar Cliente",
+                                      cliente: Clientes().fromMap(mapModel),
+                                      onSuccess: () {
+                                        Navigator.of(context).pop();
+                                        itemsController.add(ItemAction(
+                                            event: ItemEvents.Update,
+                                            index: index,
+                                            updateMethodConfiguration:
+                                                ClientesService()
+                                                    .dameConfiguration(
+                                                        cliente.idCliente)));
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                       IconButtonTableAction(
@@ -748,6 +764,9 @@ class _ClientesIndexState extends State<ClientesIndex> {
                           if (idCliente != 0) {
                             showDialog(
                               context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
                               builder: (BuildContext context) {
                                 return DeleteAlertDialog(
                                   title: "Borrar Cliente",
@@ -774,7 +793,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       )
                     ];
                   },
-                  searchArea: !showFilters ? Container() : Container(),
+                  searchArea: TableTitle(title: "Clientes"),
                 );
               }),
             ],
