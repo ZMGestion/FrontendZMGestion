@@ -536,31 +536,33 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   }
 
   _countryField(String idPais, String label) {
-    return Column(
-      key: Key(label),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TopLabel(
-          labelText: label,
-          padding: EdgeInsets.all(0),
-        ),
-        CountryCodePicker(
-          onChanged: print,
-          countryFilter: ["AR"],
-          // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-          initialSelection: idPais,
-          // optional. Shows only country name and flag
-          showCountryOnly: true,
-          // optional. Shows only country name and flag when popup is closed.
-          showOnlyCountryWhenClosed: true,
-          // optional. aligns the flag and the Text left
-          alignLeft: false,
-          hideMainText: false,
+    return Expanded(
+      child: Column(
+        key: Key(label),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TopLabel(
+            labelText: label,
+            padding: EdgeInsets.all(0),
+          ),
+          CountryCodePicker(
+            onChanged: print,
+            countryFilter: ["AR"],
+            // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+            initialSelection: idPais,
+            // optional. Shows only country name and flag
+            showCountryOnly: true,
+            // optional. Shows only country name and flag when popup is closed.
+            showOnlyCountryWhenClosed: true,
+            // optional. aligns the flag and the Text left
+            alignLeft: false,
+            hideMainText: false,
 
-          dialogSize: Size(SizeConfig.blockSizeHorizontal * 20,
-              SizeConfig.blockSizeVertical * 25),
-        ),
-      ],
+            dialogSize: Size(SizeConfig.blockSizeHorizontal * 20,
+                SizeConfig.blockSizeVertical * 25),
+          ),
+        ],
+      ),
     );
   }
 
