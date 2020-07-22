@@ -8,6 +8,7 @@ import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
+import 'package:zmgestion/src/views/clientes/DomiciliosClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/clientes/ModificarClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
@@ -376,7 +377,6 @@ class _ClientesIndexState extends State<ClientesIndex> {
                       ]),
                     ),
               AppLoader(builder: (scheduler) {
-                print(searchIdEstado);
                 return ZMTable(
                   key: Key(searchText +
                       searchIdPais +
@@ -677,6 +677,44 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                           .viewModel(context);
                                     },
                                   ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                      IconButtonTableAction(
+                        iconData: Icons.home,
+                        onPressed: () {
+                          if (idCliente != 0) {
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return ModelView(
+                                  service: ClientesService(),
+                                  getMethodConfiguration: ClientesService()
+                                      .dameConfiguration(idCliente),
+                                  isList: false,
+                                  itemBuilder: (mapModel, internalIndex,
+                                      itemController) {
+                                    return DomiciliosClientesAlertDialog(
+                                      title: "Domicilios",
+                                      cliente: Clientes().fromMap(mapModel),
+                                      onSuccess: () {
+                                        // Navigator.of(context).pop();
+                                        // itemsController.add(ItemAction(
+                                        //     event: ItemEvents.Update,
+                                        //     index: index,
+                                        //     updateMethodConfiguration:
+                                        //         ClientesService()
+                                        //             .dameConfiguration(
+                                        //                 cliente.idCliente)));
+                                      },
+                                    );
+                                  },
                                 );
                               },
                             );

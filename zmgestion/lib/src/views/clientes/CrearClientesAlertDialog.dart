@@ -153,8 +153,10 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   _form() {
     return PageView(
       controller: _pageController,
-      allowImplicitScrolling: true,
+      allowImplicitScrolling: false,
       scrollDirection: Axis.horizontal,
+      physics: NeverScrollableScrollPhysics(),
+      reverse: false,
       onPageChanged: (index) {
         setState(() {
           _pageIndex = index;
@@ -635,7 +637,7 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
           Icons.arrow_right,
           color: index == 0 ? Colors.black87 : Colors.black38,
         ),
-        iconSize: 35,
+        iconSize: 40,
         onPressed: () {
           if (index == 0) {
             setState(() {
@@ -650,7 +652,7 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
     return IconButton(
         icon: Icon(Icons.arrow_left,
             color: index == 0 ? Colors.black38 : Colors.black),
-        iconSize: 35,
+        iconSize: 40,
         onPressed: () {
           if (index == 1) {
             setState(() {

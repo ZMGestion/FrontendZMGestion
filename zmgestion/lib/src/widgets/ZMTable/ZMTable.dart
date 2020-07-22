@@ -41,6 +41,7 @@ class ZMTable extends StatefulWidget {
       Map<String, dynamic>, int index, StreamController<ItemAction>) rowActions;
   final bool paginate;
   final int pageLength;
+  final double height;
 
   const ZMTable(
       {Key key,
@@ -54,6 +55,7 @@ class ZMTable extends StatefulWidget {
       this.model,
       this.fixedActions,
       this.paginate = false,
+      this.height = 280,
       this.pageLength = 12})
       : super(key: key);
 
@@ -82,6 +84,7 @@ class _ZMTableState extends State<ZMTable> {
     super.initState();
     columnNames = getColumnNames();
     columns = generateColumns(columnNames);
+    print(widget.height);
 
     longitudPagina = widget.pageLength;
 
@@ -119,7 +122,7 @@ class _ZMTableState extends State<ZMTable> {
     widget.cellBuilder.forEach((parent, columnMap) {
       columnMap.forEach((columnName, builer) {
         var _columnName = columnName;
-        if(widget.tableLabels != null){
+        if (widget.tableLabels != null) {
           if (widget.tableLabels.containsKey(parent)) {
             if (widget.tableLabels[parent].containsKey(columnName)) {
               _columnName = widget.tableLabels[parent][columnName];
@@ -291,7 +294,7 @@ class _ZMTableState extends State<ZMTable> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 24),
                     child: Container(
-                      height: 280,
+                      height: widget.height,
                       child: ModelView(
                         key: Key(pageInfo.pagina.toString()),
                         isList: true,
