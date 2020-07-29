@@ -97,6 +97,7 @@ class _ZMUserActionState extends State<ZMUserAction> {
               Container(
                 width: _width,
                 decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
                   border: Border(
                     bottom: BorderSide(
                       color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.1),
@@ -171,27 +172,30 @@ class _ZMUserActionState extends State<ZMUserAction> {
                   ),
                 ),
               ),
-              ListView(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                children: <Widget>[
-                  _item(
-                    text: "Modificar perfil",
-                    backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
-                    iconData: Icons.settings,
-                    iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
-                    textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
-                    onTap: (){}
-                  ),
-                  _item(
-                    text: "Cambiar contraseña",
-                    backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
-                    iconData: Icons.lock_outline,
-                    iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
-                    textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
-                    onTap: (){}
-                  )
-                ],
+              Container(
+                color: Theme.of(context).cardColor,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    _item(
+                      text: "Modificar perfil",
+                      backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
+                      iconData: Icons.settings,
+                      iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
+                      textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
+                      onTap: (){}
+                    ),
+                    _item(
+                      text: "Cambiar contraseña",
+                      backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
+                      iconData: Icons.lock_outline,
+                      iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
+                      textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
+                      onTap: (){}
+                    )
+                  ],
+                ),
               ),
             ],
           ),

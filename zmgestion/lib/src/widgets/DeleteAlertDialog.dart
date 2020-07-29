@@ -16,7 +16,6 @@ class _DeleteAlertDialogState extends State<DeleteAlertDialog> {
     return AlertDialog(
       title: Text(widget.title),
       content: Text(widget.message),
-      useMaterialBorderRadius: true,
       titleTextStyle: TextStyle(
           color: Theme.of(context).primaryTextTheme.bodyText1.color,
           fontSize: 20,

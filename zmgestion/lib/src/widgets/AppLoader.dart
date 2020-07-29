@@ -9,11 +9,13 @@ class AppLoader extends StatefulWidget{
   final Widget Function(RequestScheduler scheduler) builder;
   final RequestScheduler mainRequestScheduler;
   final StreamController<bool> mainLoaderStreamController;
+  final bool showLoading;
 
   const AppLoader({
     this.builder,
     this.mainRequestScheduler,
-    this.mainLoaderStreamController
+    this.mainLoaderStreamController,
+    this.showLoading = false
   });
 
   @override
@@ -42,7 +44,6 @@ class _AppLoaderState extends State<AppLoader> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
 
     if(widget.mainLoaderStreamController != null){
       loaderStreamController = widget.mainLoaderStreamController;
@@ -61,6 +62,7 @@ class _AppLoaderState extends State<AppLoader> {
         isLoading = loaderStatus;
       });
     });
+    super.initState();
   }
 
   Future<bool> _willPopCallback() async {
@@ -70,7 +72,7 @@ class _AppLoaderState extends State<AppLoader> {
 
   Widget Processing(bool _processing) {
     return Visibility(
-      visible: _processing,
+      visible: _processing && widget.showLoading,
       child: Positioned(
         child: Padding(
           padding: const EdgeInsets.only(top: 70.0),
