@@ -9,15 +9,13 @@ import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMUserAction.dart';
 
-class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
-
-  const ZMAppBar({
-    Key key
-  }) : super(key: key);
+class ZMAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const ZMAppBar({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
+    final UsuariosProvider _usuariosProvider =
+        Provider.of<UsuariosProvider>(context);
     Usuarios usuario = _usuariosProvider.usuario;
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -25,17 +23,17 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
       title: Padding(
         padding: const EdgeInsets.only(left: 12),
         child: InkWell(
-          onTap: (){
-            final NavigationService _navigationService = locator<NavigationService>();
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
             _navigationService.navigateTo("/inicio");
           },
           child: Text(
             "ZMGestion",
             textAlign: TextAlign.left,
             style: GoogleFonts.roboto(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).primaryTextTheme.headline1.color
-            ),
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).primaryTextTheme.headline1.color),
           ),
         ),
       ),
@@ -54,7 +52,7 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget{
           color: Theme.of(context).primaryColorLight,
           outlineBorder: false,
           text: "Cerrar sesión",
-          onPressed: (){
+          onPressed: () {
             UsuariosService(context: context).cerrarSesion();
           },
         ),

@@ -17,12 +17,9 @@ class ZMDrawer extends StatefulWidget {
   final double minWidth;
   final double maxWidth;
 
-  const ZMDrawer({
-    Key key,
-    this.context,
-    this.maxWidth = 300,
-    this.minWidth = 70
-  }) : super(key: key);
+  const ZMDrawer(
+      {Key key, this.context, this.maxWidth = 300, this.minWidth = 70})
+      : super(key: key);
 
   @override
   ZMDrawerState createState() {
@@ -30,7 +27,8 @@ class ZMDrawer extends StatefulWidget {
   }
 }
 
-class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin {
+class ZMDrawerState extends State<ZMDrawer>
+    with SingleTickerProviderStateMixin {
   double maxWidth;
   double minWidth;
   bool isCollapsed = false;
@@ -40,21 +38,17 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
 
   TextStyle listTitleDefaultTextStyle, listTitleSelectedTextStyle;
   List<NavigationModel> navigationItems;
-  
+
   @override
   void initState() {
     maxWidth = widget.maxWidth;
     minWidth = widget.minWidth;
-    
-    _animationController = AnimationController(
-      vsync: this, 
-      duration: Duration(milliseconds: 100)
-    );
 
-    widthAnimation = Tween<double>(
-      begin: maxWidth, 
-      end: minWidth
-    ).animate(_animationController);
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+
+    widthAnimation = Tween<double>(begin: maxWidth, end: minWidth)
+        .animate(_animationController);
 
     listTitleDefaultTextStyle = TextStyle(
         color: Theme.of(widget.context)
@@ -73,132 +67,133 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
           title: "Inicio",
           icon: Icons.home,
           size: 32,
-          onTap: (){
-            final NavigationService _navigationService = locator<NavigationService>();
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
             _navigationService.navigateTo("/inicio");
-          }
-      ),
+          }),
       NavigationModel(
           title: "Presupuestos",
           icon: Icons.assignment,
           size: 32,
-          onTap: (){
-            final NavigationService _navigationService = locator<NavigationService>();
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
             _navigationService.navigateTo("/presupuestos");
-          }
-      ),
+          }),
       NavigationModel(
-        title: "Ventas", 
-        icon: Icons.payment, 
-        size: 32,
-        onTap: (){
-          final NavigationService _navigationService = locator<NavigationService>();
-          _navigationService.navigateTo("/ventas");
-        }
-      ),
+          title: "Ventas",
+          icon: Icons.payment,
+          size: 32,
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
+            _navigationService.navigateTo("/ventas");
+          }),
       NavigationModel(
-        title: "Remitos", 
-        icon: Icons.local_shipping, 
-        size: 32,
-        onTap: (){
-          final NavigationService _navigationService = locator<NavigationService>();
-          _navigationService.navigateTo("/remitos");
-        }
-      ),
+          title: "Remitos",
+          icon: Icons.local_shipping,
+          size: 32,
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
+            _navigationService.navigateTo("/remitos");
+          }),
       NavigationModel(
-        title: "Produccion", 
-        icon: FontAwesomeIcons.hammer, 
-        size: 26,
-        onTap: (){
-          final NavigationService _navigationService = locator<NavigationService>();
-          _navigationService.navigateTo("/ordenes-produccion");
-        }
-      ),
+          title: "Produccion",
+          icon: FontAwesomeIcons.hammer,
+          size: 26,
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
+            _navigationService.navigateTo("/ordenes-produccion");
+          }),
       NavigationModel(
-        title: "Clientes", 
-        icon: FontAwesomeIcons.users, //Icons.face, 
-        size: 23,
-        onTap: (){
-          final NavigationService _navigationService = locator<NavigationService>();
-          _navigationService.navigateTo("/clientes");
-        }
-      ),
+          title: "Clientes",
+          icon: FontAwesomeIcons.users, //Icons.face,
+          size: 23,
+          onTap: () {
+            final NavigationService _navigationService =
+                locator<NavigationService>();
+            _navigationService.navigateTo("/clientes");
+          }),
       NavigationModel(
-        title: "Productos", 
-        icon: Icons.local_offer, //FontAwesomeIcons.archive
-        size: 22,
-        animatedBuilder: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, _) {
-            return Column(children: [
-              SubCollapsingListTile(
-                  title: 'Productos finales',
-                  icon: Icons.weekend,
-                  animationController: _animationController,
-                  width: widget.maxWidth - 40, //maxwidth - 40
-                  selectedTextStyle: listTitleDefaultTextStyle,
-                  unselectedTextStyle: listTitleSelectedTextStyle,
-                  onTap: () {
-                    final NavigationService _navigationService =
-                        locator<NavigationService>();
-                    _navigationService.navigateTo("/productos-finales");
-                  },
-              ),
-              SubCollapsingListTile(
-                  title: 'Esqueletos',
-                  icon: Icons.event_seat,
-                  animationController: _animationController,
-                  width: widget.maxWidth - 40, //maxwidth - 40
-                  selectedTextStyle: listTitleDefaultTextStyle,
-                  unselectedTextStyle: listTitleSelectedTextStyle,
-                  onTap: () {
-                    final NavigationService _navigationService =
-                        locator<NavigationService>();
-                    _navigationService.navigateTo("/productos");
-                  },
-              ),
-              SubCollapsingListTile(
-                  title: 'Telas',
-                  icon: Icons.gesture,
-                  iconSize: 22,
-                  animationController: _animationController,
-                  width: widget.maxWidth - 40, //maxwidth - 40
-                  selectedTextStyle: listTitleDefaultTextStyle,
-                  unselectedTextStyle: listTitleSelectedTextStyle,
-                  onTap: () {
-                    final NavigationService _navigationService =
-                        locator<NavigationService>();
-                    _navigationService.navigateTo("/telas");
-                  },
-                  isLast: true,
-              )
-            ]);
-          }
-        )
-      ),
+          title: "Productos",
+          icon: Icons.local_offer, //FontAwesomeIcons.archive
+          size: 22,
+          animatedBuilder: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, _) {
+                return Column(children: [
+                  SubCollapsingListTile(
+                    title: 'Productos finales',
+                    icon: Icons.weekend,
+                    animationController: _animationController,
+                    width: widget.maxWidth - 40, //maxwidth - 40
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    onTap: () {
+                      final NavigationService _navigationService =
+                          locator<NavigationService>();
+                      _navigationService.navigateTo("/productos-finales");
+                    },
+                  ),
+                  SubCollapsingListTile(
+                    title: 'Esqueletos',
+                    icon: Icons.event_seat,
+                    animationController: _animationController,
+                    width: widget.maxWidth - 40, //maxwidth - 40
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    onTap: () {
+                      final NavigationService _navigationService =
+                          locator<NavigationService>();
+                      _navigationService.navigateTo("/productos");
+                    },
+                  ),
+                  SubCollapsingListTile(
+                    title: 'Telas',
+                    icon: Icons.gesture,
+                    iconSize: 22,
+                    animationController: _animationController,
+                    width: widget.maxWidth - 40, //maxwidth - 40
+                    selectedTextStyle: listTitleDefaultTextStyle,
+                    unselectedTextStyle: listTitleSelectedTextStyle,
+                    onTap: () {
+                      final NavigationService _navigationService =
+                          locator<NavigationService>();
+                      _navigationService.navigateTo("/telas");
+                    },
+                    isLast: true,
+                  )
+                ]);
+              })),
       NavigationModel(
-        title: "Empleados", 
-        icon: Icons.work, 
+        title: "Empleados",
+        icon: Icons.work,
         size: 30,
-        onTap: (){
-          final NavigationService _navigationService = locator<NavigationService>();
+        onTap: () {
+          final NavigationService _navigationService =
+              locator<NavigationService>();
           _navigationService.navigateTo("/usuarios");
         },
       ),
       NavigationModel(
-        title: "Reportes", 
-        icon: Icons.insert_chart, 
+        title: "Reportes",
+        icon: Icons.insert_chart,
         size: 32,
         onTap: () {},
       ),
-
       NavigationModel(
-        title: "Ubicaciones", 
-        icon: Icons.pin_drop, 
+        title: "Ubicaciones",
+        icon: Icons.pin_drop,
         size: 32,
-        onTap: () {},
+        onTap: () {
+          final NavigationService _navigationService =
+              locator<NavigationService>();
+          _navigationService.navigateTo("/ubicaciones");
+        },
       ),
-      
     ];
     super.initState();
   }
@@ -209,17 +204,17 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, widget) => Positioned(
-        top: 0,
-        left: 0,
-        width: widthAnimation.value,
-        height: SizeConfig.blockSizeVertical * 100,
-        child: getWidget(context, widget)
-      ),
+          top: 0,
+          left: 0,
+          width: widthAnimation.value,
+          height: SizeConfig.blockSizeVertical * 100,
+          child: getWidget(context, widget)),
     );
   }
 
   Widget getWidget(context, widget) {
-    final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
+    final UsuariosProvider _usuariosProvider =
+        Provider.of<UsuariosProvider>(context);
     Usuarios usuario = _usuariosProvider.usuario;
     return Material(
       elevation: 2.5,
@@ -241,12 +236,13 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
                 color: Theme.of(context).primaryColor,
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.1)
-                      )
-                    )
-                  ),
+                      border: Border(
+                          bottom: BorderSide(
+                              color: Theme.of(context)
+                                  .primaryTextTheme
+                                  .caption
+                                  .color
+                                  .withOpacity(0.1)))),
                   child: CollapsingListTile(
                     title: "ZMGestion",
                     leading: Padding(
@@ -261,24 +257,29 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
                     animationController: _animationController,
                     isSelected: false,
                     selectedTextStyle: TextStyle(
-                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 24
-                    ),
+                        color: Theme.of(context)
+                            .primaryTextTheme
+                            .caption
+                            .color
+                            .withOpacity(0.7),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24),
                     unselectedTextStyle: TextStyle(
-                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 24
-                    ),
+                        color: Theme.of(context)
+                            .primaryTextTheme
+                            .caption
+                            .color
+                            .withOpacity(0.7),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24),
                     width: maxWidth - 40,
                   ),
                 ),
               ),
-              
               Material(
                 color: Colors.transparent,
                 child: GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     setState(() {
                       isCollapsed = !isCollapsed;
                       isCollapsed
@@ -305,9 +306,9 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
                         children: [
                           CollapsingListTile(
                             onTap: () {
-                              if(navigationItems[counter].onTap != null){
+                              if (navigationItems[counter].onTap != null) {
                                 navigationItems[counter].onTap();
-                              }else{
+                              } else {
                                 setState(() {
                                   if (!(currentSelectedIndex == counter)) {
                                     currentSelectedIndex = counter;
@@ -325,14 +326,16 @@ class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin 
                             icon: navigationItems[counter].icon,
                             iconSize: navigationItems[counter].size,
                             animationController: _animationController,
-                            expandable: navigationItems[counter].animatedBuilder != null,
+                            expandable:
+                                navigationItems[counter].animatedBuilder !=
+                                    null,
                           ),
                           Visibility(
                             visible: currentSelectedIndex == counter,
-                            child: navigationItems[counter].animatedBuilder !=
-                                    null
-                                ? navigationItems[counter].animatedBuilder
-                                : Container(),
+                            child:
+                                navigationItems[counter].animatedBuilder != null
+                                    ? navigationItems[counter].animatedBuilder
+                                    : Container(),
                           ),
                         ],
                       ),

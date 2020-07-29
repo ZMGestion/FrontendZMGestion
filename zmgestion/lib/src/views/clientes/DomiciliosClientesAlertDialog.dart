@@ -94,6 +94,7 @@ class _DomiciliosClientesAlertDialogState
                           onPressed: () {
                             setState(() {
                               showForm = false;
+                              _domicilioFormKey.currentState.reset();
                             });
                           },
                         ),
@@ -270,7 +271,7 @@ class _DomiciliosClientesAlertDialogState
     });
   }
 
-  _form(Key key, RequestScheduler scheduler) {
+  _form(GlobalKey<FormState> key, RequestScheduler scheduler) {
     return Form(
       key: key,
       child: Column(
@@ -360,6 +361,8 @@ class _DomiciliosClientesAlertDialogState
                           setState(() {
                             showForm = false;
                           });
+                          direccionController.clear();
+                          codigoPostalController.clear();
                         } else {}
                       });
                     }
