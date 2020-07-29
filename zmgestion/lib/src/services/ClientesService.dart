@@ -6,6 +6,7 @@ import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
+import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/Services.dart';
@@ -99,13 +100,13 @@ class ClientesService extends Services {
     // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
-        path: "/usuarios/modificar",
+        path: "/clientes/modificar",
         authorizationHeader: true,
         scheduler: scheduler,
         requestConfiguration: RequestConfiguration(
             showSuccess: true,
             showLoading: true,
-            successMessage: "El usuario ha sido modificado con éxito"));
+            successMessage: "El cliente ha sido modificado con éxito"));
   }
 
   ListMethodConfiguration buscarClientes(Map<String, dynamic> payload) {
@@ -132,5 +133,44 @@ class ClientesService extends Services {
           "Clientes": {"IdCliente": idCliente}
         },
         scheduler: scheduler);
+  }
+
+  ListMethodConfiguration listarDomiciliosConfiguration(int idCliente) {
+    return ListMethodConfiguration(
+        method: Methods.POST,
+        authorizationHeader: true,
+        model: Domicilios(),
+        path: "/clientes/domicilios",
+        payload: {
+          "Clientes": {"IdCliente": idCliente}
+        });
+  }
+
+  DoMethodConfiguration agregarDomicilioConfiguration(
+      Map<String, dynamic> payload) {
+    return DoMethodConfiguration(
+        method: Methods.POST,
+        path: "/clientes/domicilios/agregar",
+        authorizationHeader: true,
+        scheduler: scheduler,
+        requestConfiguration: RequestConfiguration(
+            showSuccess: true,
+            showLoading: true,
+            successMessage: "El domicilio se ha creado con éxito"),
+        payload: payload);
+  }
+
+  DoMethodConfiguration quitarDomicilioConfiguration(
+      Map<String, dynamic> payload) {
+    return DoMethodConfiguration(
+        method: Methods.POST,
+        path: "/clientes/domicilios/quitar",
+        authorizationHeader: true,
+        scheduler: scheduler,
+        requestConfiguration: RequestConfiguration(
+            showSuccess: true,
+            showLoading: true,
+            successMessage: "El domicilio se ha eliminado con éxito"),
+        payload: payload);
   }
 }
