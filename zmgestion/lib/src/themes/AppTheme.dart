@@ -43,6 +43,7 @@ final appThemeData = {
     backgroundColor: Color(0xff222222),
     scaffoldBackgroundColor: Color(0xff222222),
     brightness: Brightness.dark,
+    cardColor: Color(0xff333333),
     primaryColor: Color(0xff333333),//0xff753434
     primaryColorDark: Color(0xff333333),
     primaryColorLight: Color(0xff0066a5),
