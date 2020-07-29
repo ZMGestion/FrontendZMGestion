@@ -193,6 +193,16 @@ class ZMDrawerState extends State<ZMDrawer>
           _navigationService.navigateTo("/ubicaciones");
         },
       ),
+      NavigationModel(
+        title: "Roles",
+        icon: Icons.supervised_user_circle,
+        size: 32,
+        onTap: () {
+          final NavigationService _navigationService =
+              locator<NavigationService>();
+          _navigationService.navigateTo("/roles");
+        },
+      ),
     ];
     super.initState();
   }
