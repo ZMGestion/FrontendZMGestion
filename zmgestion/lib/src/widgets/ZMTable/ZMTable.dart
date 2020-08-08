@@ -38,6 +38,9 @@ class ZMTable extends StatefulWidget {
   final bool paginate;
   final int pageLength;
   final double height;
+  final List<Models> initialSelection;
+  final bool showCheckbox;
+  final Widget Function(List<Models>) bottomAction;
 
   const ZMTable(
       {Key key,
@@ -52,7 +55,10 @@ class ZMTable extends StatefulWidget {
       this.fixedActions,
       this.paginate = false,
       this.height = 280,
-      this.pageLength = 12})
+      this.pageLength = 12,
+      this.showCheckbox = false,
+      this.initialSelection,
+      this.bottomAction})
       : super(key: key);
 
   @override
@@ -80,8 +86,6 @@ class _ZMTableState extends State<ZMTable> {
     super.initState();
     columnNames = getColumnNames();
     columns = generateColumns(columnNames);
-    print(widget.height);
-
     longitudPagina = widget.pageLength;
 
     pageInfo = Paginaciones(
@@ -90,6 +94,14 @@ class _ZMTableState extends State<ZMTable> {
       _updatePage(pageInfo);
     } else {
       paginatedlistMethodConfiguration = widget.listMethodConfiguration;
+    }
+
+    if(widget.initialSelection != null){
+      print("Imprimiento seleccion inicial");
+      print(widget.initialSelection);
+      widget.initialSelection.forEach((element) {
+        models.add(element);
+      });
     }
   }
 
@@ -180,7 +192,7 @@ class _ZMTableState extends State<ZMTable> {
                       ? widget.searchArea
                       : Container()),
               Visibility(
-                visible: models.length > 0,
+                visible: models.length > 0  && widget.onSelectActions != null,
                 child: Card(
                   color: Theme.of(context).primaryColor.withOpacity(0.7),
                   child: Padding(
@@ -231,7 +243,7 @@ class _ZMTableState extends State<ZMTable> {
                 children: [
                   Row(children: [
                     Visibility(
-                      visible: widget.onSelectActions != null,
+                      visible: widget.onSelectActions != null || widget.showCheckbox,
                       child: Opacity(
                         opacity: 0,
                         child: Row(children: [
@@ -329,7 +341,7 @@ class _ZMTableState extends State<ZMTable> {
                             child: Row(
                               children: [
                                 Visibility(
-                                  visible: widget.onSelectActions != null,
+                                  visible: widget.onSelectActions != null || widget.showCheckbox,
                                   child: Row(
                                     children: [
                                       CircularCheckBox(
@@ -416,7 +428,12 @@ class _ZMTableState extends State<ZMTable> {
                             _updatePage(pageInfo);
                           });
                         },
-                      ))
+                      )
+                    ),
+                    Visibility(
+                      visible: widget.bottomAction != null,
+                      child: widget.bottomAction != null ? widget.bottomAction(models) : Container(),
+                    )
                 ],
               ),
             ),
