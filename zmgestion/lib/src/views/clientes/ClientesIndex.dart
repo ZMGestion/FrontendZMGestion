@@ -814,9 +814,9 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                     await ClientesService().borra({
                                       "Clientes": {"IdCliente": idCliente}
                                     }).then((response) {
-                                      if (response.status ==
-                                          RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
+                                      if (response.status ==RequestStatus.SUCCESS) {
+                                        itemsController.add(
+                                          ItemAction(
                                             event: ItemEvents.Hide,
                                             index: index));
                                       }

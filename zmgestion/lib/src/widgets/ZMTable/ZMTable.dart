@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/services/Services.dart';
@@ -38,6 +41,12 @@ class ZMTable extends StatefulWidget {
   final bool paginate;
   final int pageLength;
   final double height;
+  final List<Models> initialSelection;
+  final bool showCheckbox;
+  final Widget Function(List<Models>) bottomAction;
+  final EdgeInsets padding;
+  final ListMethodConfiguration initialSelectionConfiguration;
+  final Services initialService;
 
   const ZMTable(
       {Key key,
@@ -52,7 +61,13 @@ class ZMTable extends StatefulWidget {
       this.fixedActions,
       this.paginate = false,
       this.height = 280,
-      this.pageLength = 12})
+      this.pageLength = 12,
+      this.showCheckbox = false,
+      this.initialSelection,
+      this.initialSelectionConfiguration,
+      this.initialService,
+      this.padding = const EdgeInsets.all(12),
+      this.bottomAction})
       : super(key: key);
 
   @override
@@ -80,17 +95,34 @@ class _ZMTableState extends State<ZMTable> {
     super.initState();
     columnNames = getColumnNames();
     columns = generateColumns(columnNames);
-    print(widget.height);
-
     longitudPagina = widget.pageLength;
 
-    pageInfo = Paginaciones(
-        longitudPagina: widget.pageLength, cantidadTotal: 0, pagina: 1);
+    pageInfo = Paginaciones(longitudPagina: widget.pageLength, cantidadTotal: 0, pagina: 1);
     if (widget.paginate) {
       _updatePage(pageInfo);
     } else {
       paginatedlistMethodConfiguration = widget.listMethodConfiguration;
     }
+
+    if (widget.initialService != null && widget.initialSelectionConfiguration != null){
+      SchedulerBinding.instance.addPostFrameCallback((_) async{ 
+        await widget.initialService.listMethod(widget.initialSelectionConfiguration).then((response){
+          if(response.status == RequestStatus.SUCCESS){
+            response.message.forEach((model) {
+              models.add(model);
+            });
+          }
+        });
+      });
+    }
+    
+    
+
+    // if(widget.initialSelection != null){
+    //   widget.initialSelection.forEach((element) {
+    //     models.add(element);
+    //   });
+    // }
   }
 
   _updatePage(Paginaciones pageInfo) {
@@ -170,7 +202,7 @@ class _ZMTableState extends State<ZMTable> {
       children: [
         //Table
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: widget.padding,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -180,7 +212,7 @@ class _ZMTableState extends State<ZMTable> {
                       ? widget.searchArea
                       : Container()),
               Visibility(
-                visible: models.length > 0,
+                visible: models.length > 0  && widget.onSelectActions != null,
                 child: Card(
                   color: Theme.of(context).primaryColor.withOpacity(0.7),
                   child: Padding(
@@ -200,9 +232,10 @@ class _ZMTableState extends State<ZMTable> {
                           width: 15,
                         ),
                         Row(
-                            children: widget.onSelectActions != null
-                                ? widget.onSelectActions(models)
-                                : [])
+                          children: widget.onSelectActions != null
+                              ? widget.onSelectActions(models)
+                              : []
+                            )
                       ],
                     ),
                   ),
@@ -231,7 +264,7 @@ class _ZMTableState extends State<ZMTable> {
                 children: [
                   Row(children: [
                     Visibility(
-                      visible: widget.onSelectActions != null,
+                      visible: widget.onSelectActions != null || widget.showCheckbox,
                       child: Opacity(
                         opacity: 0,
                         child: Row(children: [
@@ -329,7 +362,7 @@ class _ZMTableState extends State<ZMTable> {
                             child: Row(
                               children: [
                                 Visibility(
-                                  visible: widget.onSelectActions != null,
+                                  visible: widget.onSelectActions != null || widget.showCheckbox,
                                   child: Row(
                                     children: [
                                       CircularCheckBox(
@@ -346,24 +379,21 @@ class _ZMTableState extends State<ZMTable> {
                                         },
                                       ),
                                       Container(
-                                          padding: EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: models.contains(model)
-                                                ? Theme.of(context)
-                                                    .primaryColor
-                                                    .withOpacity(0.3)
-                                                : Colors.transparent,
+                                        padding: EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: models.contains(model)
+                                              ? Theme.of(context).primaryColor.withOpacity(0.3)
+                                              : Colors.transparent,
+                                        ),
+                                        child: Text(
+                                          widget.paginate ? (pageInfo.longitudPagina * (pageInfo.pagina - 1) + index + 1).toString() : (index + 1).toString(),
+                                          style: TextStyle(
+                                              color: Theme.of(context).primaryTextTheme.bodyText1.color,
+                                              fontWeight: FontWeight.bold
                                           ),
-                                          child: Text(
-                                            (index + 1).toString(),
-                                            style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .primaryTextTheme
-                                                    .bodyText1
-                                                    .color,
-                                                fontWeight: FontWeight.bold),
-                                          )),
+                                        )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -416,7 +446,15 @@ class _ZMTableState extends State<ZMTable> {
                             _updatePage(pageInfo);
                           });
                         },
-                      ))
+                      )
+                    ),
+                    Visibility(
+                      visible: widget.bottomAction != null,
+                      child: widget.bottomAction != null ? Padding(
+                        padding: const EdgeInsets.only(top:4),
+                        child: widget.bottomAction(models),
+                      ) : Container(),
+                    )
                 ],
               ),
             ),
