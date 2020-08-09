@@ -4,13 +4,18 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
+import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Productos.dart';
+import 'package:zmgestion/src/services/GruposProductoService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
+import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
+import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
+import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
@@ -36,6 +41,11 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
   
   final TextEditingController productoController = TextEditingController();
   final TextEditingController precioController = TextEditingController();
+  final TextEditingController longitudTelaController = TextEditingController();
+
+  String idTipoProducto;
+  int idCategoriaProducto;
+  int idGrupoProducto;
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -55,6 +65,7 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
     super.initState();
     Faker faker = new Faker();
     productoController.text = faker.person.lastName();
+    longitudTelaController.text = "0";
   }
 
   @override
@@ -100,10 +111,110 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
                           ),
                           SizedBox(width: 12,),
                           Expanded(
+                            child: Container(
+                              constraints: BoxConstraints(minWidth: 200),
+                              child: DropDownModelView(
+                                service: ProductosService(),
+                                listMethodConfiguration:
+                                    ProductosService().listarTiposProducto(),
+                                parentName: "TiposProducto",
+                                labelName: "Seleccione un tipo de producto",
+                                displayedName: "TipoProducto",
+                                valueName: "IdTipoProducto",
+                                errorMessage:
+                                    "Debe seleccionar un tipo de producto",
+                                decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 8)),
+                                onChanged: (idSelected) {
+                                  setState(() {
+                                    idTipoProducto = idSelected;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              constraints: BoxConstraints(minWidth: 200),
+                              child: DropDownModelView(
+                                service: ProductosService(),
+                                listMethodConfiguration:
+                                    ProductosService().listarCategorias(),
+                                parentName: "CategoriasProducto",
+                                labelName: "Seleccione una categoría",
+                                displayedName: "Categoria",
+                                valueName: "IdCategoriaProducto",
+                                errorMessage:
+                                    "Debe seleccionar una categoría",
+                                decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 8)),
+                                onChanged: (idSelected) {
+                                  setState(() {
+                                    idCategoriaProducto = idSelected;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 12,),
+                          Expanded(
+                            child: AutoCompleteField(
+                              labelText: "Grupo del producto",
+                              service: GruposProductoService(),
+                              paginate: true,
+                              pageLength: 6,
+                              listMethodConfiguration: (searchText){
+                                return GruposProductoService().buscar({
+                                  "GruposProducto": {
+                                    "Grupo": searchText
+                                  }
+                                });
+                              },
+                              onSelect: (mapModel){
+                                if(mapModel != null){
+                                  GruposProducto grupo = GruposProducto().fromMap(mapModel);
+                                  setState(() {
+                                    idGrupoProducto = grupo.idGrupoProducto;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
                               child: TextFormFieldDialog(
                                 controller: precioController,
                                 validator: Validator.notEmptyValidator,
                                 labelText: "Precio",
+                            ),
+                          ),
+                          SizedBox(width: 12,),
+                          Expanded(
+                              child: TextFormFieldDialog(
+                                controller: longitudTelaController,
+                                validator: (value){
+                                  if(value != ""){
+                                    return Validator.decimalValidator(value, 3, 2);
+                                  }
+                                  longitudTelaController.text = "0";
+                                  return null;
+                                },
+                                labelText: "Longitud tela",
                             ),
                           ),
                         ],
@@ -130,6 +241,10 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
                                   precio: Precios(
                                     precio: double.parse(precioController.text)
                                   ),
+                                  idCategoriaProducto: idCategoriaProducto,
+                                  idGrupoProducto: idGrupoProducto,
+                                  idTipoProducto: idTipoProducto,
+                                  longitudTela: double.parse(longitudTelaController.text != null ? longitudTelaController.text : 0)
                                 );
                                 ProductosService(scheduler: scheduler).crear(producto).then(
                                   (response){

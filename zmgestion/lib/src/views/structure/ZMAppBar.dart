@@ -28,13 +28,11 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget {
                 locator<NavigationService>();
             _navigationService.navigateTo("/inicio");
           },
-          child: Text(
-            "ZMGestion",
-            textAlign: TextAlign.left,
-            style: GoogleFonts.roboto(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).primaryTextTheme.headline1.color),
-          ),
+          child: Image.asset(
+            "assets/ZM.png",
+            fit: BoxFit.fitHeight,
+            height: 45,
+          )
         ),
       ),
       actions: [

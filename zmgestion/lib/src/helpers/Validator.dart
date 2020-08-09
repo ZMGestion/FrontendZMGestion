@@ -31,6 +31,24 @@ abstract class Validator{
     return err;
   }
 
+  static String intValidator(String text){
+    String err;
+    RegExp emailRegExp = RegExp(r"^[0-9]*$");
+    if(!emailRegExp.hasMatch(text)){
+      err = "Este campo debe ser numérico";
+    }
+    return err;
+  }
+
+  static String decimalValidator(String text,int digits, int decimal){
+    String err;
+    RegExp decRegExp = RegExp(r"^[0-9]{1,"+digits.toString()+"}(\.[0-9]{1,"+decimal.toString()+"})?\$");
+    if(!decRegExp.hasMatch(text)){
+      err = "Debe ser un decimal con a lo sumo "+digits.toString()+" digitos y "+decimal.toString()+" decimales";
+    }
+    return err;
+  }
+
   static String lengthValidator(String text, int length, {String error}){
     var _error = (error != null ? error : "La contraseña debe ser mayor a "+length.toString()+" caracteres.");
     if(text.length < length){

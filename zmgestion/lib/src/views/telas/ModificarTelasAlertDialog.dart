@@ -141,19 +141,9 @@ class _ModificarTelasAlertDialogState extends State<ModificarTelasAlertDialog> {
                           TelasService().modifica(tela.toMap()).then(
                             (response){
                               if(response.status == RequestStatus.SUCCESS){
-                                TelasService().doMethod(TelasService().modificaPrecioConfiguration(tela)).then(
-                                  (response){
-                                    if(response.status == RequestStatus.SUCCESS){
-                                      if(widget.onSuccess != null){
-                                        widget.onSuccess();
-                                      }
-                                    }else{
-                                      if(widget.onError != null){
-                                        widget.onError(response.message);
-                                      }
-                                    }
-                                  }
-                                );
+                                if(widget.onSuccess != null){
+                                  widget.onSuccess();
+                                }
                               }else{
                                 if(widget.onError != null){
                                   widget.onError(response.message);

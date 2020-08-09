@@ -10,6 +10,8 @@ class DropDownMap extends StatefulWidget {
   final bool addAllOption;
   final String addAllText;
   final String addAllValue;
+  final Color textColor;
+  final Color dropdownColor;
 
   const DropDownMap({
     Key key, 
@@ -17,6 +19,8 @@ class DropDownMap extends StatefulWidget {
     this.map,
     this.onChanged,
     this.initialValue,
+    this.textColor,
+    this.dropdownColor,
     this.hint = const Text(
       "Seleccione una opción"
     ), 
@@ -41,7 +45,12 @@ class _DropDownMapState extends State<DropDownMap> {
       items.add(
         DropdownMenuItem<String>(
           value: widget.addAllValue,
-          child: Text(widget.addAllText),
+          child: Text(
+            widget.addAllText,
+            style: TextStyle(
+              color: widget.textColor
+            ),
+          ),
         )
       );
     }
@@ -49,7 +58,12 @@ class _DropDownMapState extends State<DropDownMap> {
       items.add(
         DropdownMenuItem<String>(
           value: key,
-          child: Text(value),
+          child: Text(
+            value,
+            style: TextStyle(
+              color: widget.textColor
+            ),
+          ),
         )
       );
     });
@@ -66,6 +80,7 @@ class _DropDownMapState extends State<DropDownMap> {
       items: items,
       hint: widget.hint,
       value: selectedValue,
+      dropdownColor: widget.dropdownColor,
       onChanged: (value){
         setState(() {
           selectedValue = value;
