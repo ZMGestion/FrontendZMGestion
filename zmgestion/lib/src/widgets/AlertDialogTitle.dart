@@ -7,11 +7,17 @@ import 'SizeConfig.dart';
 class AlertDialogTitle extends StatelessWidget {
   final String title;
   final double width;
+  final Color backgroundColor;
+  final Color titleColor;
+  final Color titleShadowColor;
 
   const AlertDialogTitle({
     Key key, 
     this.title,
-    this.width
+    this.width,
+    this.backgroundColor,
+    this.titleColor,
+    this.titleShadowColor,
   }) : super(key: key);
 
   @override
@@ -21,7 +27,7 @@ class AlertDialogTitle extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: backgroundColor != null ? backgroundColor : Theme.of(context).cardColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(22))
           ),
           width: width != null ? width : SizeConfig.blockSizeHorizontal * 40,
@@ -39,7 +45,7 @@ class AlertDialogTitle extends StatelessWidget {
                           Text(
                             title.trim(),
                             style: TextStyle(
-                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.1),
+                              color: titleShadowColor != null ? titleShadowColor : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.06),
                               fontWeight: FontWeight.bold,
                               fontSize: 40
                             ),
@@ -54,7 +60,7 @@ class AlertDialogTitle extends StatelessWidget {
                           Text(
                             title,
                             style: TextStyle(
-                              color: Theme.of(context).primaryTextTheme.headline1.color,
+                              color: titleColor != null ? titleColor : Theme.of(context).primaryTextTheme.headline1.color,
                               fontWeight: FontWeight.bold,
                               fontSize: 22
                             ),

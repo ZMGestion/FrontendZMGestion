@@ -12,6 +12,7 @@ import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/views/productos/CrearProductosAlertDialog.dart';
+import 'package:zmgestion/src/views/productos/GruposProductoAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/ModificarProductosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -42,6 +43,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
   /*Search*/
   String searchText = "";
   String searchIdEstado = "T";
+  int searchIdCategoria = 0;
   /*Search filters*/
   bool showFilters = false;
   bool searchByProducto = true;
@@ -118,6 +120,46 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TopLabel(
+                                  labelText: "Categoría",
+                                ),
+                                DropDownModelView(
+                                  service: ProductosService(),
+                                  listMethodConfiguration:
+                                      ProductosService().listarCategorias(),
+                                  parentName: "CategoriasProducto",
+                                  labelName: "Seleccione una categoría",
+                                  displayedName: "Categoria",
+                                  valueName: "IdCategoriaProducto",
+                                  allOption: true,
+                                  allOptionText: "Todas",
+                                  allOptionValue: 0,
+                                  initialValue: 0,
+                                  errorMessage:
+                                      "Debe seleccionar una categoría",
+                                  //initialValue: UsuariosProvider.idUbicacion,
+                                  decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.only(left: 8)),
+                                  onChanged: (idSelected) {
+                                    setState(() {
+                                      searchIdCategoria = idSelected;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            constraints: BoxConstraints(minWidth: 200),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TopLabel(
                                   labelText: "Estado",
                                 ),
                                 Container(
@@ -148,13 +190,14 @@ class _ProductosIndexState extends State<ProductosIndex> {
               ),
               AppLoader(builder: (scheduler) {
                 return ZMTable(
-                  key: Key(searchText + searchIdEstado.toString() + searchByProducto.toString() + refreshValue.toString()),
+                  key: Key(searchText + searchIdEstado.toString() + searchIdCategoria.toString() + searchByProducto.toString() + refreshValue.toString()),
                   model: Productos(),
                   service: ProductosService(),
                   listMethodConfiguration: ProductosService().buscarProductos({
                     "Productos": {
                       "Producto": searchByProducto ? searchText : null,
-                      "Estado": searchIdEstado
+                      "Estado": searchIdEstado,
+                      "IdCategoriaProducto": searchIdCategoria
                     }
                   }),
                   pageLength: 12,
@@ -166,7 +209,27 @@ class _ProductosIndexState extends State<ProductosIndex> {
                           value.toString(),
                           textAlign: TextAlign.center,
                         );
-                      }
+                      },
+                      "LongitudTela": (value) {
+                        return Text(
+                          (value > 0 ? value.toString()+ "m" : "-"),
+                          textAlign: TextAlign.center,
+                        );
+                      },
+                    },
+                    "GruposProducto": {
+                      "Grupo": (value) {
+                        return Text(
+                            value.toString(),
+                            textAlign: TextAlign.center);
+                      },
+                    },
+                    "CategoriasProducto": {
+                      "Categoria": (value) {
+                        return Text(
+                            value.toString(),
+                            textAlign: TextAlign.center);
+                      },
                     },
                     "Precios": {
                       "Precio": (value) {
@@ -189,11 +252,49 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     }
                   },
                   tableLabels: {
+                    "Productos": {
+                      "LongitudTela": "Longitud tela"
+                    },
                     "Precios": {
-                      "FechaAlta": "Última actualización"
+                      "FechaAlta": "Última actualización precio"
+                    },
+                    "CategoriasProducto": {
+                      "Categoria": "Categoría"
                     }
                   },
                   fixedActions: [
+                    ZMStdButton(
+                      color: Colors.blue,
+                      text: Text(
+                        "Grupos",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      icon: Icon(
+                        Icons.group_work,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierColor: Theme.of(context)
+                              .backgroundColor
+                              .withOpacity(0.5),
+                          builder: (BuildContext context) {
+                            return GruposProductoAlertDialog(
+                              title: "Grupos producto",
+                              onChange: (){
+
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
                     ZMStdButton(
                       color: Colors.green,
                       text: Text(
@@ -225,7 +326,8 @@ class _ProductosIndexState extends State<ProductosIndex> {
                           },
                         );
                       },
-                    )
+                    ),
+                    
                   ],
                   onSelectActions: (productos) {
                     bool estadosIguales = true;
@@ -326,15 +428,18 @@ class _ProductosIndexState extends State<ProductosIndex> {
                         text: Text(
                           "Borrar (" + productos.length.toString() + ")",
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
+                              color: Colors.white, 
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),                        
                         icon: Icon(
                           Icons.delete_outline,
                           color: Colors.white,
                           size: 20,
                         ),
                         onPressed: () {
-                          showDialog(
+                          if(productos != null){
+                            showDialog(
                             context: context,
                             barrierColor: Theme.of(context)
                                 .backgroundColor
@@ -367,6 +472,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               );
                             },
                           );
+                          }
                         },
                       )
                     ];

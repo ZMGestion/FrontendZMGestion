@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ZMTextButton extends StatelessWidget {
 
   final String text;
+  final double fontSize;
   final Color color;
   final Color disabledColor;
   final Icon icon;
@@ -12,6 +13,7 @@ class ZMTextButton extends StatelessWidget {
   const ZMTextButton({
     Key key, 
     this.text = "", 
+    this.fontSize = 14,
     this.color = Colors.black,
     this.disabledColor = Colors.grey,
     this.icon, 
@@ -56,6 +58,7 @@ class ZMTextButton extends StatelessWidget {
               text,
               style: TextStyle(
                 color: onPressed != null ? color : disabledColor,
+                fontSize: fontSize,
                 fontWeight: FontWeight.bold
               ),
             )

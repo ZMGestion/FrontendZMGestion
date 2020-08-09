@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
+import 'package:zmgestion/src/models/CategoriasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Productos.dart';
+import 'package:zmgestion/src/models/TiposProductos.dart';
 import 'package:zmgestion/src/services/Services.dart';
 
 class ProductosService extends Services{
@@ -33,11 +35,11 @@ class ProductosService extends Services{
       ),
       attributes: {
         "Productos": [
-          "Producto"
+          "Producto", "IdTipoProducto", "IdCategoriaProducto", "IdGrupoProducto", "LongitudTela"
         ],
         "Precios": [
           "Precio"
-        ]
+        ],
       }
     );
   }
@@ -161,6 +163,34 @@ class ProductosService extends Services{
       requestConfiguration: RequestConfiguration(
         showError: true,
         errorMessage: "Ha ocurrido un error mientras se obtenian los precios"
+      )
+    );
+  }
+
+  ListMethodConfiguration listarCategorias(){
+    return ListMethodConfiguration(
+      method: Methods.GET,
+      authorizationHeader: true,
+      model: CategoriasProducto(),
+      path: "/productos/categoriasProducto",
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se obtenian las categorías"
+      )
+    );
+  }
+
+  ListMethodConfiguration listarTiposProducto(){
+    return ListMethodConfiguration(
+      method: Methods.GET,
+      authorizationHeader: true,
+      model: TiposProducto(),
+      path: "/productos/tiposProducto",
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se obtenian los tipos de producto"
       )
     );
   }

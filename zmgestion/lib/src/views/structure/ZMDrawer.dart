@@ -117,7 +117,7 @@ class ZMDrawerState extends State<ZMDrawer>
             _navigationService.navigateTo("/clientes");
           }),
       NavigationModel(
-          title: "Productos",
+          title: "Artículos",
           icon: Icons.local_offer, //FontAwesomeIcons.archive
           size: 22,
           animatedBuilder: AnimatedBuilder(
@@ -125,7 +125,7 @@ class ZMDrawerState extends State<ZMDrawer>
               builder: (context, _) {
                 return Column(children: [
                   SubCollapsingListTile(
-                    title: 'Productos finales',
+                    title: 'Muebles',
                     icon: Icons.weekend,
                     animationController: _animationController,
                     width: widget.maxWidth - 40, //maxwidth - 40
@@ -138,7 +138,7 @@ class ZMDrawerState extends State<ZMDrawer>
                     },
                   ),
                   SubCollapsingListTile(
-                    title: 'Esqueletos',
+                    title: 'Productos',
                     icon: Icons.event_seat,
                     animationController: _animationController,
                     width: widget.maxWidth - 40, //maxwidth - 40
