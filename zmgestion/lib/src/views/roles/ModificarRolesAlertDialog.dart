@@ -1,3 +1,4 @@
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:progress_state_button/iconed_button.dart';
@@ -14,6 +15,7 @@ import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
+import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 
@@ -35,11 +37,13 @@ class ModificarRolesAlertDialog extends StatefulWidget {
 class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
   final TextEditingController _rolController = new TextEditingController();
   final TextEditingController _descripcionController = new TextEditingController();
+  FlareController animationController;
   final _formKey = GlobalKey<FormState>();
   Roles _rol;
   final List<Permisos> _permisos = new List<Permisos>();
-  bool isLoading = true;
-  bool hasError = false;
+  // bool isLoading = true;
+  // bool hasError = false;
+  bool modifyingRol = false;
 
   void initState(){
     super.initState();
@@ -48,25 +52,25 @@ class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
       _rol = widget.rol;
       _rolController.text = _rol.rol;
       _descripcionController.text = _rol.descripcion;
-      SchedulerBinding.instance.addPostFrameCallback((_) async{ 
-        await RolesService().listMethod(RolesService().listarPermisosConfiguration({
-          "Roles":{
-            "IdRol": _rol.idRol
-          }
-        })).then((response) async {
-          if (response.status == RequestStatus.SUCCESS) {
-            response.message.forEach((permiso) {
-              _permisos.add(permiso);
-            });
-          }
-          setState(() {
-            isLoading = false;
-            if (response.status == RequestStatus.ERROR) {
-              hasError = true;
-            }
-          });
-        });
-      });
+      // SchedulerBinding.instance.addPostFrameCallback((_) async{ 
+      //   await RolesService().listMethod(RolesService().listarPermisosConfiguration({
+      //     "Roles":{
+      //       "IdRol": _rol.idRol
+      //     }
+      //   })).then((response) async {
+      //     if (response.status == RequestStatus.SUCCESS) {
+      //       response.message.forEach((permiso) {
+      //         _permisos.add(permiso);
+      //       });
+      //     }
+      //     setState(() {
+      //       isLoading = false;
+      //       if (response.status == RequestStatus.ERROR) {
+      //         hasError = true;
+      //       }
+      //     });
+      //   });
+      // });
     }
   }
 
@@ -84,39 +88,34 @@ class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
           elevation: 1.5,
           scrollable: true,
           backgroundColor: Theme.of(context).cardColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: AlertDialogTitle(title: widget.title),
           content: Container(
-            padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 12, 24, 0),
             width: SizeConfig.blockSizeHorizontal * 75,
-            
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(24))),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Form(
                   key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _rolField(_rolController),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        _descripcionField(_descripcionController)
-                      ],
-                    ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _rolField(_rolController),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      _descripcionField(_descripcionController)
+                    ],
                   ),
                 ),
-                !isLoading ? 
-                  !hasError ? 
+                // !isLoading ? 
+                //   !hasError ? 
                     ZMTable(
+                      padding: const EdgeInsets.all(0),
                       model: Permisos(),
                       service: PermisosService(),
                       listMethodConfiguration: PermisosService(scheduler: scheduler).listarPermisos({}),
@@ -136,14 +135,22 @@ class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
                       },
                       showCheckbox: true,
                       initialSelection: _permisos,
+                      initialSelectionConfiguration: RolesService().listarPermisosConfiguration({
+                        "Roles":{
+                          "IdRol": _rol.idRol
+                        }
+                      }),
+                      initialService: RolesService(),
                       bottomAction: (permisos){
                         return _createButton(scheduler, permisos);
                       },
                     )
-                    : Text("Ha ocurrido un error")
-                  : CircularProgressIndicator(),
-                //_createButton(scheduler)
-                
+                  //   : Text("Ha ocurrido un error")
+                  // : ZMAnimatedLoader(
+                  //   height: SizeConfig.blockSizeVertical*35,
+                  //   width: SizeConfig.blockSizeVertical*35,
+                  //   controller: animationController,
+                  // ),
               ],
             )
           ));
@@ -169,6 +176,7 @@ class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
       ),
     );
   }
+
 
   Widget _createButton(RequestScheduler scheduler, List<Models> permisos){
     return Row(
@@ -197,12 +205,44 @@ class _ModificarRolesAlertDialogState extends State<ModificarRolesAlertDialog> {
                 color: Colors.green.shade400)
           },
           padding: EdgeInsets.all(4),
-          onPressed: () {
+          onPressed: () async{
+            setState(() {
+              modifyingRol = true;
+            });
             if (_formKey.currentState.validate()) {
-              //_crearCliente(scheduler);
+              await RolesService(scheduler: scheduler).modifica({
+                "Roles":{
+                  "IdRol": _rol.idRol,
+                  "Rol":_rolController.text,
+                  "Descripcion":_descripcionController.text
+                }
+              }).then((response) async{
+                if(response.status == RequestStatus.SUCCESS){
+                  Roles _rolCreado = new Roles().fromMap(response.message);
+                  List<Map> _permisos = new List<Map>();
+                  permisos.forEach((permiso) {
+                    _permisos.add(permiso.toMap()["Permisos"]);
+                  });
+                  await RolesService(scheduler: scheduler).doMethod(RolesService(scheduler: scheduler).asignarPermisosConfiguration({
+                    "Roles":{
+                      "IdRol": _rolCreado.idRol
+                    },
+                    "Permisos":_permisos
+                  })).then((responsePermisos){
+                    if(responsePermisos.status == RequestStatus.SUCCESS){
+                      if (widget.onSuccess != null){
+                        widget.onSuccess();
+                      }
+                    }
+                  });
+                }
+              });
             }
+            setState(() {
+              modifyingRol = false;
+            });
           },
-          state: scheduler.isLoading()
+          state: modifyingRol
               ? ButtonState.loading
               : ButtonState.idle,
         ),

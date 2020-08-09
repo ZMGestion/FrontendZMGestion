@@ -72,7 +72,15 @@ class RolesService extends Services {
   @override
   DoMethodConfiguration modificaConfiguration() {
     // TODO: implement modificaConfiguration
-    throw UnimplementedError();
+    return DoMethodConfiguration(
+        method: Methods.POST,
+        path: "/roles/modificar",
+        authorizationHeader: true,
+        scheduler: scheduler,
+        requestConfiguration: RequestConfiguration(
+            showSuccess: false,
+            showLoading: true,
+            successMessage: "El rol ha sido modificado con éxito"));
   }
 
   ListMethodConfiguration listar() {
@@ -100,6 +108,12 @@ class RolesService extends Services {
         authorizationHeader: true,
         path: "/roles/asignarPermisos",
         scheduler: scheduler,
-        payload: payload);
+        payload: payload,
+        requestConfiguration: RequestConfiguration(
+          showError: true,
+          showSuccess: true,
+          successMessage: "Se han asignado los permisos correctamente"
+        )
+    );
   }
 }

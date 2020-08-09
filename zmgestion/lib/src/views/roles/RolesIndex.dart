@@ -1,3 +1,5 @@
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
@@ -11,6 +13,7 @@ import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
+import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
@@ -26,6 +29,7 @@ class _RolesIndexState extends State<RolesIndex> {
   bool _hasError;
   int key = 0;
   Map<int, dynamic> permisosRol = new Map<int, dynamic>();
+  FlareController animationController;
   @override
   void initState() {
     // TODO: implement initState
@@ -59,7 +63,6 @@ class _RolesIndexState extends State<RolesIndex> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,7 +73,7 @@ class _RolesIndexState extends State<RolesIndex> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TableTitle(
-                  title: "Roles",
+                  title: "Roles y Permisos",
                 ),
                 ZMStdButton(
                       color: Colors.green,
@@ -93,11 +96,12 @@ class _RolesIndexState extends State<RolesIndex> {
                           builder: (BuildContext context) {
                             return CrearRolesAlertDialog(
                               title: "Crear Rol",
-                              onSuccess: () {
+                              onSuccess: () async{
                                 Navigator.of(context).pop();
-                                setState(() {
-                                  key ++;
-                                });
+                                await refreshRoles();
+                                // setState(() {
+                                //   key ++;
+                                // });
                               },
                             );
                           },
@@ -159,7 +163,7 @@ class _RolesIndexState extends State<RolesIndex> {
                             Text(
                               _rol.rol,
                               style: TextStyle(
-                                color: Theme.of(context).canvasColor,
+                                color: Colors.white,
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600
                               ),
@@ -169,7 +173,7 @@ class _RolesIndexState extends State<RolesIndex> {
                                 IconButton(
                                   icon: Icon(
                                     Icons.edit,
-                                    color:Theme.of(context).canvasColor,
+                                    color: Colors.white,
                                     size: 25,
                                   ),
                                   onPressed: (){
@@ -180,8 +184,11 @@ class _RolesIndexState extends State<RolesIndex> {
                                         return ModificarRolesAlertDialog(
                                           title: "Modificar Rol",
                                           rol: _rol,
-                                          onSuccess: () {
+                                          onSuccess: () async{
                                             Navigator.of(context).pop(); 
+                                            setState(() {
+                                              key ++;
+                                            });
                                           },
                                         );
                                       },
@@ -191,7 +198,7 @@ class _RolesIndexState extends State<RolesIndex> {
                                 IconButton(
                                   icon: Icon(
                                     Icons.delete,
-                                    color:Theme.of(context).canvasColor,
+                                    color: Colors.white,
                                     size: 25,
                                   ),
                                   onPressed: (){
@@ -238,6 +245,7 @@ class _RolesIndexState extends State<RolesIndex> {
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: ModelView(
+                            key: Key(key.toString()),
                             isList: true,
                             service: RolesService(),
                             listMethodConfiguration: RolesService().listarPermisosConfiguration({
@@ -269,5 +277,24 @@ class _RolesIndexState extends State<RolesIndex> {
 
   _errorWidget() {
     return Text("Hay un error");
+  }
+
+  refreshRoles() async{
+    roles = [];
+    await RolesService().listMethod(RolesService().listar()).then((response) async {
+      if (response.status == RequestStatus.SUCCESS) {
+        response.message.forEach((rol) {
+          roles.add(rol);
+        });
+      }
+      setState(() {
+        if (response.status == RequestStatus.ERROR) {
+          _hasError = true;
+        } else {
+          _hasError = false;
+        }
+        _isLoading = false;
+      });
+    });
   }
 }

@@ -34,6 +34,7 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
   final TextEditingController _rolController = new TextEditingController();
   final TextEditingController _descripcionController = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool creatingRol = false;
 
 
   @override
@@ -49,37 +50,32 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
           elevation: 1.5,
           scrollable: true,
           backgroundColor: Theme.of(context).cardColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: AlertDialogTitle(title: widget.title),
           content: Container(
-            padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 12, 24, 0),
             width: SizeConfig.blockSizeHorizontal * 75,
-            
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(24))),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Form(
                   key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _rolField(_rolController),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        _descripcionField(_descripcionController)
-                      ],
-                    ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _rolField(_rolController),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      _descripcionField(_descripcionController)
+                    ],
                   ),
                 ),
                 ZMTable(
+                  padding: const EdgeInsets.all(0),
                   model: Permisos(),
                   service: PermisosService(),
                   listMethodConfiguration: PermisosService(scheduler: scheduler).listarPermisos({}),
@@ -95,6 +91,11 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
                         return Text(value.toString(),
                             textAlign: TextAlign.left);
                       },
+                    }
+                  },
+                  tableLabels: {
+                    "Permisos":{
+                      "Descripcion":"Descripción"
                     }
                   },
                   showCheckbox: true,
@@ -114,7 +115,8 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
       child: TextFormFieldDialog(
           controller: controller,
           validator: Validator.notEmptyValidator,
-          labelText: "Rol"),
+          labelText: "Rol"
+      ),
     );
   }
 
@@ -156,6 +158,9 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
           },
           padding: EdgeInsets.all(4),
           onPressed: () async{
+            setState(() {
+              creatingRol = true;
+            });
             if (_formKey.currentState.validate()) {
               Roles _rol = new Roles(
                 rol: _rolController.text,
@@ -173,18 +178,26 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
                       "IdRol": _rolCreado.idRol
                     },
                     "Permisos":_permisos
-                  })).then((responsePermisos){
+                  })).then((responsePermisos) async{
                     if(responsePermisos.status == RequestStatus.SUCCESS){
                       if (widget.onSuccess != null){
                         widget.onSuccess();
                       }
                     }
+                    //Rollback del rol creado
+                    if(responsePermisos.status == RequestStatus.ERROR){
+                      await RolesService(scheduler: scheduler).borra(_rol.toMap());
+                    }
                   });
+                  
                 }
+              });
+              setState(() {
+                creatingRol = false;
               });
             }
           },
-          state: scheduler.isLoading()
+          state: creatingRol
               ? ButtonState.loading
               : ButtonState.idle,
         ),

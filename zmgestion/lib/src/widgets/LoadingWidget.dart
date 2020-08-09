@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 
 class LoadingWidget extends StatelessWidget {
   @override
@@ -10,9 +11,9 @@ class LoadingWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top:25),
           child: Container(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(),
+            width: 75,
+            height: 75,
+            child: ZMAnimatedLoader(),
           ),
         ),
       ],
