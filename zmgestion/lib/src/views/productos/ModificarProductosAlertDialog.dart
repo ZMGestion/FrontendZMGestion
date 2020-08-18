@@ -180,6 +180,8 @@ class _ModificarProductosAlertDialogState extends State<ModificarProductosAlertD
                               service: GruposProductoService(),
                               paginate: true,
                               pageLength: 6,
+                              parentName: "GruposProducto",
+                              keyName: "Grupo",
                               initialValue: widget.producto?.grupoProducto?.grupo,
                               listMethodConfiguration: (searchText){
                                 return GruposProductoService().buscar({

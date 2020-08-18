@@ -5,6 +5,7 @@ import 'package:zmgestion/src/views/Test.dart';
 import 'package:zmgestion/src/views/clientes/ClientesIndex.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
 import 'package:zmgestion/src/views/productos/ProductosIndex.dart';
+import 'package:zmgestion/src/views/productosFinales/ProductosFinalesIndex.dart';
 import 'package:zmgestion/src/views/roles/RolesIndex.dart';
 import 'package:zmgestion/src/views/telas/TelasIndex.dart';
 import 'package:zmgestion/src/views/ubicaciones/UbicacionesIndex.dart';
@@ -17,6 +18,7 @@ const String UsuariosRoute = '/usuarios';
 const String ClientesRoute = '/clientes';
 const String TelasRoute = '/telas';
 const String ProductosRoute = '/productos';
+const String ProductosFinalesRoute = '/productos-finales';
 const String LoginRoute = '/login';
 const String RolesRoute = '/roles';
 const String LoaderRoute = '/';
@@ -37,6 +39,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(TelasIndex(), settings);
     case ProductosRoute:
       return _getPageRoute(ProductosIndex(), settings);
+    case ProductosFinalesRoute:
+      return _getPageRoute(ProductosFinalesIndex(), settings);
     case UbicacionesRoute:
       return _getPageRoute(UbicacionesIndex(), settings);
     case RolesRoute:

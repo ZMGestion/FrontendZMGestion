@@ -29,11 +29,14 @@ import 'package:zmgestion/src/widgets/PageInfoHandler.dart';
 
 class ZMTable extends StatefulWidget {
   final Services service;
+  final String modelViewKey;
   final Models model;
   final ListMethodConfiguration listMethodConfiguration;
   final Map<String, Map<String, Function(dynamic)>> cellBuilder;
   final Map<String, Map<String, String>> tableLabels;
   final List<Widget> Function(List<Models>) onSelectActions;
+  final Color tableBackgroundColor;
+  final Widget onEmpty;
   final Widget searchArea;
   final List<Widget> fixedActions;
   final List<Widget> Function(
@@ -50,9 +53,12 @@ class ZMTable extends StatefulWidget {
 
   const ZMTable(
       {Key key,
+      this.modelViewKey = "",
       this.cellBuilder,
       this.tableLabels,
       this.onSelectActions,
+      this.tableBackgroundColor,
+      this.onEmpty,
       this.searchArea,
       this.rowActions,
       this.service,
@@ -128,19 +134,7 @@ class _ZMTableState extends State<ZMTable> {
   _updatePage(Paginaciones pageInfo) {
     if (widget.paginate) {
       setState(() {
-        paginatedlistMethodConfiguration = new ListMethodConfiguration(
-            path: widget.listMethodConfiguration.path,
-            payload: widget.listMethodConfiguration.payload,
-            authorizationHeader:
-                widget.listMethodConfiguration.authorizationHeader,
-            model: widget.listMethodConfiguration.model,
-            method: widget.listMethodConfiguration.method,
-            scheduler: widget.listMethodConfiguration.scheduler,
-            requestConfiguration:
-                widget.listMethodConfiguration.requestConfiguration,
-            actionsConfiguration:
-                widget.listMethodConfiguration.actionsConfiguration,
-            paginacion: pageInfo);
+        paginatedlistMethodConfiguration = paginatedListMethodConfiguration();
       });
     }
   }
@@ -194,6 +188,27 @@ class _ZMTableState extends State<ZMTable> {
     });
 
     return columnContent;
+  }
+
+  ListMethodConfiguration paginatedListMethodConfiguration(){
+    if(widget.paginate){
+      paginatedlistMethodConfiguration = new ListMethodConfiguration(
+            path: widget.listMethodConfiguration.path,
+            payload: widget.listMethodConfiguration.payload,
+            authorizationHeader:
+                widget.listMethodConfiguration.authorizationHeader,
+            model: widget.listMethodConfiguration.model,
+            method: widget.listMethodConfiguration.method,
+            scheduler: widget.listMethodConfiguration.scheduler,
+            requestConfiguration:
+                widget.listMethodConfiguration.requestConfiguration,
+            actionsConfiguration:
+                widget.listMethodConfiguration.actionsConfiguration,
+            paginacion: pageInfo);
+    }else{
+      paginatedlistMethodConfiguration = widget.listMethodConfiguration;
+    }
+    return paginatedlistMethodConfiguration;
   }
 
   @override
@@ -257,6 +272,7 @@ class _ZMTableState extends State<ZMTable> {
         Padding(
           padding: const EdgeInsets.only(bottom: 50),
           child: Card(
+            color: widget.tableBackgroundColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               child: Column(
@@ -325,12 +341,14 @@ class _ZMTableState extends State<ZMTable> {
                     child: Container(
                       height: widget.height,
                       child: ModelView(
-                        key: Key(pageInfo.pagina.toString()),
+                        key: Key(pageInfo.pagina.toString()+widget.modelViewKey),
                         isList: true,
                         service: widget.service,
-                        listMethodConfiguration:
-                            paginatedlistMethodConfiguration,
+                        listMethodConfiguration: paginatedListMethodConfiguration(),
                         onEmpty: () {
+                          if(widget.onEmpty != null){
+                            return widget.onEmpty;
+                          }
                           return DefaultResultEmpty();
                         },
                         onPageInfo: (newPageInfo) {

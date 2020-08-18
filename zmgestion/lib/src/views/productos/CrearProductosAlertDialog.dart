@@ -171,6 +171,8 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
                               service: GruposProductoService(),
                               paginate: true,
                               pageLength: 6,
+                              parentName: "GruposProducto",
+                              keyName: "Grupo",
                               listMethodConfiguration: (searchText){
                                 return GruposProductoService().buscar({
                                   "GruposProducto": {
