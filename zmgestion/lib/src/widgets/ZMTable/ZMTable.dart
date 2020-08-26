@@ -244,7 +244,7 @@ class _ZMTableState extends State<ZMTable> {
                               fontSize: 15),
                         ),
                         SizedBox(
-                          width: 15,
+                          width: 12,
                         ),
                         Row(
                           children: widget.onSelectActions != null

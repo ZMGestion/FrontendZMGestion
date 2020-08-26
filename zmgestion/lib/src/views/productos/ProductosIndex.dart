@@ -108,7 +108,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               AutoCompleteField(
                                 labelText: "",
                                 hintText: "Ingrese un grupo",
-                                parentName: "Grupos",
+                                parentName: "GruposProducto",
                                 keyName: "Grupo",
                                 service: GruposProductoService(),
                                 paginate: true,

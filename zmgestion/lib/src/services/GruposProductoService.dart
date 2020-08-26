@@ -113,6 +113,21 @@ class GruposProductoService extends Services{
     );
   }
 
+  DoMethodConfiguration modificarPreciosConfiguration() {
+    // TODO: implement modificarPreciosConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/gruposProducto/modificarPrecios",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "Los precios de los productos se han actualizado con éxito"
+      )
+    );
+  }
+
   ListMethodConfiguration buscar(Map<String, dynamic> payload){
     return ListMethodConfiguration(
       method: Methods.POST,

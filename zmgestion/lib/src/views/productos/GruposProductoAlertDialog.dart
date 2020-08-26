@@ -6,6 +6,7 @@ import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/GruposProductoService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
+import 'package:zmgestion/src/views/productos/ModificarPreciosGrupoProductoAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
@@ -227,7 +228,7 @@ class _GruposProductoAlertDialogState extends State<GruposProductoAlertDialog> {
                               GruposProducto grupoProducto = GruposProducto(
                                 idGrupoProducto: idGrupoProducto,
                                 grupo: grupoController.text,
-                                descripcion: descripcionController.text,
+                                descripcion: descripcionController.text == "" ? null : descripcionController.text,
                               );
                               if(create){
                                 GruposProductoService(scheduler: scheduler).crear(grupoProducto).then(
@@ -458,6 +459,24 @@ class _GruposProductoTableState extends State<GruposProductoTable> {
         }
 
         return <Widget>[
+          IconButtonTableAction(
+            iconData: Icons.attach_money,
+            color: Theme.of(context).canvasColor.withOpacity(0.7),
+            onPressed: () {
+              if (idGrupoProducto != 0) {
+                showDialog(
+                  context: context,
+                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                  builder: (BuildContext context) {
+                    return ModificarPreciosGrupoProductoAlertDialog(
+                      title: "Modificar precios",
+                      grupoProducto: grupoProducto,
+                    );
+                  },
+                );
+              }
+            },
+          ),
           IconButtonTableAction(
             iconData: (estado == "A"
                 ? Icons.arrow_downward
