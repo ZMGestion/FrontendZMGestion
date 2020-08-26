@@ -29,14 +29,6 @@ final appThemeData = {
       headline6: TextStyle(
         color: Color(0xfff7f7f7)
       ),
-    ),
-    textTheme: TextTheme(
-      bodyText1: TextStyle(
-        color: Color(0xff222222)
-      ),
-      headline6: TextStyle(
-        color: Color(0xfff7f7f7)
-      ),
     )
   ),
   AppTheme.Dark: ThemeData(
@@ -50,6 +42,9 @@ final appThemeData = {
     primaryTextTheme: TextTheme(
       headline1: TextStyle(
         color: Color(0xffc14949)
+      ),
+      headline6: TextStyle(
+        color: Color(0xfff7f7f7)
       ),
     )
   ),

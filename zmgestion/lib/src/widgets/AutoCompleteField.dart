@@ -9,21 +9,29 @@ import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class AutoCompleteField extends StatefulWidget {
   final String labelText;
+  final String hintText;
   final Function(Map<String, dynamic> mapModel) onSelect;
   final Services service;
   final String initialValue;
+  final String parentName;
+  final String keyName;
   final ListMethodConfiguration Function(String searchText) listMethodConfiguration;
   final bool paginate;
   final int pageLength;
+  final Function onClear;
 
   const AutoCompleteField({
     Key key, 
     this.labelText,
+    this.hintText,
     this.onSelect,
     this.service,
+    this.parentName,
+    this.keyName,
     this.initialValue = "",
     this.listMethodConfiguration,
     this.paginate = false,
+    this.onClear,
     this.pageLength = 4
   }) : super(key: key);
 
@@ -71,6 +79,11 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
       setState(() {
         searchText = _textController.text;
       });
+      if(searchText == ""){
+        if(widget.onClear != null){
+          widget.onClear();
+        }
+      }
     });
 
     longitudPagina = widget.pageLength;
@@ -134,6 +147,8 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
             key: Key(searchText),
             pageInfo: pageInfo,
             focusNode: _focusNode,
+            parentName: widget.parentName,
+            keyName: widget.keyName,
             listMethodConfiguration: widget.listMethodConfiguration(searchText),
             onSelect: (mapModel){
               setState(() {
@@ -165,11 +180,15 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
         ),
         decoration: InputDecoration(
           labelText: widget.labelText,
+          hintText: widget.hintText,
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
           suffixIcon: IconButton(
             icon: Icon(Icons.clear),
             onPressed: (){
               if(_textController.text != ""){
+                if(widget.onClear != null){
+                  widget.onClear();
+                }
                 setState(() {
                   _textController.text = "";
                   _selectedFromList = false;
@@ -198,6 +217,8 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
   final TextEditingController textController;
   final Paginaciones pageInfo;
   final Function(Map<String, dynamic> mapModel) onSelect;
+  final String parentName;
+  final String keyName;
   final FocusNode focusNode;
   final Services service;
   final ListMethodConfiguration listMethodConfiguration;
@@ -208,6 +229,8 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
     Key key, 
     this.textController,
     this.pageInfo,
+    this.parentName,
+    this.keyName,
     this.onSelect,
     this.focusNode, 
     this.service, 
@@ -239,9 +262,10 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
     super.initState();
   }
 
-  _updatePage(Paginaciones pageInfo) {
+  _updatePage(Paginaciones newPageInfo) {
     if (widget.paginate) {
       setState(() {
+        pageInfo = newPageInfo;
         paginatedlistMethodConfiguration = new ListMethodConfiguration(
             path: widget.listMethodConfiguration.path,
             payload: widget.listMethodConfiguration.payload,
@@ -288,7 +312,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
             ),
           ),
           ModelView(
-            key: Key(widget.pageInfo.pagina.toString()),
+            key: Key(pageInfo.pagina.toString()),
             service: widget.service,
             listMethodConfiguration: widget.listMethodConfiguration != null ? paginatedlistMethodConfiguration : null,
             onPageInfo: (newPageInfo) {
@@ -308,7 +332,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
               return InkWell(
                 onTap: (){
                   setState(() { 
-                    _textController.text = mapModel["GruposProducto"]["Grupo"];
+                    _textController.text = mapModel[widget.parentName][widget.keyName];
                     //_selectedFromList = true;
                   });
                   if(widget.onSelect != null){
@@ -319,7 +343,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 12, 10),
                   child: Text(
-                    mapModel["GruposProducto"]["Grupo"],
+                    mapModel[widget.parentName][widget.keyName],
                     style: TextStyle(
                       fontSize: 15
                     ),

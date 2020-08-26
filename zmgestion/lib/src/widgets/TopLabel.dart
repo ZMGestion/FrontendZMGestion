@@ -4,11 +4,13 @@ class TopLabel extends StatelessWidget {
   final String labelText;
   final Color color;
   final EdgeInsetsGeometry padding;
+  final double fontSize;
 
   const TopLabel(
       {Key key,
       this.labelText = "",
       this.color,
+      this.fontSize = 12,
       this.padding = const EdgeInsets.only(left: 12)})
       : super(key: key);
 
@@ -18,7 +20,10 @@ class TopLabel extends StatelessWidget {
       padding: this.padding,
       child: Text(
         labelText,
-        style: TextStyle(color: color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.55), fontSize: 12),
+        style: TextStyle(
+          color: color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.55), 
+          fontSize: fontSize
+        ),
       ),
     );
   }

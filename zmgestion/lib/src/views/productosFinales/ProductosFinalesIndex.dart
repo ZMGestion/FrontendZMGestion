@@ -1,28 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/models/GruposProducto.dart';
-import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/models/Productos.dart';
-import 'package:zmgestion/src/services/GruposProductoService.dart';
-import 'package:zmgestion/src/services/RolesService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
+import 'package:zmgestion/src/models/ProductosFinales.dart';
+import 'package:zmgestion/src/models/Telas.dart';
+import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
+import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/views/productos/CrearProductosAlertDialog.dart';
-import 'package:zmgestion/src/views/productos/GruposProductoAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/ModificarProductosAlertDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
+import 'package:zmgestion/src/views/productosFinales/CrearProductosFinalesAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
@@ -32,25 +25,28 @@ import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
-class ProductosIndex extends StatefulWidget {
+class ProductosFinalesIndex extends StatefulWidget {
   @override
   _ProductosIndexState createState() => _ProductosIndexState();
 }
 
-class _ProductosIndexState extends State<ProductosIndex> {
-  Map<int, Productos> productos = {};
+class _ProductosIndexState extends State<ProductosFinalesIndex> {
+  Map<int, ProductosFinales> productos = {};
 
   /*ZMTable key*/
   int refreshValue = 0;
 
   /*Search*/
-  String searchText = "";
-  String searchIdEstado = "T";
-  int searchIdGrupoProducto;
-  int searchIdCategoria = 0;
+  int searchIdProducto;
+  int searchIdTela;
+  int searchIdLustre;
+  String searchEstado = "T";
   /*Search filters*/
   bool showFilters = false;
   bool searchByProducto = true;
+
+  ProductosService _productosService = ProductosService();
+  ProductosFinalesService _productosFinalesService = ProductosFinalesService();
 
   @override
   void initState() {
@@ -72,23 +68,45 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
+                        SizedBox(
+                          width: 12,
+                        ),
                         Expanded(
-                          flex: 4,
+                          flex: 1,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    hintText: "Buscar",
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(Icons.search),
-                                    alignLabelWithHint: true,
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(20, 15, 20, 0)),
-                                onChanged: (value) {
+                              TopLabel(
+                                labelText: "Producto",
+                              ),
+                              AutoCompleteField(
+                                labelText: "",
+                                hintText: "Ingrese un producto",
+                                parentName: "Productos",
+                                keyName: "Producto",
+                                service: _productosService,
+                                paginate: true,
+                                pageLength: 4,
+                                onClear: (){
                                   setState(() {
-                                    searchText = value;
+                                    searchIdProducto = null;
                                   });
+                                },
+                                listMethodConfiguration: (searchText){
+                                  return ProductosService().buscarProductos({
+                                    "Productos": {
+                                      "Producto": searchText,
+                                      "Estado": "A"
+                                    }
+                                  });
+                                },
+                                onSelect: (mapModel){
+                                  if(mapModel != null){
+                                    Productos producto = Productos().fromMap(mapModel);
+                                    setState(() {
+                                      searchIdProducto = producto.idProducto;
+                                    });
+                                  }
                                 },
                               ),
                             ],
@@ -103,34 +121,34 @@ class _ProductosIndexState extends State<ProductosIndex> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TopLabel(
-                                labelText: "Grupo del producto",
+                                labelText: "Tela",
                               ),
                               AutoCompleteField(
                                 labelText: "",
-                                hintText: "Ingrese un grupo",
-                                parentName: "GruposProducto",
-                                keyName: "Grupo",
-                                service: GruposProductoService(),
+                                hintText: "Ingrese una tela",
+                                service: _productosFinalesService,
+                                parentName: "Telas",
+                                keyName: "Tela",
                                 paginate: true,
                                 pageLength: 4,
                                 onClear: (){
                                   setState(() {
-                                    searchIdGrupoProducto = null;
+                                    searchIdTela = null;
                                   });
                                 },
                                 listMethodConfiguration: (searchText){
-                                  return GruposProductoService().buscar({
-                                    "GruposProducto": {
-                                      "Grupo": searchText,
+                                  return TelasService().buscarTelas({
+                                    "Telas": {
+                                      "Tela": searchText,
                                       "Estado": "A"
                                     }
                                   });
                                 },
                                 onSelect: (mapModel){
                                   if(mapModel != null){
-                                    GruposProducto grupo = GruposProducto().fromMap(mapModel);
+                                    Telas tela = Telas().fromMap(mapModel);
                                     setState(() {
-                                      searchIdGrupoProducto = grupo.idGrupoProducto;
+                                      searchIdTela = tela.idTela;
                                     });
                                   }
                                 },
@@ -149,28 +167,27 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TopLabel(
-                                  labelText: "Categoría",
+                                  labelText: "Lustre",
                                 ),
                                 DropDownModelView(
-                                  service: ProductosService(),
-                                  listMethodConfiguration:
-                                      ProductosService().listarCategorias(),
-                                  parentName: "CategoriasProducto",
-                                  labelName: "Seleccione una categoría",
-                                  displayedName: "Categoria",
-                                  valueName: "IdCategoriaProducto",
+                                  service: ProductosFinalesService(),
+                                  listMethodConfiguration: ProductosFinalesService().listarLustres(),
+                                  parentName: "Lustres",
+                                  labelName: "Seleccione un lustre",
+                                  displayedName: "Lustre",
+                                  valueName: "IdLustre",
                                   allOption: true,
-                                  allOptionText: "Todas",
+                                  allOptionText: "Todos",
                                   allOptionValue: 0,
                                   initialValue: 0,
-                                  errorMessage:
-                                      "Debe seleccionar una categoría",
+                                  errorMessage: "Debe seleccionar un lustre",
                                   //initialValue: UsuariosProvider.idUbicacion,
                                   decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(left: 8)),
+                                    contentPadding: EdgeInsets.only(left: 8)
+                                  ),
                                   onChanged: (idSelected) {
                                     setState(() {
-                                      searchIdCategoria = idSelected;
+                                      searchIdLustre = idSelected;
                                     });
                                   },
                                 ),
@@ -194,16 +211,14 @@ class _ProductosIndexState extends State<ProductosIndex> {
                                 Container(
                                   width: 250,
                                   child: DropDownMap(
-                                    map: Productos()
-                                        .mapEstados(),
+                                    map: ProductosFinales().mapEstados(),
                                     addAllOption: true,
                                     addAllText: "Todos",
                                     addAllValue: "T",
                                     initialValue: "T",
                                     onChanged: (value) {
                                       setState(() {
-                                        searchIdEstado =
-                                            value;
+                                        searchEstado = value;
                                       });
                                     },
                                   ),
@@ -219,15 +234,16 @@ class _ProductosIndexState extends State<ProductosIndex> {
               ),
               AppLoader(builder: (scheduler) {
                 return ZMTable(
-                  key: Key(searchText + searchIdEstado.toString() + searchIdGrupoProducto.toString()+ searchIdCategoria.toString() + searchByProducto.toString() + refreshValue.toString()),
-                  model: Productos(),
-                  service: ProductosService(),
-                  listMethodConfiguration: ProductosService().buscarProductos({
-                    "Productos": {
-                      "Producto": searchByProducto ? searchText : null,
-                      "Estado": searchIdEstado,
-                      "IdCategoriaProducto": searchIdCategoria,
-                      "IdGrupoProducto": searchIdGrupoProducto
+                  key: Key(refreshValue.toString()),
+                  modelViewKey: searchIdProducto.toString()+ searchIdLustre.toString() + searchIdTela.toString() + searchEstado.toString(),
+                  model: ProductosFinales(),
+                  service: ProductosFinalesService(),
+                  listMethodConfiguration: ProductosFinalesService().buscarProductos({
+                    "ProductosFinales": {
+                      "IdProducto": searchIdProducto,
+                      "IdTela": searchIdTela,
+                      "IdLustre": searchIdLustre,
+                      "Estado": searchEstado
                     }
                   }),
                   pageLength: 12,
@@ -236,99 +252,46 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     "Productos": {
                       "Producto": (value) {
                         return Text(
-                          value.toString(),
+                          value != null ? value.toString() : "-",
+                          textAlign: TextAlign.center,
+                        );
+                      }
+                    },
+                    "Telas": {
+                      "Tela": (value) {
+                        return Text(
+                          value != null ? value.toString() : "-",
+                          textAlign: TextAlign.center,
+                        );
+                      }
+                    },
+                    "Lustres": {
+                      "Lustre": (value) {
+                        return Text(
+                          value != null ? value.toString() : "-",
+                          textAlign: TextAlign.center,
+                        );
+                      }
+                    },
+                    "ProductosFinales": {
+                      "_PrecioTotal": (value) {
+                        return Text(
+                          value != null ? "\$"+value.toString() : "-",
                           textAlign: TextAlign.center,
                         );
                       },
-                      "LongitudTela": (value) {
-                        return Text(
-                          (value > 0 ? value.toString()+ "m" : "-"),
-                          textAlign: TextAlign.center,
-                        );
-                      },
                     },
-                    "GruposProducto": {
-                      "Grupo": (value) {
-                        return Text(
-                            value.toString(),
-                            textAlign: TextAlign.center);
-                      },
-                    },
-                    "CategoriasProducto": {
-                      "Categoria": (value) {
-                        return Text(
-                            value.toString(),
-                            textAlign: TextAlign.center);
-                      },
-                    },
-                    "Precios": {
-                      "Precio": (value) {
-                        return Text(
-                            "\$ "+value.toString(),
-                            textAlign: TextAlign.center);
-                      },
-                      "FechaAlta": (value){
-                        if(value != null){
-                          return Text(
-                            Utils.cuteDateTimeText(DateTime.parse(value)),
-                            textAlign: TextAlign.center);
-                        }else{
-                          return Text(
-                            "-",
-                            textAlign: TextAlign.center);
-                        }
-                        
-                      },
-                    }
                   },
                   tableLabels: {
-                    "Productos": {
-                      "LongitudTela": "Longitud tela"
-                    },
-                    "Precios": {
-                      "FechaAlta": "Última actualización precio"
-                    },
-                    "CategoriasProducto": {
-                      "Categoria": "Categoría"
+                    "ProductosFinales": {
+                      "_PrecioTotal": "Precio total"
                     }
                   },
                   fixedActions: [
                     ZMStdButton(
-                      color: Colors.blue,
-                      text: Text(
-                        "Grupos",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      icon: Icon(
-                        Icons.group_work,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierColor: Theme.of(context)
-                              .backgroundColor
-                              .withOpacity(0.5),
-                          builder: (BuildContext context) {
-                            return GruposProductoAlertDialog(
-                              title: "Grupos producto",
-                              onChange: (){
-
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    ZMStdButton(
                       color: Colors.green,
                       text: Text(
-                        "Nuevo producto",
+                        "Nuevo mueble",
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
@@ -344,8 +307,8 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               .backgroundColor
                               .withOpacity(0.5),
                           builder: (BuildContext context) {
-                            return CrearProductosAlertDialog(
-                              title: "Crear Productos",
+                            return CrearProductosFinalesAlertDialog(
+                              title: "Crear mueble",
                               onSuccess: () {
                                 Navigator.of(context).pop();
                                 setState(() {
@@ -364,11 +327,11 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     String estado;
                     if (productos.length >= 1) {
                       Map<String, dynamic> anterior;
-                      for (Productos producto in productos) {
+                      for (ProductosFinales producto in productos) {
                         Map<String, dynamic> mapProducto = producto.toMap();
                         if (anterior != null) {
-                          if (anterior["Productos"]["Estado"] !=
-                              mapProducto["Productos"]["Estado"]) {
+                          if (anterior["ProductosFinales"]["Estado"] !=
+                              mapProducto["ProductosFinales"]["Estado"]) {
                             estadosIguales = false;
                           }
                         }
@@ -376,7 +339,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                         anterior = mapProducto;
                       }
                       if (estadosIguales) {
-                        estado = productos[0].toMap()["Productos"]["Estado"];
+                        estado = productos[0].toMap()["ProductosFinales"]["Estado"];
                       }
                     }
                     return <Widget>[
@@ -419,22 +382,26 @@ class _ProductosIndexState extends State<ProductosIndex> {
                                               : "Dar de alta") +
                                           " " +
                                           productos.length.toString() +
-                                          " productos",
-                                      service: ProductosService(),
+                                          " muebles",
+                                      service: ProductosFinalesService(),
                                       doMethodConfiguration: estado == "A"
-                                          ? ProductosService()
+                                          ? ProductosFinalesService()
                                               .bajaConfiguration()
-                                          : ProductosService()
+                                          : ProductosFinalesService()
                                               .altaConfiguration(),
                                       payload: (mapModel) {
                                         return {
-                                          "Productos": {
-                                            "IdProducto": mapModel["Productos"]["IdProducto"]
+                                          "ProductosFinales": {
+                                            "IdProductoFinal": mapModel["ProductosFinales"]["IdProductoFinal"]
                                           }
                                         };
                                       },
                                       itemBuilder: (mapModel) {
-                                        return Text(mapModel["Productos"]["Producto"]);
+                                        ProductosFinales productoFinal = ProductosFinales().fromMap(mapModel);
+
+                                        return Text(
+                                          productoFinal.producto.producto+" - "+(productoFinal.tela != null ? productoFinal.tela.tela+" - " :"")+productoFinal.lustre?.lustre
+                                        );
                                       },
                                       onFinished: () {
                                         setState(() {
@@ -471,28 +438,24 @@ class _ProductosIndexState extends State<ProductosIndex> {
                           if(productos != null){
                             showDialog(
                             context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
+                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                             builder: (BuildContext context) {
                               return MultipleRequestView(
                                 models: productos,
-                                title: "Borrar " +
-                                    productos.length.toString() +
-                                    " productos",
-                                service: ProductosService(),
-                                doMethodConfiguration:
-                                    ProductosService().borraConfiguration(),
+                                title: "Borrar " + productos.length.toString() +" productos",
+                                service: ProductosFinalesService(),
+                                doMethodConfiguration: ProductosFinalesService().borraConfiguration(),
                                 payload: (mapModel) {
                                   return {
-                                    "Productos": {
-                                      "IdProducto": mapModel["Productos"]
-                                          ["IdProducto"]
+                                    "ProductosFinales": {
+                                      "IdProductoFinal": mapModel["ProductosFinales"]["IdProductoFinal"]
                                     }
                                   };
                                 },
                                 itemBuilder: (mapModel) {
-                                  return Text(mapModel["Productos"]["Producto"]);
+                                  return Text(
+                                    mapModel["Productos"]["Producto"]
+                                  );
                                 },
                                 onFinished: () {
                                   setState(() {
@@ -508,42 +471,34 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     ];
                   },
                   rowActions: (mapModel, index, itemsController) {
-                    Productos producto;
                     String estado = "A";
-                    int idProducto = 0;
+                    int idProductoFinal = 0;
                     if (mapModel != null) {
-                      producto = Productos().fromMap(mapModel);
-                      if (mapModel["Productos"] != null) {
-                        if (mapModel["Productos"]["Estado"] != null) {
-                          estado = mapModel["Productos"]["Estado"];
+                      if (mapModel["ProductosFinales"] != null) {
+                        if (mapModel["ProductosFinales"]["Estado"] != null) {
+                          estado = mapModel["ProductosFinales"]["Estado"];
                         }
-                        if (mapModel["Productos"]["IdProducto"] != null) {
-                          idProducto = mapModel["Productos"]["IdProducto"];
+                        if (mapModel["ProductosFinales"]["IdProductoFinal"] != null) {
+                          idProductoFinal = mapModel["ProductosFinales"]["IdProductoFinal"];
                         }
                       }
                     }
                     return <Widget>[
                       IconButtonTableAction(
-                        iconData: Icons.show_chart,
+                        iconData: Icons.remove_red_eye,
                         onPressed: () {
-                          if (idProducto != 0) {
+                          if (idProductoFinal != 0) {
                             showDialog(
                               context: context,
-                              barrierColor: Theme.of(context)
-                                  .backgroundColor
-                                  .withOpacity(0.5),
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               builder: (BuildContext context) {
                                 return ModelViewDialog(
                                   content: ModelView(
-                                    service: ProductosService(),
-                                    getMethodConfiguration: ProductosService()
-                                        .dameConfiguration(idProducto),
+                                    service: ProductosFinalesService(),
+                                    getMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal),
                                     isList: false,
-                                    itemBuilder:
-                                        (mapModel, index, itemController) {
-                                      return Productos()
-                                          .fromMap(mapModel)
-                                          .viewModel(context);
+                                    itemBuilder: (mapModel, index, itemController) {
+                                      return ProductosFinales().fromMap(mapModel).viewModel(context);
                                     },
                                   ),
                                 );
@@ -553,36 +508,30 @@ class _ProductosIndexState extends State<ProductosIndex> {
                         }
                       ),
                       IconButtonTableAction(
-                        iconData: (estado == "A"
-                            ? Icons.arrow_downward
-                            : Icons.arrow_upward),
+                        iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
                         color: estado == "A" ? Colors.redAccent : Colors.green,
                         onPressed: () {
-                          if (idProducto != 0) {
+                          if (idProductoFinal != 0) {
                             if (estado == "A") {
-                              ProductosService(scheduler: scheduler).baja({
-                                "Productos": {"IdProducto": idProducto}
+                              ProductosFinalesService().baja({
+                                "ProductosFinales": {"IdProductoFinal": idProductoFinal}
                               }).then((response) {
                                 if (response.status == RequestStatus.SUCCESS) {
                                   itemsController.add(ItemAction(
                                       event: ItemEvents.Update,
                                       index: index,
-                                      updateMethodConfiguration:
-                                          ProductosService().dameConfiguration(
-                                              producto.idProducto)));
+                                      updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
                                 }
                               });
                             } else {
-                              ProductosService().alta({
-                                "Productos": {"IdProducto": idProducto}
+                              ProductosFinalesService().alta({
+                                "ProductosFinales": {"IdProductoFinal": idProductoFinal}
                               }).then((response) {
                                 if (response.status == RequestStatus.SUCCESS) {
                                   itemsController.add(ItemAction(
                                       event: ItemEvents.Update,
                                       index: index,
-                                      updateMethodConfiguration:
-                                          ProductosService().dameConfiguration(
-                                              producto.idProducto)));
+                                      updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
                                 }
                               });
                             }
@@ -590,42 +539,9 @@ class _ProductosIndexState extends State<ProductosIndex> {
                         },
                       ),
                       IconButtonTableAction(
-                        iconData: Icons.edit,
-                        onPressed: () {
-                          if (idProducto != 0) {
-                            showDialog(
-                              context: context,
-                              barrierColor: Theme.of(context)
-                                  .backgroundColor
-                                  .withOpacity(0.5),
-                              builder: (BuildContext context) {
-                                return ModelView(
-                                  service: ProductosService(),
-                                  getMethodConfiguration: ProductosService().dameConfiguration(idProducto),
-                                  isList: false,
-                                  itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarProductosAlertDialog(
-                                    title: "Modificar producto",
-                                    producto: Productos().fromMap(updatedMapModel),
-                                    onSuccess: () {
-                                      Navigator.of(context).pop();
-                                      itemsController.add(ItemAction(
-                                          event: ItemEvents.Update,
-                                          index: index,
-                                          updateMethodConfiguration:
-                                              ProductosService().dameConfiguration(
-                                                  producto.idProducto)));
-                                    },
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
-                      IconButtonTableAction(
                         iconData: Icons.delete_outline,
                         onPressed: () {
-                          if (idProducto != 0) {
+                          if (idProductoFinal != 0) {
                             showDialog(
                               context: context,
                               barrierColor: Theme.of(context)
@@ -637,8 +553,8 @@ class _ProductosIndexState extends State<ProductosIndex> {
                                   message:
                                       "¿Está seguro que desea eliminar la producto?",
                                   onAccept: () async {
-                                    await ProductosService().borra({
-                                      "Productos": {"IdProducto": idProducto}
+                                    await ProductosFinalesService().borra({
+                                      "ProductosFinales": {"IdProductoFinal": idProductoFinal}
                                     }).then((response) {
                                       if (response.status ==
                                           RequestStatus.SUCCESS) {
@@ -658,7 +574,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                     ];
                   },
                   searchArea: TableTitle(
-                    title: "Productos"
+                    title: "Muebles"
                   )
                 );
               }),
