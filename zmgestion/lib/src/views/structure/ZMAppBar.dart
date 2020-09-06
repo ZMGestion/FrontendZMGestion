@@ -14,8 +14,7 @@ class ZMAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final UsuariosProvider _usuariosProvider =
-        Provider.of<UsuariosProvider>(context);
+    final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
     Usuarios usuario = _usuariosProvider.usuario;
     return AppBar(
       backgroundColor: Colors.transparent,

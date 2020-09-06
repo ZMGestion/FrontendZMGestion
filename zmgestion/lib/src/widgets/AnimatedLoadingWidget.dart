@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 
-class LoadingWidget extends StatelessWidget {
+class AnimatedLoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -8,11 +9,11 @@ class LoadingWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(top:12.5),
+          padding: const EdgeInsets.only(top:25),
           child: Container(
-            width: 25,
-            height: 25,
-            child: CircularProgressIndicator(),
+            width: 75,
+            height: 75,
+            child: ZMAnimatedLoader(),
           ),
         ),
       ],

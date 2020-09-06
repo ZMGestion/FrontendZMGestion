@@ -110,6 +110,10 @@ class Productos extends Equatable with Models{
     return result;
   }
 
+  bool esFabricable(){
+    return tipoProducto.idTipoProducto == "P";
+  }
+
   @override
   Widget viewModel(BuildContext context) {
     // TODO: implement viewModel

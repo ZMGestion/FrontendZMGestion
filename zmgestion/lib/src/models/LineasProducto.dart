@@ -52,7 +52,7 @@ class LineasProducto extends Equatable with Models{
         fechaAlta: mapModel["LineasProducto"]["FechaAlta"],
         fechaCancelacion: mapModel["LineasProducto"]["FechaCancelacion"],
         estado: mapModel["LineasProducto"]["Estado"],
-        productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap({"ProductosFinales": mapModel["ProductosFinales"]}) : null
+        productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap(mapModel) : null
       );
     }
   
