@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zmgestion/src/models/Ubicaciones.dart';
+import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class Presupuestos extends Equatable with Models{
@@ -16,7 +19,11 @@ class Presupuestos extends Equatable with Models{
   final String estado;
 
   /* -Other-*/
+  final double precioTotal;
   final List<LineasProducto> lineasProducto;
+  final Clientes cliente;
+  final Usuarios usuario;
+  final Ubicaciones ubicacion;
 
   Presupuestos({
     this.idPresupuesto,
@@ -27,7 +34,11 @@ class Presupuestos extends Equatable with Models{
     this.fechaAlta,
     this.observaciones,
     this.estado,
-    this.lineasProducto
+    this.lineasProducto,
+    this.cliente, 
+    this.usuario, 
+    this.ubicacion,
+    this.precioTotal,
   });
 
   @override
@@ -35,7 +46,7 @@ class Presupuestos extends Equatable with Models{
 
   Map<String, String> mapEstados(){
     return {
-      "E": "En creacion",
+      "E": "En creación",
       "C": "Creado",
       "X": "Expirado",
       "V": "Vendido"
@@ -57,10 +68,14 @@ class Presupuestos extends Equatable with Models{
         idVenta:        mapModel["Presupuestos"]["IdVenta"],
         idUbicacion:    mapModel["Presupuestos"]["IdUbicacion"],
         idUsuario:      mapModel["Presupuestos"]["IdUsuario"],
-        fechaAlta:      mapModel["Presupuestos"]["FechaAlta"] != null ? DateTime.parse(mapModel["ProductosFinales"]["FechaAlta"]) : null,
+        fechaAlta:      mapModel["Presupuestos"]["FechaAlta"] != null ? DateTime.parse(mapModel["Presupuestos"]["FechaAlta"]) : null,
         observaciones:  mapModel["Presupuestos"]["Observaciones"],
         estado:         mapModel["Presupuestos"]["Estado"],
-        lineasProducto: _lineasProducto
+        precioTotal:      mapModel["Presupuestos"]["_PrecioTotal"],
+        cliente:        mapModel["Clientes"] != null ? Clientes().fromMap({"Clientes": mapModel["Clientes"]}) : null,
+        usuario:        mapModel["Usuarios"] != null ? Usuarios().fromMap({"Usuarios": mapModel["Usuarios"]}) : null,
+        ubicacion:      mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap({"Ubicaciones": mapModel["Ubicaciones"]}) : null,
+        lineasProducto: _lineasProducto,
     );
   }
 
@@ -77,21 +92,30 @@ class Presupuestos extends Equatable with Models{
         "FechaAlta":        this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
         "Observaciones":    this.observaciones,
         "Estado":           this.estado,
+        "_PrecioTotal":      this.precioTotal
       }
     };
+
     Map<String, List<Map<String,dynamic>>> lineasPresupuesto = new Map<String, List<Map<String,dynamic>>>();
     if (this.lineasProducto != null){
       lineasPresupuesto = {
-        "LineasPresupuesto":[],
+        "LineasPresupuesto": [],
       };
       lineasProducto.forEach((lineaProducto) {
         lineasPresupuesto["LineasPresupuesto"].add(lineaProducto.toMap());
       });
     }
+    
+    Map<String, dynamic> clientes = this.cliente?.toMap();
+    Map<String, dynamic> usuarios = this.usuario?.toMap();
+    Map<String, dynamic> ubicaciones = this.ubicacion?.toMap();
 
     Map<String, dynamic> result = {};
     result.addAll(presupuestos);
     result.addAll(lineasPresupuesto);
+    result.addAll(clientes != null ? clientes : {});
+    result.addAll(usuarios != null ? usuarios : {});
+    result.addAll(ubicaciones != null ? ubicaciones : {});
 
     return result;
   }

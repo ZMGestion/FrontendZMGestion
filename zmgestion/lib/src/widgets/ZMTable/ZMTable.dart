@@ -34,13 +34,14 @@ class ZMTable extends StatefulWidget {
   final ListMethodConfiguration listMethodConfiguration;
   final Map<String, Map<String, Function(dynamic)>> cellBuilder;
   final Map<String, Map<String, String>> tableLabels;
+  final Map<String, Map<String, int>> tableWeights;
+  final int defaultWeight;
   final List<Widget> Function(List<Models>) onSelectActions;
   final Color tableBackgroundColor;
   final Widget onEmpty;
   final Widget searchArea;
   final List<Widget> fixedActions;
-  final List<Widget> Function(
-      Map<String, dynamic>, int index, StreamController<ItemAction>) rowActions;
+  final List<Widget> Function(Map<String, dynamic>, int index, StreamController<ItemAction>) rowActions;
   final bool paginate;
   final int pageLength;
   final double height;
@@ -56,6 +57,8 @@ class ZMTable extends StatefulWidget {
       this.modelViewKey = "",
       this.cellBuilder,
       this.tableLabels,
+      this.tableWeights,
+      this.defaultWeight = 1,
       this.onSelectActions,
       this.tableBackgroundColor,
       this.onEmpty,
@@ -85,7 +88,7 @@ class _ZMTableState extends State<ZMTable> {
 
   bool selected = false;
 
-  List<String> columnNames;
+  Map<String, int> columnNames;
 
   List<Widget> columns = new List<Widget>();
 
@@ -139,8 +142,20 @@ class _ZMTableState extends State<ZMTable> {
     }
   }
 
-  List<String> getColumnNames() {
-    List<String> _result = new List<String>();
+  int _getColumnWeight(String parent, String columnName){
+    int weight = widget.defaultWeight;
+    if(widget.tableWeights != null){
+      if(widget.tableWeights.containsKey(parent)){
+        if(widget.tableWeights[parent].containsKey(columnName)){
+          weight = widget.tableWeights[parent][columnName];
+        }
+      }
+    }
+    return weight;
+  }
+
+  Map<String, int> getColumnNames() {
+    Map<String, int> _result = new Map<String, int>();
     widget.cellBuilder.forEach((parent, columnMap) {
       columnMap.forEach((columnName, builer) {
         var _columnName = columnName;
@@ -151,16 +166,17 @@ class _ZMTableState extends State<ZMTable> {
             }
           }
         }
-        _result.add(_columnName);
+        _result.addAll({_columnName: _getColumnWeight(parent, columnName)});
       });
     });
     return _result;
   }
 
-  List<Widget> generateColumns(List<String> columnNames) {
+  List<Widget> generateColumns(Map<String, int> columnNames) {
     List<Widget> result = new List<Widget>();
-    columnNames.forEach((name) {
+    columnNames.forEach((name, weight) {
       result.add(Expanded(
+        flex: weight,
         child: Text(
           name,
           textAlign: TextAlign.center,
@@ -179,11 +195,13 @@ class _ZMTableState extends State<ZMTable> {
 
   List<Widget> generateRow(Map<String, dynamic> mapModel) {
     List<Widget> columnContent = new List<Widget>();
-
     widget.cellBuilder.forEach((parent, columnMap) {
       columnMap.forEach((columnName, builder) {
-        columnContent
-            .add(Expanded(child: builder(mapModel[parent][columnName])));
+        if(columnName == "*"){
+          columnContent.add(Expanded(flex: _getColumnWeight(parent, columnName), child: builder({parent: mapModel[parent]})));
+        }else{
+          columnContent.add(Expanded(flex: _getColumnWeight(parent, columnName), child: builder(mapModel[parent][columnName])));
+        }
       });
     });
 

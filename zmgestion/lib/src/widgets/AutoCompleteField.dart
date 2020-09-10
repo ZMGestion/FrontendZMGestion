@@ -15,6 +15,7 @@ class AutoCompleteField extends StatefulWidget {
   final String initialValue;
   final String parentName;
   final String keyName;
+  final String Function(Map<String, dynamic>) keyNameFunc;
   final ListMethodConfiguration Function(String searchText) listMethodConfiguration;
   final bool paginate;
   final int pageLength;
@@ -28,6 +29,7 @@ class AutoCompleteField extends StatefulWidget {
     this.service,
     this.parentName,
     this.keyName,
+    this.keyNameFunc,
     this.initialValue = "",
     this.listMethodConfiguration,
     this.paginate = false,
@@ -149,6 +151,7 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
             focusNode: _focusNode,
             parentName: widget.parentName,
             keyName: widget.keyName,
+            keyNameFunc: widget.keyNameFunc,
             listMethodConfiguration: widget.listMethodConfiguration(searchText),
             onSelect: (mapModel){
               setState(() {
@@ -219,6 +222,7 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
   final Function(Map<String, dynamic> mapModel) onSelect;
   final String parentName;
   final String keyName;
+  final String Function(Map<String, dynamic>) keyNameFunc;
   final FocusNode focusNode;
   final Services service;
   final ListMethodConfiguration listMethodConfiguration;
@@ -231,6 +235,7 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
     this.pageInfo,
     this.parentName,
     this.keyName,
+    this.keyNameFunc,
     this.onSelect,
     this.focusNode, 
     this.service, 
@@ -332,7 +337,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
               return InkWell(
                 onTap: (){
                   setState(() { 
-                    _textController.text = mapModel[widget.parentName][widget.keyName];
+                    _textController.text = widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName];
                     //_selectedFromList = true;
                   });
                   if(widget.onSelect != null){
@@ -343,7 +348,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 12, 10),
                   child: Text(
-                    mapModel[widget.parentName][widget.keyName],
+                    widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName],
                     style: TextStyle(
                       fontSize: 15
                     ),

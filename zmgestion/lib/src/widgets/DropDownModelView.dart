@@ -22,6 +22,7 @@ class DropDownModelView extends StatefulWidget {
   final dynamic initialValue;
   final Function(List<Models> resultSet) onComplete;
   final Function(dynamic value) onChanged;
+  final Function(Map<String, dynamic> value) modelInfo;
   final Function(dynamic value) onSelectAll;
   final bool disable;
   final InputDecoration decoration;
@@ -43,6 +44,7 @@ class DropDownModelView extends StatefulWidget {
     this.initialValue,
     this.onComplete,
     this.onChanged,
+    this.modelInfo,
     this.onSelectAll,
     this.disable = false,
     this.decoration,
@@ -58,6 +60,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
   bool closed = false;
   bool hasError = false;
   dynamic _tipoSeleccionado;
+  Map<dynamic,Map<String, dynamic>> _models = {};
   List<DropdownMenuItem> _items = [];
 
   @override
@@ -84,9 +87,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
       setState(() {
         loading = true;
       });
-      await widget.service
-          .listarPor(widget.listMethodConfiguration, showLoading: false)
-          .then((response) {
+      await widget.service.listarPor(widget.listMethodConfiguration, showLoading: false).then((response) {
         if (!closed) {
           if (response.status == RequestStatus.SUCCESS) {
             if (widget.onComplete != null) {
@@ -106,6 +107,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             response.message.forEach((model) {
               Map<String, dynamic> mapModel = model.toMap();
               print(mapModel);
+              _models.addAll({mapModel[widget.parentName][widget.valueName]: mapModel});
               _items.add(DropdownMenuItem(
                 value: mapModel[widget.parentName][widget.valueName],
                 child: Text(
@@ -205,6 +207,9 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                           state.validate();
                           if (widget.onChanged != null) {
                             widget.onChanged(_tipoSeleccionado);
+                          }
+                          if (widget.modelInfo != null) {
+                            widget.modelInfo(_models[_tipoSeleccionado]);
                           }
                         }
                       }

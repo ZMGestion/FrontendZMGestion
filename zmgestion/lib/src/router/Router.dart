@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zmgestion/src/views/HomePage.dart';
-import 'package:zmgestion/src/views/Test.dart';
 import 'package:zmgestion/src/views/clientes/ClientesIndex.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
+import 'package:zmgestion/src/views/presupuestos/PresupuestosIndex.dart';
 import 'package:zmgestion/src/views/productos/ProductosIndex.dart';
 import 'package:zmgestion/src/views/productosFinales/ProductosFinalesIndex.dart';
 import 'package:zmgestion/src/views/roles/RolesIndex.dart';
@@ -30,7 +30,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case LoginRoute:
       return _getPageRoute(Login(), settings);
     case PresupuestosRoute:
-      return _getPageRoute(Test(), settings);
+      return _getPageRoute(PresupuestosIndex(), settings);
     case UsuariosRoute:
       return _getPageRoute(UsuariosIndex(), settings);
     case ClientesRoute:
