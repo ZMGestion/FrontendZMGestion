@@ -85,11 +85,13 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
       }
     }
     if(!_priceChanged){
-      _precioUnitarioController.text = precioOriginal.toStringAsFixed(2).toString();
       precioModificado = precioOriginal;
     }else{
-      precioModificado = double.parse(_precioUnitarioController.text);
+      if(_precioUnitarioController.text != ""){
+        precioModificado = double.parse(_precioUnitarioController.text);
+      }
     }
+    _precioUnitarioController.text = precioOriginal.toStringAsFixed(2).toString();
     setState(() {
       _precioUnitario = _priceChanged ? precioModificado : precioOriginal;
       _precioTotal = precioOriginal * _cantidad;
@@ -299,147 +301,170 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                         visible: showLineasForm,
                                         child: Column(
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        TopLabel(
-                                                          labelText: "Producto",
-                                                        ),
-                                                        AutoCompleteField(
-                                                          labelText: "",
-                                                          hintText: "Ingrese un producto",
-                                                          parentName: "Productos",
-                                                          keyName: "Producto",
-                                                          service: ProductosService(),
-                                                          paginate: true,
-                                                          pageLength: 4,
-                                                          onClear: (){
-                                                            setState(() {
-                                                              //searchIdProducto = 0;
-                                                                _productoSeleccionado = null;
-                                                            });
-                                                          },
-                                                          listMethodConfiguration: (searchText){
-                                                            return ProductosService().buscarProductos({
-                                                              "Productos": {
-                                                                "Producto": searchText
-                                                              }
-                                                            });
-                                                          },
-                                                          onSelect: (mapModel){
-                                                            if(mapModel != null){
-                                                              Productos producto = Productos().fromMap(mapModel);
-                                                              setState(() {
-                                                                _productoSeleccionado = producto;
-                                                                _priceChanged = false;
-                                                                _setPrecios();
-                                                                //searchIdProducto = producto.idProducto;
-                                                              });
-                                                            }
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 12,
-                                                  ),
-                                                  Visibility(
-                                                    visible: _productoSeleccionado != null ? _productoSeleccionado.esFabricable() : false,
-                                                    child: Expanded(
-                                                      child: Row(
+                                            Card(
+                                              color: Theme.of(context).primaryColorLight,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                TopLabel(
-                                                                  labelText: "Tela",
-                                                                ),
-                                                                AutoCompleteField(
-                                                                  labelText: "",
-                                                                  hintText: "Ingrese una tela",
-                                                                  parentName: "Telas",
-                                                                  keyName: "Tela",
-                                                                  service: TelasService(),
-                                                                  paginate: true,
-                                                                  pageLength: 4,
-                                                                  onClear: (){
-                                                                    setState(() {
-                                                                      _telaSeleccionada = null;
-                                                                    });
-                                                                  },
-                                                                  listMethodConfiguration: (searchText){
-                                                                    return TelasService().buscarTelas({
-                                                                      "Telas": {
-                                                                        "Tela": searchText
-                                                                      }
-                                                                    });
-                                                                  },
-                                                                  onSelect: (mapModel){
-                                                                    if(mapModel != null){
-                                                                      Telas tela = Telas().fromMap(mapModel);
-                                                                      setState(() {
-                                                                        _telaSeleccionada = tela;
-                                                                        _priceChanged = false;
-                                                                        _setPrecios();
-                                                                        //searchIdTela = tela.idTela;
-                                                                      });
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ],
-                                                            ),
+                                                          TopLabel(
+                                                            labelText: "Producto",
+                                                            color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8)
                                                           ),
-                                                          SizedBox(
-                                                            width: 12,
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              constraints: BoxConstraints(minWidth: 200),
-                                                              child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  TopLabel(
-                                                                    labelText: "Lustre",
-                                                                  ),
-                                                                  DropDownModelView(
-                                                                    service: ProductosFinalesService(),
-                                                                    listMethodConfiguration:
-                                                                      ProductosFinalesService().listarLustres(),
-                                                                    parentName: "Lustres",
-                                                                    labelName: "Seleccione un lustre",
-                                                                    displayedName: "Lustre",
-                                                                    valueName: "IdLustre",
-                                                                    errorMessage:
-                                                                      "Debe seleccionar un lustre",
-                                                                    decoration: InputDecoration(
-                                                                      contentPadding: EdgeInsets.only(left: 8)
-                                                                    ),
-                                                                    onChanged: (idSelected) {
-                                                                      setState(() {
-                                                                        _idLustre = idSelected;
-                                                                      });
-                                                                    },
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                          Container(
+                                                            constraints: BoxConstraints(maxWidth: _productoSeleccionado == null ? 300 : double.infinity),
+                                                            child: AutoCompleteField(
+                                                              labelText: "",
+                                                              hintText: "Ingrese un producto",
+                                                              parentName: "Productos",
+                                                              keyName: "Producto",
+                                                              service: ProductosService(),
+                                                              paginate: true,
+                                                              pageLength: 4,
+                                                              onClear: (){
+                                                                setState(() {
+                                                                  //searchIdProducto = 0;
+                                                                    _productoSeleccionado = null;
+                                                                    _precioUnitarioController.clear();
+                                                                    _setPrecios();
+                                                                });
+                                                              },
+                                                              listMethodConfiguration: (searchText){
+                                                                return ProductosService().buscarProductos({
+                                                                  "Productos": {
+                                                                    "Producto": searchText
+                                                                  }
+                                                                });
+                                                              },
+                                                              onSelect: (mapModel){
+                                                                if(mapModel != null){
+                                                                  Productos producto = Productos().fromMap(mapModel);
+                                                                  setState(() {
+                                                                    _productoSeleccionado = producto;
+                                                                    _priceChanged = false;
+                                                                    _setPrecios();
+                                                                    //searchIdProducto = producto.idProducto;
+                                                                  });
+                                                                }
+                                                              },
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
-                                                  ),
-                                                  
-                                                ],
+                                                    Visibility(
+                                                      visible: _productoSeleccionado != null ? _productoSeleccionado.esFabricable() : false,
+                                                      child: Expanded(
+                                                        flex: _productoSeleccionado != null ? (_productoSeleccionado.longitudTela > 0 ? 2 : 1) : 1,
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 12,
+                                                            ),
+                                                            Visibility(
+                                                              visible: _productoSeleccionado != null ? _productoSeleccionado.longitudTela > 0 : false,
+                                                              child: Expanded(
+                                                                child: Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      flex: 1,
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          TopLabel(
+                                                                            labelText: "Tela",
+                                                                            color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8)
+                                                                          ),
+                                                                          AutoCompleteField(
+                                                                            labelText: "",
+                                                                            hintText: "Ingrese una tela",
+                                                                            parentName: "Telas",
+                                                                            keyName: "Tela",
+                                                                            service: TelasService(),
+                                                                            paginate: true,
+                                                                            pageLength: 4,
+                                                                            onClear: (){
+                                                                              setState(() {
+                                                                                _telaSeleccionada = null;
+                                                                                _setPrecios();
+                                                                              });
+                                                                            },
+                                                                            listMethodConfiguration: (searchText){
+                                                                              return TelasService().buscarTelas({
+                                                                                "Telas": {
+                                                                                  "Tela": searchText
+                                                                                }
+                                                                              });
+                                                                            },
+                                                                            onSelect: (mapModel){
+                                                                              if(mapModel != null){
+                                                                                Telas tela = Telas().fromMap(mapModel);
+                                                                                setState(() {
+                                                                                  _telaSeleccionada = tela;
+                                                                                  _priceChanged = false;
+                                                                                  _setPrecios();
+                                                                                  //searchIdTela = tela.idTela;
+                                                                                });
+                                                                              }
+                                                                            },
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width: 12,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Expanded(
+                                                              flex: 1,
+                                                              child: Container(
+                                                                constraints: BoxConstraints(minWidth: 200),
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    TopLabel(
+                                                                      labelText: "Lustre",
+                                                                      color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8)
+                                                                    ),
+                                                                    DropDownModelView(
+                                                                      service: ProductosFinalesService(),
+                                                                      listMethodConfiguration:
+                                                                        ProductosFinalesService().listarLustres(),
+                                                                      parentName: "Lustres",
+                                                                      labelName: "Seleccione un lustre",
+                                                                      displayedName: "Lustre",
+                                                                      valueName: "IdLustre",
+                                                                      errorMessage:
+                                                                        "Debe seleccionar un lustre",
+                                                                      decoration: InputDecoration(
+                                                                        contentPadding: EdgeInsets.only(left: 8),
+                                                                      ),
+                                                                      onChanged: (idSelected) {
+                                                                        setState(() {
+                                                                          _idLustre = idSelected;
+                                                                        });
+                                                                      },
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             Padding(
@@ -465,7 +490,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                       child: TextFormFieldDialog(
                                                         controller: _precioUnitarioController,
                                                         validator: Validator.notEmptyValidator,
-                                                        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                                                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
                                                         labelText: "Precio unitario",
                                                     ),
                                                   ),
@@ -475,8 +500,16 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                   Expanded(
                                                       child: Column(
                                                         children: [
-                                                          Text("Total"),
+                                                          Text(
+                                                            "Total",
+                                                            style: TextStyle(
+                                                              color: Theme.of(context).primaryColorLight,
+                                                              fontSize: 14,
+                                                              fontWeight: FontWeight.w600
+                                                            ),
+                                                          ),
                                                           Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
                                                               Visibility(
                                                                 visible: _precioTotal != _precioTotalModificado,
@@ -561,8 +594,8 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                             cantidad: _cantidad,
                                                             precioUnitario: _precioUnitario,
                                                             productoFinal: ProductosFinales(
-                                                              idProducto: _productoSeleccionado.idProducto,
-                                                              idTela: _telaSeleccionada.idTela,
+                                                              idProducto: _productoSeleccionado?.idProducto,
+                                                              idTela: _telaSeleccionada?.idTela,
                                                               idLustre: _idLustre,
                                                               producto: _productoSeleccionado,
                                                               tela: _telaSeleccionada
@@ -596,6 +629,11 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                   onPressed: (){
                                                     setState(() {
                                                       showLineasForm = false;
+                                                      _productoSeleccionado = null;
+                                                      _telaSeleccionada = null;
+                                                      _idLustre = 0;
+                                                      _cantidad = 0;
+                                                      _setPrecios();
                                                     });
                                                   },
                                                 ),

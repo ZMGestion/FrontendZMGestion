@@ -18,6 +18,7 @@ import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/views/presupuestos/CrearPresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/ModificarPresupuestosAlertDialog.dart';
+import 'package:zmgestion/src/views/presupuestos/TransformarPresupuestosVentaAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
@@ -559,6 +560,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                   ],
                   onSelectActions: (presupuestos) {
                     bool estadosIguales = true;
+                    bool clientesIguales = true;
                     String estado;
                     if (presupuestos.length >= 1) {
                       Map<String, dynamic> anterior;
@@ -566,11 +568,15 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                         Map<String, dynamic> mapPresupuesto = presupuesto.toMap();
                         if (anterior != null) {
                           if (anterior["Presupuestos"]["Estado"] !=
-                              mapPresupuesto["Presupuestos"]["Estado"]) {
+                            mapPresupuesto["Presupuestos"]["Estado"]) {
                             estadosIguales = false;
                           }
+                          if (anterior["Presupuestos"]["IdCliente"] !=
+                            mapPresupuesto["Presupuestos"]["IdCliente"]) {
+                            clientesIguales = false;
+                          }
                         }
-                        if (!estadosIguales) break;
+                        if (!estadosIguales && !clientesIguales) break;
                         anterior = mapPresupuesto;
                       }
                       if (estadosIguales) {
@@ -646,6 +652,40 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                             )
                           ],
                         ),
+                      ),
+                      Visibility(
+                        visible: clientesIguales && estadosIguales && estado == "C",
+                        child: ZMStdButton(
+                          color: Colors.blue,
+                          text: Text(
+                            "Transformar en venta (" + presupuestos.length.toString() + ")",
+                            style: TextStyle(
+                                color: Colors.white, 
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),                        
+                          icon: Icon(
+                            Icons.compare_arrows,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            if(presupuestos != null){
+                              showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return TransformarPresupuestosVentaAlertDialog(
+                                  presupuestos: presupuestos
+                                );
+                              },
+                            );
+                            }
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 15,
                       ),
                       ZMStdButton(
                         color: Colors.red,
