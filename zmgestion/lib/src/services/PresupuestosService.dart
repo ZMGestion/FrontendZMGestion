@@ -18,7 +18,7 @@ class PresupuestosService extends Services{
     this.context = context;
   }
 
-  GetMethodConfiguration dameConfiguration(int idProducto){
+  GetMethodConfiguration dameConfiguration(int idPresupuesto){
     return GetMethodConfiguration(
       method: Methods.POST,
       authorizationHeader: true,
@@ -26,7 +26,7 @@ class PresupuestosService extends Services{
       path: "/presupuestos/dame",
       payload: {
         "Presupuestos": {
-          "IdPresupuesto": idProducto
+          "IdPresupuesto": idPresupuesto
         }
       },
       scheduler: scheduler
@@ -163,6 +163,35 @@ class PresupuestosService extends Services{
           "IdProducto", "IdTela", "IdLustre"
         ],
       }
+    );
+  }
+
+  ListMethodConfiguration dameMultiplesConfiguration(Map<String, dynamic> payload){
+    return ListMethodConfiguration(
+      method: Methods.POST,
+      authorizationHeader: true,
+      model: Presupuestos(),
+      path: "/presupuestos/dameMultiple",
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto"
+      )
+    );
+  }
+
+  DoMethodConfiguration transformarPresupuestoEnVentaConfiguration(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      authorizationHeader: true,
+      path: "/presupuestos/transformarEnVenta",
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto"
+      )
     );
   }
 }
