@@ -490,7 +490,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                       child: TextFormFieldDialog(
                                                         controller: _precioUnitarioController,
                                                         validator: Validator.notEmptyValidator,
-                                                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
+                                                        //inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
                                                         labelText: "Precio unitario",
                                                     ),
                                                   ),
