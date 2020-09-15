@@ -15,6 +15,11 @@ class AutoCompleteField extends StatefulWidget {
   final String initialValue;
   final String parentName;
   final String keyName;
+  final Icon prefixIcon;
+  final Color validTextColor;
+  final Color invalidTextColor;
+  final TextStyle hintStyle;
+  final TextStyle labelStyle;
   final String Function(Map<String, dynamic>) keyNameFunc;
   final ListMethodConfiguration Function(String searchText) listMethodConfiguration;
   final bool paginate;
@@ -29,8 +34,13 @@ class AutoCompleteField extends StatefulWidget {
     this.service,
     this.parentName,
     this.keyName,
+    this.prefixIcon,
     this.keyNameFunc,
     this.initialValue = "",
+    this.validTextColor = Colors.green,
+    this.invalidTextColor = Colors.red,
+    this.hintStyle,
+    this.labelStyle,
     this.listMethodConfiguration,
     this.paginate = false,
     this.onClear,
@@ -179,11 +189,14 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
         focusNode: this._focusNode,
         controller: _textController,
         style: TextStyle(
-          color: _selectedFromList ? Colors.green : Colors.red
+          color: _selectedFromList ? widget.validTextColor : widget.invalidTextColor
         ),
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
+          hintStyle: widget.hintStyle,
+          labelStyle: widget.labelStyle,
+          prefixIcon: widget.prefixIcon,
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
           suffixIcon: IconButton(
             icon: Icon(Icons.clear),

@@ -704,34 +704,32 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                         onPressed: () {
                           if(presupuestos != null){
                             showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context)
-                                .backgroundColor
-                                .withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return MultipleRequestView(
-                                models: presupuestos,
-                                title: "Borrar "+presupuestos.length.toString()+" presupuestos",
-                                service: PresupuestosService(),
-                                doMethodConfiguration: PresupuestosService().borraConfiguration(),
-                                payload: (mapModel) {
-                                  return {
-                                    "Presupuestos": {
-                                      "IdPresupuesto": mapModel["Presupuestos"]["IdPresupuesto"]
-                                    }
-                                  };
-                                },
-                                itemBuilder: (mapModel) {
-                                  return Text(mapModel["Presupuestos"]["Presupuesto"]);
-                                },
-                                onFinished: () {
-                                  setState(() {
-                                    refreshValue = Random().nextInt(99999);
-                                  });
-                                },
-                              );
-                            },
-                          );
+                              context: context,
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return MultipleRequestView(
+                                  models: presupuestos,
+                                  title: "Borrar "+presupuestos.length.toString()+" presupuestos",
+                                  service: PresupuestosService(),
+                                  doMethodConfiguration: PresupuestosService().borraConfiguration(),
+                                  payload: (mapModel) {
+                                    return {
+                                      "Presupuestos": {
+                                        "IdPresupuesto": mapModel["Presupuestos"]["IdPresupuesto"]
+                                      }
+                                    };
+                                  },
+                                  itemBuilder: (mapModel) {
+                                    return Text(mapModel["Presupuestos"]["Presupuesto"]);
+                                  },
+                                  onFinished: () {
+                                    setState(() {
+                                      refreshValue = Random().nextInt(99999);
+                                    });
+                                  },
+                                );
+                              },
+                            );
                           }
                         },
                       )
@@ -858,14 +856,11 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                           if (idPresupuesto != 0) {
                             showDialog(
                               context: context,
-                              barrierColor: Theme.of(context)
-                                  .backgroundColor
-                                  .withOpacity(0.5),
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               builder: (BuildContext context) {
                                 return DeleteAlertDialog(
                                   title: "Borrar presupuesto",
-                                  message:
-                                      "¿Está seguro que desea eliminar la presupuesto?",
+                                  message: "¿Está seguro que desea eliminar el presupuesto?",
                                   onAccept: () async {
                                     await PresupuestosService().borra({
                                       "Presupuestos": {"IdPresupuesto": idPresupuesto}

@@ -10,6 +10,9 @@ class TextFormFieldDialog extends StatelessWidget {
   final List<TextInputFormatter> inputFormatters;
   final TextEditingController controller;
   final String Function(String) validator;
+  final TextStyle hintStyle;
+  final TextStyle labelStyle;
+  final TextStyle textStyle;
 
   const TextFormFieldDialog({
     Key key, 
@@ -20,7 +23,10 @@ class TextFormFieldDialog extends StatelessWidget {
     this.disabled = false,
     this.inputFormatters,
     this.controller, 
-    this.validator
+    this.validator,
+    this.hintStyle,
+    this.labelStyle,
+    this.textStyle,
   }) : super(key: key);
 
   @override
@@ -35,8 +41,11 @@ class TextFormFieldDialog extends StatelessWidget {
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
+          hintStyle: hintStyle,
+          labelStyle: labelStyle,
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
         ),
+        style: textStyle,
     );
   }
 }

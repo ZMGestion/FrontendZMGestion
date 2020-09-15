@@ -139,7 +139,8 @@ class ZMDrawerState extends State<ZMDrawer>
                   ),
                   SubCollapsingListTile(
                     title: 'Productos',
-                    icon: Icons.event_seat,
+                    icon: FontAwesomeIcons.boxOpen,
+                    iconSize: 17,
                     animationController: _animationController,
                     width: widget.maxWidth - 40, //maxwidth - 40
                     selectedTextStyle: listTitleDefaultTextStyle,
@@ -152,8 +153,8 @@ class ZMDrawerState extends State<ZMDrawer>
                   ),
                   SubCollapsingListTile(
                     title: 'Telas',
-                    icon: Icons.gesture,
-                    iconSize: 22,
+                    icon: FontAwesomeIcons.buffer,
+                    iconSize: 19,
                     animationController: _animationController,
                     width: widget.maxWidth - 40, //maxwidth - 40
                     selectedTextStyle: listTitleDefaultTextStyle,

@@ -2,6 +2,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
+import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Productos.dart';
@@ -27,6 +29,7 @@ import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
+import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
@@ -69,6 +72,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
   double _precioUnitario = 0;
   Productos _productoSeleccionado;
   Telas _telaSeleccionada;
+  Lustres _lustreSeleccionado;
   int _idLustre = 0;
   bool _priceChanged = false;
   List<Widget> _lineasProducto = [];
@@ -114,12 +118,104 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
   Widget _lineaProducto(LineasProducto lp){
     return Row(
       children: [
-        Text(lp.cantidad.toString()),
-        Text(
-          lp.productoFinal.producto.producto + 
-          " " + (lp.productoFinal.tela?.tela??"") +
-          " " + (lp.productoFinal.lustre?.lustre??"")),
-        Text((lp.precioUnitario*lp.cantidad).toString()),
+        Expanded(
+          flex: 3,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Text(
+                  "x"+lp.cantidad.toString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: Text(
+                  lp.productoFinal.producto.producto + 
+                  (lp.productoFinal.tela != null? " - "+lp.productoFinal.tela.tela : "") +
+                  (lp.productoFinal.lustre != null? " - "+lp.productoFinal.lustre.lustre : ""),
+                  style: TextStyle(
+                  color: Colors.white.withOpacity(1)
+                ),
+                ),
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "\$"+lp.precioUnitario.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w600
+                ),
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "\$"+(lp.precioUnitario * lp.cantidad).toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w600
+                ),
+              )
+            ],
+          ),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.edit_outlined,
+            size: 18,
+          ),
+          onPressed: (){
+            print(lp.precioUnitario);
+          },
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.cancel_outlined,
+            size: 20,
+          ),
+          onPressed: (){
+            showDialog(
+              context: context,
+              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+              builder: (BuildContext context) {
+                return DeleteAlertDialog(
+                  title: "Borrar linea de producto",
+                  message: "¿Está seguro que desea eliminar la linea?",
+                  onAccept: () async {
+                    /*await PresupuestosService().borra({
+                      "Presupuestos": {"IdPresupuesto": idPresupuesto}
+                    }).then((response) {
+                      if (response.status == RequestStatus.SUCCESS){
+                        itemsController.add(ItemAction(
+                            event: ItemEvents.Hide,
+                            index: index));
+                      }
+                    });*/
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            );
+          },
+        )
       ]
     );
   }
@@ -148,7 +244,8 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: AlertDialogTitle(
-              title: widget.title
+              title: widget.title, 
+              titleColor: Theme.of(context).primaryColorLight.withOpacity(0.8),
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
@@ -165,82 +262,113 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: AutoCompleteField(
-                                    labelText: "Cliente",
-                                    hintText: "Ingrese un cliente",
-                                    parentName: "Clientes",
-                                    keyNameFunc: (mapModel){
-                                      String displayedName = "";
-                                      if(mapModel["Clientes"]["Nombres"] != null){
-                                        displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                                      }else{
-                                        displayedName = mapModel["Clientes"]["RazonSocial"];
-                                      }
-                                      return displayedName;
-                                    },
-                                    service: ClientesService(),
-                                    paginate: true,
-                                    pageLength: 4,
-                                    onClear: (){
-                                      setState(() {
-                                        _idCliente = 0;
-                                      });
-                                    },
-                                    listMethodConfiguration: (searchText){
-                                      return ClientesService().buscarClientes({
-                                        "Clientes": {
-                                          "Nombres": searchText
-                                        }
-                                      });
-                                    },
-                                    onSelect: (mapModel){
-                                      if(mapModel != null){
-                                        Clientes cliente = Clientes().fromMap(mapModel);
-                                        setState(() {
-                                          _idCliente = cliente.idCliente;
-                                        });
-                                      }
-                                    },
+                          child: Card(
+                            color: Theme.of(context).primaryColorLight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: AutoCompleteField(
+                                        prefixIcon: Icon(
+                                          Icons.person_outline,
+                                          color: Color(0xff87C2F5).withOpacity(0.8),
+                                        ),
+                                        hintStyle: TextStyle(
+                                          color: Color(0xffBADDFB).withOpacity(0.8)
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Color(0xffBADDFB).withOpacity(0.8)
+                                        ),
+                                        labelText: "Cliente",
+                                        hintText: "Ingrese un cliente",
+                                        invalidTextColor: Color(0xffffaaaa),
+                                        validTextColor: Color(0xffaaffaa),
+                                        parentName: "Clientes",
+                                        keyNameFunc: (mapModel){
+                                          String displayedName = "";
+                                          if(mapModel["Clientes"]["Nombres"] != null){
+                                            displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
+                                          }else{
+                                            displayedName = mapModel["Clientes"]["RazonSocial"];
+                                          }
+                                          return displayedName;
+                                        },
+                                        service: ClientesService(),
+                                        paginate: true,
+                                        pageLength: 4,
+                                        onClear: (){
+                                          setState(() {
+                                            _idCliente = 0;
+                                          });
+                                        },
+                                        listMethodConfiguration: (searchText){
+                                          return ClientesService().buscarClientes({
+                                            "Clientes": {
+                                              "Nombres": searchText
+                                            }
+                                          });
+                                        },
+                                        onSelect: (mapModel){
+                                          if(mapModel != null){
+                                            Clientes cliente = Clientes().fromMap(mapModel);
+                                            setState(() {
+                                              _idCliente = cliente.idCliente;
+                                            });
+                                          }
+                                        },
+                                      ),
                                   ),
-                              ),
-                              SizedBox(width: 12,),
-                              Expanded(
-                                child: Container(
-                                  constraints: BoxConstraints(minWidth: 200),
-                                  child: DropDownModelView(
-                                    service: UbicacionesService(),
-                                    listMethodConfiguration: UbicacionesService().listar(),
-                                    parentName: "Ubicaciones",
-                                    labelName: "Seleccione una ubicación",
-                                    displayedName: "Ubicacion",
-                                    valueName: "IdUbicacion",
-                                    allOption: false,
-                                    initialValue: usuario.idUbicacion,
-                                    errorMessage:
-                                      "Debe seleccionar una ubicación",
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(left: 8)
+                                  SizedBox(width: 12,),
+                                  Expanded(
+                                    child: Container(
+                                      constraints: BoxConstraints(minWidth: 200),
+                                      child: DropDownModelView(
+                                        service: UbicacionesService(),
+                                        listMethodConfiguration: UbicacionesService().listar(),
+                                        parentName: "Ubicaciones",
+                                        labelName: "Seleccione una ubicación",
+                                        displayedName: "Ubicacion",
+                                        valueName: "IdUbicacion",
+                                        allOption: false,
+                                        initialValue: usuario.idUbicacion,
+                                        errorMessage: "Debe seleccionar una ubicación",
+                                        textStyle: TextStyle(
+                                          color: Color(0xff97D2FF).withOpacity(1),
+                                        ),
+                                        iconEnabledColor: Color(0xff97D2FF).withOpacity(1),
+                                        dropdownColor: Theme.of(context).primaryColor,
+                                        decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.location_city,
+                                            color: Color(0xff87C2F5).withOpacity(0.8),  
+                                          ),
+                                          hintStyle: TextStyle(
+                                            color: Color(0xffBADDFB).withOpacity(0.8)
+                                          ),
+                                          labelStyle: TextStyle(
+                                            color: Color(0xffBADDFB).withOpacity(0.8)
+                                          ),
+                                        ),
+                                        onChanged: (idSelected) {
+                                          setState(() {
+                                            _idUbicacion = idSelected;
+                                          });
+                                        },
+                                      )
                                     ),
-                                    onChanged: (idSelected) {
-                                      setState(() {
-                                        _idUbicacion = idSelected;
-                                      });
-                                    },
-                                  )
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                         Row(
                           children: [
                             Expanded(
-                              child: Container(
-                                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              child: Card(
+                                color: Theme.of(context).primaryColorLight,
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Column(
@@ -260,7 +388,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                       children: [
                                                         Icon(
                                                           Icons.info_outline,
-                                                          color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                                          color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.7),
                                                           size: 18,
                                                         ),
                                                         SizedBox(
@@ -271,7 +399,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                           style: TextStyle(
                                                             fontSize: 13,
                                                             fontWeight: FontWeight.w600,
-                                                            color: Theme.of(context).primaryColor.withOpacity(0.7)
+                                                            color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8),
                                                           ),
                                                         ),
                                                       ],
@@ -284,7 +412,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 ZMTextButton(
-                                                  color: Theme.of(context).primaryColorLight,
+                                                  color: Theme.of(context).primaryTextTheme.headline6.color,
                                                   text: "Agregar linea",
                                                   onPressed: (){
                                                     setState(() {
@@ -302,7 +430,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                         child: Column(
                                           children: [
                                             Card(
-                                              color: Theme.of(context).primaryColorLight,
+                                              color: Color(0xff042949).withOpacity(0.55),
                                               child: Padding(
                                                 padding: const EdgeInsets.all(8.0),
                                                 child: Row(
@@ -318,7 +446,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                             color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8)
                                                           ),
                                                           Container(
-                                                            constraints: BoxConstraints(maxWidth: _productoSeleccionado == null ? 300 : double.infinity),
+                                                            //constraints: BoxConstraints(maxWidth: _productoSeleccionado == null ? 300 : double.infinity),
                                                             child: AutoCompleteField(
                                                               labelText: "",
                                                               hintText: "Ingrese un producto",
@@ -327,6 +455,16 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                               service: ProductosService(),
                                                               paginate: true,
                                                               pageLength: 4,
+                                                              invalidTextColor: Color(0xffffaaaa),
+                                                              validTextColor: Color(0xffaaffaa),
+                                                              prefixIcon: Icon(
+                                                                FontAwesomeIcons.boxOpen,
+                                                                size: 17,
+                                                                color: Color(0xff87C2F5).withOpacity(0.8),
+                                                              ),
+                                                              hintStyle: TextStyle(
+                                                                color: Color(0xffBADDFB).withOpacity(0.8)
+                                                              ),
                                                               onClear: (){
                                                                 setState(() {
                                                                   //searchIdProducto = 0;
@@ -347,6 +485,12 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                                   Productos producto = Productos().fromMap(mapModel);
                                                                   setState(() {
                                                                     _productoSeleccionado = producto;
+                                                                    if(!_productoSeleccionado.esFabricable()){
+                                                                      _telaSeleccionada = null;
+                                                                      _lustreSeleccionado = null;
+                                                                    }else if(_productoSeleccionado.longitudTela <= 0){
+                                                                      _telaSeleccionada = null;
+                                                                    }
                                                                     _priceChanged = false;
                                                                     _setPrecios();
                                                                     //searchIdProducto = producto.idProducto;
@@ -389,6 +533,16 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                                             service: TelasService(),
                                                                             paginate: true,
                                                                             pageLength: 4,
+                                                                            hintStyle: TextStyle(
+                                                                              color: Color(0xffBADDFB).withOpacity(0.8)
+                                                                            ),
+                                                                            prefixIcon: Icon(
+                                                                              FontAwesomeIcons.buffer,
+                                                                              size: 19,
+                                                                              color: Color(0xff87C2F5).withOpacity(0.8),
+                                                                            ),
+                                                                            invalidTextColor: Color(0xffffaaaa),
+                                                                            validTextColor: Color(0xffaaffaa),
                                                                             onClear: (){
                                                                               setState(() {
                                                                                 _telaSeleccionada = null;
@@ -437,16 +591,34 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                                     ),
                                                                     DropDownModelView(
                                                                       service: ProductosFinalesService(),
-                                                                      listMethodConfiguration:
-                                                                        ProductosFinalesService().listarLustres(),
+                                                                      listMethodConfiguration: ProductosFinalesService().listarLustres(),
                                                                       parentName: "Lustres",
                                                                       labelName: "Seleccione un lustre",
                                                                       displayedName: "Lustre",
                                                                       valueName: "IdLustre",
                                                                       errorMessage:
                                                                         "Debe seleccionar un lustre",
+                                                                      textStyle: TextStyle(
+                                                                        color: Color(0xff87C2F5).withOpacity(0.8),
+                                                                      ),
+                                                                      modelInfo: (mapModel){
+                                                                        setState(() {
+                                                                          _lustreSeleccionado = Lustres().fromMap(mapModel);
+                                                                        });
+                                                                      },
+                                                                      dropdownColor: Theme.of(context).primaryColor,
                                                                       decoration: InputDecoration(
-                                                                        contentPadding: EdgeInsets.only(left: 8),
+                                                                        prefixIcon: Icon(
+                                                                          FontAwesomeIcons.brush,
+                                                                          size: 18,
+                                                                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                                                                        ),
+                                                                        hintStyle: TextStyle(
+                                                                          color: Color(0xffBADDFB).withOpacity(0.8)
+                                                                        ),
+                                                                        labelStyle: TextStyle(
+                                                                          color: Colors.white
+                                                                        ),
                                                                       ),
                                                                       onChanged: (idSelected) {
                                                                         setState(() {
@@ -472,81 +644,124 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                               child: Row(
                                                 children: [
                                                   Expanded(
-                                                    child: NumberInputWithIncrementDecrement(
-                                                      labelText: "Cantidad",
-                                                      initialValue: _cantidad,
-                                                      onChanged: (value){
-                                                        setState(() {
-                                                          _cantidad = value;
-                                                        });
-                                                        _setPrecios();
-                                                      },
-                                                    )
-                                                  ),
-                                                  SizedBox(
-                                                    width: 12,
-                                                  ),
-                                                  Expanded(
-                                                      child: TextFormFieldDialog(
-                                                        controller: _precioUnitarioController,
-                                                        validator: Validator.notEmptyValidator,
-                                                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
-                                                        labelText: "Precio unitario",
+                                                    flex: 2,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: NumberInputWithIncrementDecrement(
+                                                              labelText: "Cantidad",
+                                                              initialValue: _cantidad,
+                                                              textStyle: TextStyle(
+                                                                color: Color(0xffBADDFB)
+                                                              ),
+                                                              hintStyle: TextStyle(
+                                                                color: Color(0xffBADDFB).withOpacity(0.8)
+                                                              ),
+                                                              labelStyle: TextStyle(
+                                                                color: Color(0xffBADDFB).withOpacity(0.8)
+                                                              ),
+                                                              onChanged: (value){
+                                                                setState(() {
+                                                                  _cantidad = value;
+                                                                });
+                                                                _setPrecios();
+                                                              },
+                                                            )
+                                                          ),
+                                                          SizedBox(
+                                                            width: 12,
+                                                          ),
+                                                          Expanded(
+                                                              child: TextFormFieldDialog(
+                                                                controller: _precioUnitarioController,
+                                                                validator: Validator.notEmptyValidator,
+                                                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
+                                                                labelText: "Precio unitario",
+                                                                textStyle: TextStyle(
+                                                                  color: Color(0xffBADDFB)
+                                                                ),
+                                                                hintStyle: TextStyle(
+                                                                  color: Color(0xffBADDFB).withOpacity(0.8)
+                                                                ),
+                                                                labelStyle: TextStyle(
+                                                                  color: Color(0xffBADDFB).withOpacity(0.8)
+                                                                ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                   SizedBox(
                                                     width: 12,
                                                   ),
                                                   Expanded(
-                                                      child: Column(
-                                                        children: [
-                                                          Text(
-                                                            "Total",
-                                                            style: TextStyle(
-                                                              color: Theme.of(context).primaryColorLight,
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.w600
-                                                            ),
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                    flex: 1,
+                                                      child: Card(
+                                                        color: Color(0xff042949).withOpacity(0.55),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(16),
+                                                          child: Column(
                                                             children: [
-                                                              Visibility(
-                                                                visible: _precioTotal != _precioTotalModificado,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Text.rich(TextSpan(
-                                                                      children: <TextSpan>[
-                                                                        TextSpan(
-                                                                          text: "\$"+(_precioTotal.toStringAsFixed(2).toString()),
-                                                                          style: TextStyle(
-                                                                            color: Colors.grey,
-                                                                            decoration: TextDecoration.lineThrough,
+                                                              Text(
+                                                                "Total",
+                                                                style: TextStyle(
+                                                                  color: Color(0xffBADDFB).withOpacity(0.9),
+                                                                  fontSize: 14,
+                                                                  fontWeight: FontWeight.w600
+                                                                ),
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Visibility(
+                                                                    visible: _precioTotal != _precioTotalModificado,
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text.rich(TextSpan(
+                                                                          children: <TextSpan>[
+                                                                            TextSpan(
+                                                                              text: "\$"+(_precioTotal.toStringAsFixed(2).toString()),
+                                                                              style: TextStyle(
+                                                                                color: Colors.white.withOpacity(0.7),
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.w500,
+                                                                                decoration: TextDecoration.lineThrough,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                          ),
+                                                                        ),
+                                                                        Padding(
+                                                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                          child: Icon(
+                                                                            Icons.keyboard_arrow_right,
+                                                                            color: Colors.white.withOpacity(0.75),
+                                                                            size: 24,
                                                                           ),
                                                                         ),
                                                                       ],
-                                                                      ),
                                                                     ),
-                                                                    Padding(
-                                                                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                                      child: Icon(
-                                                                        Icons.keyboard_arrow_right,
-                                                                        size: 24,
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                                    child: Text(
+                                                                      "\$"+(_precioTotalModificado.toStringAsFixed(2).toString()),
+                                                                      style: TextStyle(
+                                                                        color: Colors.white.withOpacity(0.9),
+                                                                        fontSize: 24,
+                                                                        fontWeight: FontWeight.w600
                                                                       ),
+                                                                      textAlign: TextAlign.center
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                                child: Text(
-                                                                  "\$"+(_precioTotalModificado.toStringAsFixed(2).toString()),
-                                                                  textAlign: TextAlign.center
-                                                                ),
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ],
                                                           ),
-                                                        ],
+                                                        ),
                                                       )
                                                   ),
                                                 ],
@@ -555,9 +770,20 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                ZMTextButton(
-                                                  color: Theme.of(context).primaryColorLight,
-                                                  text: "Agregar",
+                                                ZMStdButton(
+                                                  color: Theme.of(context).primaryTextTheme.headline6.color,
+                                                  icon: Icon(
+                                                    Icons.add,
+                                                    color: Theme.of(context).primaryColorLight,
+                                                    size: 16,
+                                                  ),
+                                                  text: Text(
+                                                    "Agregar",
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).primaryColorLight,
+                                                      fontWeight: FontWeight.bold
+                                                    ),
+                                                  ),
                                                   onPressed: () async{
                                                     if(!showLineasForm){
                                                       setState(() {
@@ -598,14 +824,23 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                               idTela: _telaSeleccionada?.idTela,
                                                               idLustre: _idLustre,
                                                               producto: _productoSeleccionado,
-                                                              tela: _telaSeleccionada
+                                                              tela: _telaSeleccionada,
+                                                              lustre: _lustreSeleccionado
                                                             ),
                                                           );
                                                           PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().crearLineaPrespuesto(_lp)).then(
                                                             (response){
                                                               if(response.status == RequestStatus.SUCCESS){
                                                                 setState(() {
-                                                                  _lineasProducto.add(_lineaProducto(_lp));
+                                                                  _productoSeleccionado = null;
+                                                                  _telaSeleccionada = null;
+                                                                  _lustreSeleccionado = null;
+                                                                  _idLustre = null;
+                                                                  _lineasProducto.add(
+                                                                    _lineaProducto(
+                                                                      LineasProducto().fromMap(response.message)
+                                                                    )
+                                                                  );
                                                                   showLineasForm = false;
                                                                 });
                                                               }else{
@@ -624,7 +859,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                   width: 12,
                                                 ),
                                                 ZMTextButton(
-                                                  color: Theme.of(context).primaryColorLight,
+                                                  color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.9),
                                                   text: "Cancelar",
                                                   onPressed: (){
                                                     setState(() {
@@ -650,35 +885,38 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                           ],
                         ),
                         //Button zone
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ZMStdButton(
-                                color: Theme.of(context).primaryColor,
-                                text: Text(
-                                  "Aceptar",
-                                  style: TextStyle(
-                                    color: Colors.white
+                        Visibility(
+                          visible: !showLineasForm,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ZMStdButton(
+                                  color: Theme.of(context).primaryColor,
+                                  text: Text(
+                                    "Aceptar",
+                                    style: TextStyle(
+                                      color: Colors.white
+                                    ),
                                   ),
+                                  onPressed: scheduler.isLoading() ? null : () async{
+                                    
+                                  },
                                 ),
-                                onPressed: scheduler.isLoading() ? null : () async{
-                                  
-                                },
-                              ),
-                              SizedBox(
-                                width: 15
-                              ),
-                              ZMTextButton(
-                                color: Theme.of(context).primaryColor,
-                                text: "Cancelar",
-                                onPressed: (){
-                                  Navigator.of(context).pop();
-                                },
-                                outlineBorder: false,
-                              )
-                            ],
+                                SizedBox(
+                                  width: 15
+                                ),
+                                ZMTextButton(
+                                  color: Theme.of(context).primaryColor,
+                                  text: "Cancelar",
+                                  onPressed: (){
+                                    Navigator.of(context).pop();
+                                  },
+                                  outlineBorder: false,
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
