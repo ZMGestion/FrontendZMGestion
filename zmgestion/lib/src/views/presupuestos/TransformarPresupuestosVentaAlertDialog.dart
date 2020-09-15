@@ -9,6 +9,8 @@ import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
+import 'package:zmgestion/src/views/presupuestos/CrearLineaVenta.dart';
+import 'package:zmgestion/src/views/presupuestos/CrearPresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AnimatedLoadingWidget.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -109,433 +111,8 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TopLabel(
-                                padding: EdgeInsets.zero,
-                                labelText: "Cliente",
-                                fontSize: 14,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  cliente,
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColorDark,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12,),
-                      Expanded(
-                        child: Container(
-                          constraints: BoxConstraints(minWidth: 200),
-                          child: DropDownModelView(
-                            service: ClientesService(),
-                            listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
-                            parentName: "Domicilios",
-                            labelName: "Seleccione un domicilio",
-                            displayedName: "Domicilio",
-                            valueName: "IdDomicilio",
-                            allOption: false,
-                            errorMessage:
-                              "Debe seleccionar un domicilio",
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(left: 8)
-                            ),
-                            onChanged: (idSelected) {
-                              setState(() {
-                                _idDomicilio = idSelected;
-                              });
-                            },
-                          )
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Container(
-                          constraints: BoxConstraints(minWidth: 200),
-                          child: DropDownModelView(
-                            service: UbicacionesService(),
-                            listMethodConfiguration: UbicacionesService().listar(),
-                            parentName: "Ubicaciones",
-                            labelName: "Seleccione una ubicación",
-                            displayedName: "Ubicacion",
-                            valueName: "IdUbicacion",
-                            allOption: false,
-                            errorMessage:
-                              "Debe seleccionar una ubicación",
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(left: 8)
-                            ),
-                            onChanged: (idSelected) {
-                              setState(() {
-                                _idUbicacion = idSelected;
-                              });
-                            },
-                          )
-                        ),
-                      ),
-                      SizedBox(width: 12,),
-                      Expanded(
-                        child: Container(
-                          child: Text("Total: \$" + _total.toString()),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(6),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Card(
-                        elevation: 0.5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: SizeConfig.blockSizeVertical*5,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(24)
-                                    )
-                                  ),
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:2.5),
-                                    child: Text(
-                                      "Detalles de presupuestos",
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryTextTheme.headline6.color
-                                      ),  
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Cantidad",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 5,
-                                  child: Text(
-                                    "Detalle",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Precio Unitario",
-                                    textAlign: TextAlign.center,  
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Total",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    "",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                              ],
-                            ),
-                            Divider(),
-                            Container(
-                              height: SizeConfig.blockSizeVertical*40,
-                              child: ListView.separated(
-                                itemCount: _lineasPresupuesto.length,
-                                itemBuilder: (context, index){
-                                  LineasProducto _lineaProducto = _lineasPresupuesto.elementAt(index);
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          flex: 2,
-                                          child: Text(
-                                            _lineaProducto.cantidad.toString(),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 5,
-                                          child: Text(
-                                            _lineaProducto.productoFinal.producto.producto + 
-                                            " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                                            " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1)
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex:2,
-                                          child: Text(
-                                            "\$"+_lineaProducto.precioUnitario.toString(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex:2,
-                                          child: Text(
-                                            "\$"+(_lineaProducto.precioUnitario * _lineaProducto.cantidad).toString(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.add,
-                                              color: Colors.green,
-                                            ), 
-                                            onPressed: (){
-                                              setState(() {
-                                                _lineasVenta.add(_lineaProducto);
-                                                _lineasPresupuesto.remove(_lineaProducto);
-                                                _total = _total + (_lineaProducto.cantidad * _lineaProducto.precioUnitario);
-                                              });
-                                          }),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index){
-                                  return Divider(
-                                    color: Colors.black12,
-                                    height: 2,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal*1.5,
-                    ),
-                    Expanded(
-                      child: Card(
-                        elevation: 0.5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: SizeConfig.blockSizeVertical*5,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(24)
-                                    )
-                                  ),
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:2.5),
-                                    child: Text(
-                                      "Detalles de venta",
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryTextTheme.headline6.color
-                                      ),  
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 2.5,
-                                  top: SizeConfig.blockSizeVertical*2.5 - 24 ,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.add,
-                                      color: Colors.white70,
-                                    ),
-                                    onPressed: (){}
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Cantidad",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 5,
-                                  child: Text(
-                                    "Detalle",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Precio Unitario",
-                                    textAlign: TextAlign.center,  
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "Total",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    "",
-                                    textAlign: TextAlign.center,
-                                  )
-                                ),
-                              ],
-                            ),
-                            Divider(),
-                            Container(
-                              height: SizeConfig.blockSizeVertical*40,
-                              child: ListView.separated(
-                                itemCount: _lineasVenta.length,
-                                itemBuilder: (context, index){
-                                  LineasProducto _lineaProducto = _lineasVenta.elementAt(index);
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          flex: 2,
-                                          child: Text(
-                                            _lineaProducto.cantidad.toString(),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 5,
-                                          child: Text(
-                                            _lineaProducto.productoFinal.producto.producto + 
-                                            " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                                            " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1)
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex:2,
-                                          child: Text(
-                                            "\$"+_lineaProducto.precioUnitario.toString(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex:2,
-                                          child: Text(
-                                            "\$"+(_lineaProducto.precioUnitario * _lineaProducto.cantidad).toString(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.remove,
-                                              color: Colors.red,
-                                            ), 
-                                            onPressed: (){
-                                              setState(() {
-                                                _lineasVenta.remove(_lineaProducto);
-                                                _lineasPresupuesto.add(_lineaProducto);
-                                                _total = _total - (_lineaProducto.cantidad * _lineaProducto.precioUnitario);
-                                              });
-                                          }),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index){
-                                  return Divider(
-                                    color: Colors.black12,
-                                    height: 2,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              encabezado(),
+              cuerpo(),
               ProgressButton.icon(
                 radius: 7,
                 iconedButtons: {
@@ -559,8 +136,14 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                 },
                 onPressed: () async{
                   List<int> _lineasProducto = [];
+                  List<LineasProducto> _nuevasLineas = new List<LineasProducto>();
                   _lineasVenta.forEach((element) {
-                    _lineasProducto.add(element.idLineaProducto);
+                    if(element.idLineaProducto != null){
+                      _lineasProducto.add(element.idLineaProducto);
+                    }else{
+                      _nuevasLineas.add(element);
+                    }
+                    
                   });
 
                   Map<String, dynamic> _payload = new Map<String, dynamic>();
@@ -569,7 +152,8 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                       "IdUbicacion":_idUbicacion,
                       "IdDomicilio": _idDomicilio,
                     },
-                    "LineasProducto": _lineasProducto
+                    "LineasProducto": _lineasProducto,
+                    "LineasVenta": _nuevasLineas
                   });
 
                   setState(() {
@@ -593,6 +177,472 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
         )
       );
       },
+    );
+  }
+
+  Widget encabezado(){
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2.5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TopLabel(
+                          padding: EdgeInsets.zero,
+                          labelText: "Cliente",
+                          fontSize: 14,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            cliente,
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12,),
+                Expanded(
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: 200),
+                    child: DropDownModelView(
+                      service: UbicacionesService(),
+                      listMethodConfiguration: UbicacionesService().listar(),
+                      parentName: "Ubicaciones",
+                      labelName: "Seleccione una ubicación",
+                      displayedName: "Ubicacion",
+                      valueName: "IdUbicacion",
+                      allOption: false,
+                      errorMessage:
+                        "Debe seleccionar una ubicación",
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 8)
+                      ),
+                      onChanged: (idSelected) {
+                        setState(() {
+                          _idUbicacion = idSelected;
+                        });
+                      },
+                    )    
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Container(
+                    constraints: BoxConstraints(minWidth: 200),
+                    child: DropDownModelView(
+                      service: ClientesService(),
+                      listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
+                      parentName: "Domicilios",
+                      labelName: "Seleccione un domicilio",
+                      displayedName: "Domicilio",
+                      valueName: "IdDomicilio",
+                      allOption: false,
+                      errorMessage:
+                        "Debe seleccionar un domicilio",
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 8)
+                      ),
+                      onChanged: (idSelected) {
+                        setState(() {
+                          _idDomicilio = idSelected;
+                        });
+                      },
+                    )
+                  ),
+                ),
+                SizedBox(width: 12,),
+                Expanded(
+                  child: Container(
+                    child: Text("Total: \$" + _total.toString()),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget cuerpo(){
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Row(
+          children: [
+            Expanded(
+              child: detallePresupuesto()
+            ),
+            SizedBox(
+              width: SizeConfig.blockSizeHorizontal*1.5,
+            ),
+            Expanded(
+              child: detalleVenta()
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget detallePresupuesto(){
+    return Card(
+      elevation: 0.5,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              Container(
+                height: SizeConfig.blockSizeVertical*5,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(24)
+                  )
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical:2.5),
+                  child: Text(
+                    "Detalles de presupuestos",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryTextTheme.headline6.color
+                    ),  
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Cantidad",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 5,
+                child: Text(
+                  "Detalle",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Precio Unitario",
+                  textAlign: TextAlign.center,  
+                )
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Total",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  "",
+                  textAlign: TextAlign.center,
+                )
+              ),
+            ],
+          ),
+          Divider(),
+          Container(
+            height: SizeConfig.blockSizeVertical*40,
+            child: ListView.separated(
+              itemCount: _lineasPresupuesto.length,
+              itemBuilder: (context, index){
+                LineasProducto _lineaProducto = _lineasPresupuesto.elementAt(index);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          _lineaProducto.cantidad.toString(),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 5,
+                        child: Text(
+                          _lineaProducto.productoFinal.producto.producto + 
+                          " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                          " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1)
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex:2,
+                        child: Text(
+                          "\$"+_lineaProducto.precioUnitario.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex:2,
+                        child: Text(
+                          "\$"+(_lineaProducto.precioUnitario * _lineaProducto.cantidad).toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.green,
+                          ), 
+                          onPressed: (){
+                            setState(() {
+                              _lineasVenta.add(_lineaProducto);
+                              _lineasPresupuesto.remove(_lineaProducto);
+                              _total = _total + (_lineaProducto.cantidad * _lineaProducto.precioUnitario);
+                            });
+                        }),
+                      )
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context, index){
+                return Divider(
+                  color: Colors.black12,
+                  height: 2,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget detalleVenta(){
+    return Card(
+      elevation: 0.5,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              Container(
+                height: SizeConfig.blockSizeVertical*5,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(24)
+                  )
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical:2.5),
+                  child: Text(
+                    "Detalles de venta",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryTextTheme.headline6.color
+                    ),  
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 2.5,
+                top: SizeConfig.blockSizeVertical*2.5 - 24 ,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white70,
+                  ),
+                  onPressed: (){
+                    showDialog(
+                      context: context,
+                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                      builder: (BuildContext context) {
+                        return CrearLineaVenta(
+                          onAccept: (lineaProducto){
+                            setState(() {
+                              _lineasVenta.add(lineaProducto);
+                              _total = _total + (lineaProducto.cantidad * lineaProducto.precioUnitario);
+                            });
+                          },
+                        );
+                      },
+                    );
+                  }
+                ),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Cantidad",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 5,
+                child: Text(
+                  "Detalle",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Precio Unitario",
+                  textAlign: TextAlign.center,  
+                )
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Total",
+                  textAlign: TextAlign.center,
+                )
+              ),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  "",
+                  textAlign: TextAlign.center,
+                )
+              ),
+            ],
+          ),
+          Divider(),
+          Container(
+            height: SizeConfig.blockSizeVertical*40,
+            child: ListView.separated(
+              itemCount: _lineasVenta.length,
+              itemBuilder: (context, index){
+                LineasProducto _lineaProducto = _lineasVenta.elementAt(index);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          _lineaProducto.cantidad.toString(),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 5,
+                        child: Text(
+                          _lineaProducto.productoFinal.producto.producto + 
+                          " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                          " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1)
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex:2,
+                        child: Text(
+                          "\$"+_lineaProducto.precioUnitario.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex:2,
+                        child: Text(
+                          "\$"+(_lineaProducto.precioUnitario * _lineaProducto.cantidad).toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.remove,
+                            color: Colors.red,
+                          ), 
+                          onPressed: (){
+                            setState(() {
+                              _lineasVenta.remove(_lineaProducto);
+                              if(_lineaProducto.idLineaProducto != null){
+                                _lineasPresupuesto.add(_lineaProducto);
+                              }
+                              _total = _total - (_lineaProducto.cantidad * _lineaProducto.precioUnitario);
+                            });
+                        }),
+                      )
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context, index){
+                return Divider(
+                  color: Colors.black12,
+                  height: 2,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
