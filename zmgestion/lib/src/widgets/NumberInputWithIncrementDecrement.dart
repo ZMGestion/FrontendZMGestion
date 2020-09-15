@@ -5,12 +5,18 @@ class NumberInputWithIncrementDecrement extends StatefulWidget {
   final String labelText;
   final int initialValue;
   final Function(int) onChanged;
+  final TextStyle hintStyle;
+  final TextStyle labelStyle;
+  final TextStyle textStyle;
 
   const NumberInputWithIncrementDecrement({
     Key key, 
     this.labelText = "",
     this.initialValue = 0,
-    this.onChanged
+    this.onChanged,
+    this.hintStyle,
+    this.labelStyle,
+    this.textStyle,
   }) : super(key: key);
 
   @override
@@ -37,8 +43,11 @@ class _NumberInputWithIncrementDecrementState
           child: TextFormField(
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-              labelText: widget.labelText
+              labelText: widget.labelText,
+              labelStyle: widget.labelStyle,
+              hintStyle: widget.hintStyle,
             ),
+            style: widget.textStyle,
             textAlign: TextAlign.center,
             controller: _controller,
             onChanged: (strValue){  
@@ -52,7 +61,7 @@ class _NumberInputWithIncrementDecrementState
               signed: true,
             ),
             inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly
+              FilteringTextInputFormatter.digitsOnly
             ],
           ),
         ),

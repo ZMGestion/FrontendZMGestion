@@ -16,6 +16,7 @@ class DropDownModelView extends StatefulWidget {
   final bool allOption;
   final dynamic allOptionValue;
   final String allOptionText;
+  final TextStyle textStyle;
   final String Function(Map<String, dynamic> mapModel) displayedNameFunction;
   final Function(dynamic value) onSaved;
   final String errorMessage;
@@ -26,6 +27,9 @@ class DropDownModelView extends StatefulWidget {
   final Function(dynamic value) onSelectAll;
   final bool disable;
   final InputDecoration decoration;
+  final Color dropdownColor;
+  final Color iconDisabledColor;
+  final Color iconEnabledColor;
 
   const DropDownModelView({
     Key key,
@@ -38,6 +42,7 @@ class DropDownModelView extends StatefulWidget {
     this.allOption = false,
     this.allOptionText = "",
     this.allOptionValue,
+    this.textStyle = const TextStyle(color: Colors.black, fontSize: 16),
     this.displayedNameFunction,
     this.onSaved,
     this.errorMessage,
@@ -48,6 +53,9 @@ class DropDownModelView extends StatefulWidget {
     this.onSelectAll,
     this.disable = false,
     this.decoration,
+    this.dropdownColor,
+    this.iconDisabledColor,
+    this.iconEnabledColor
   }) : super(key: key);
 
   @override
@@ -197,6 +205,9 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                     items: _items,
                     onSaved: widget.onSaved,
                     isExpanded: true,
+                    dropdownColor: widget.dropdownColor,
+                    iconDisabledColor: widget.iconDisabledColor,
+                    iconEnabledColor: widget.iconEnabledColor,
                     onChanged: (newValue) {
                       if (!widget.disable) {
                         if (newValue != null) {
@@ -214,12 +225,14 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                         }
                       }
                     },
+                    style: widget.textStyle,
                     decoration: widget.decoration != null
                         ? widget.decoration
                         : InputDecoration(border: InputBorder.none),
                     value: _tipoSeleccionado,
                     hint: Text(
                       widget.labelName != null ? widget.labelName : "",
+                      style: widget.textStyle,
                       maxLines: 2,
                     ),
                   ),

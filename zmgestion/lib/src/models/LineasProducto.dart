@@ -49,8 +49,8 @@ class LineasProducto extends Equatable with Models{
         tipo: mapModel["LineasProducto"]["Tipo"],
         precioUnitario: mapModel["LineasProducto"]["PrecioUnitario"],
         cantidad: mapModel["LineasProducto"]["Cantidad"],
-        fechaAlta: mapModel["LineasProducto"]["FechaAlta"],
-        fechaCancelacion: mapModel["LineasProducto"]["FechaCancelacion"],
+        fechaAlta:  mapModel["LineasProducto"]["FechaAlta"] != null ? DateTime.parse(mapModel["LineasProducto"]["FechaAlta"]) : null,
+        fechaCancelacion:  mapModel["LineasProducto"]["FechaCancelacion"] != null ? DateTime.parse(mapModel["LineasProducto"]["FechaCancelacion"]) : null,
         estado: mapModel["LineasProducto"]["Estado"],
         productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap(mapModel) : null
       );
@@ -69,8 +69,8 @@ class LineasProducto extends Equatable with Models{
           "Tipo":                 this.tipo,
           "PrecioUnitario":       this.precioUnitario,
           "Cantidad":             this.cantidad,
-          "FechaAlta":            this.fechaAlta,
-          "FechaCancelacion":     this.fechaCancelacion,
+          "FechaAlta":            this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
+          "FechaCancelacion":     this.fechaCancelacion!= null ? this.fechaCancelacion.toIso8601String() : null,
           "Estado":               this.estado,
         }
       };
