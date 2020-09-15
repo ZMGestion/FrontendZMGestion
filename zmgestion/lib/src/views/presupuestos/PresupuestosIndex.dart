@@ -445,18 +445,21 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                                                   fontWeight: FontWeight.w500,
                                                   color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7-index*0.15),
                                                   fontSize: 12
+                                                
                                                 ),
                                               ),
                                               SizedBox(
                                                 width: 8,
                                               ),
-                                              Text(
-                                                _lineaProducto.productoFinal.producto.producto + 
-                                                " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                                                " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33)
+                                              Flexible(
+                                                child: Text(
+                                                  _lineaProducto.productoFinal.producto.producto + 
+                                                  " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                                                  " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33)
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -609,7 +612,13 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               builder: (BuildContext context) {
                                 return TransformarPresupuestosVentaAlertDialog(
-                                  presupuestos: presupuestos
+                                  presupuestos: presupuestos,
+                                  onSuccess: (){
+                                    setState(() {
+                                      refreshValue =
+                                          Random().nextInt(99999);
+                                    });
+                                  },
                                 );
                               },
                             );
