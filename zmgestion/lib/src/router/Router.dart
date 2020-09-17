@@ -10,6 +10,7 @@ import 'package:zmgestion/src/views/roles/RolesIndex.dart';
 import 'package:zmgestion/src/views/telas/TelasIndex.dart';
 import 'package:zmgestion/src/views/ubicaciones/UbicacionesIndex.dart';
 import 'package:zmgestion/src/views/usuarios/UsuariosIndex.dart';
+import 'package:zmgestion/src/widgets/PdfPreview.dart';
 
 const String InicioRoute = '/inicio';
 const String PresupuestosRoute = '/presupuestos';
@@ -21,6 +22,7 @@ const String ProductosRoute = '/productos';
 const String ProductosFinalesRoute = '/productos-finales';
 const String LoginRoute = '/login';
 const String RolesRoute = '/roles';
+const String PdfPreview = '/pdf'; //Eliminar despues
 const String LoaderRoute = '/';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -45,6 +47,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(UbicacionesIndex(), settings);
     case RolesRoute:
       return _getPageRoute(RolesIndex(), settings);
+    case PdfPreview:
+      return _getPageRoute(PdfIndex(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

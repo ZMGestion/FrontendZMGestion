@@ -166,6 +166,40 @@ class PresupuestosService extends Services{
     );
   }
 
+  @override
+  DoMethodConfiguration pasarACreado(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/presupuestos/pasarACreado",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El presupuesto se ha creado con éxito"
+      )
+    );
+  }
+
+  @override
+  DoMethodConfiguration borrarLineaPrespuesto(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/presupuestos/lineasPresupuesto/borrar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de presupuesto se ha eliminado con éxito"
+      )
+    );
+  }
+
   ListMethodConfiguration dameMultiplesConfiguration(Map<String, dynamic> payload){
     return ListMethodConfiguration(
       method: Methods.POST,

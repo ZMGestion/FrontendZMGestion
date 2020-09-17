@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Response.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Lustres.dart';
+import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Telas.dart';
@@ -19,11 +23,17 @@ import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class ZMLineaProducto extends StatefulWidget {
+  final int idReferencia;
+  final LineasProducto lineaProducto;
   final Function(LineasProducto lp) onAccept; 
+  final Function() onCancel; 
 
   const ZMLineaProducto({
     Key key,
-    this.onAccept
+    this.idReferencia,
+    this.lineaProducto,
+    this.onAccept,
+    this.onCancel
   }): super(key: key);
   @override
   _ZMLineaProductoState createState() => _ZMLineaProductoState();
@@ -41,6 +51,38 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
   Lustres _lustreSeleccionado;
   int _idLustre = 0;
   bool _priceChanged = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    
+    if(widget.lineaProducto != null){
+      _cantidad = widget.lineaProducto.cantidad;
+      
+      _lustreSeleccionado = widget.lineaProducto.productoFinal?.lustre;
+      _idLustre = widget.lineaProducto.productoFinal?.idLustre??0;
+      SchedulerBinding.instance.addPostFrameCallback((_) async{
+        Response<Models<dynamic>> responseProducto;
+        Response<Models<dynamic>> responseTela;
+        if(widget.lineaProducto.productoFinal.producto?.idProducto != null){
+          responseProducto = await ProductosService().damePor(ProductosService().dameConfiguration(widget.lineaProducto.productoFinal.producto.idProducto));
+        }
+        if(widget.lineaProducto.productoFinal.tela?.idTela != null){
+          responseTela = await TelasService().damePor(TelasService().dameConfiguration(widget.lineaProducto.productoFinal.tela.idTela));
+        }
+        setState(() {
+          if(responseProducto?.status == RequestStatus.SUCCESS){
+            _productoSeleccionado = Productos().fromMap(responseProducto.message.toMap());
+          }
+          if(responseTela?.status == RequestStatus.SUCCESS){
+            _telaSeleccionada = Telas().fromMap(responseTela.message.toMap());
+          }
+        });
+        _setPrecios();
+      });
+    }
+    super.initState();
+  }
 
   void _setPrecios(){
     double precioOriginal = 0;
@@ -71,6 +113,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
     return Column(
       children: [
         Card(
+          key: Key(_productoSeleccionado?.producto??""),
           color: Color(0xff042949).withOpacity(0.55),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -96,6 +139,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                           service: ProductosService(),
                           paginate: true,
                           pageLength: 4,
+                          initialValue: _productoSeleccionado?.producto,
                           invalidTextColor: Color(0xffffaaaa),
                           validTextColor: Color(0xffaaffaa),
                           prefixIcon: Icon(
@@ -144,6 +188,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                   ),
                 ),
                 Visibility(
+                  key: Key(_productoSeleccionado?.esFabricable().toString()??"-"),
                   visible: _productoSeleccionado != null ? _productoSeleccionado.esFabricable() : false,
                   child: Expanded(
                     flex: _productoSeleccionado != null ? (_productoSeleccionado.longitudTela > 0 ? 2 : 1) : 1,
@@ -172,6 +217,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                                         parentName: "Telas",
                                         keyName: "Tela",
                                         service: TelasService(),
+                                        initialValue: _telaSeleccionada?.tela,
                                         paginate: true,
                                         pageLength: 4,
                                         hintStyle: TextStyle(
@@ -427,6 +473,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
               onPressed: (){
                 widget.onAccept(
                   LineasProducto(
+                    idReferencia: widget.idReferencia,
                     cantidad: _cantidad,
                     precioUnitario: _precioUnitario,
                     productoFinal: ProductosFinales(
@@ -447,7 +494,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
             ZMTextButton(
               color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.9),
               text: "Cancelar",
-              onPressed: (){},
+              onPressed: widget.onCancel
             ),
           ],
         )

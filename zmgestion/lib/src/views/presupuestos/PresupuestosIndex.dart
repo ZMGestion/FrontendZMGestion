@@ -373,7 +373,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
               ),
               AppLoader(builder: (scheduler) {
                 return ZMTable(
-                  key: Key(searchText + searchIdEstado.toString() + searchIdCliente.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
+                  key: Key(searchText + refreshValue.toString() + searchIdEstado.toString() + searchIdCliente.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
                   searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString()),
                   model: Presupuestos(),
                   service: PresupuestosService(),
@@ -561,18 +561,20 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                   onSelectActions: (presupuestos) {
                     bool estadosIguales = true;
                     bool clientesIguales = true;
+                    bool algunVendido = false;
                     String estado;
                     if (presupuestos.length >= 1) {
                       Map<String, dynamic> anterior;
                       for (Presupuestos presupuesto in presupuestos) {
                         Map<String, dynamic> mapPresupuesto = presupuesto.toMap();
+                        if(mapPresupuesto["Presupuestos"]["Estado"] == 'V'){
+                          algunVendido = true;
+                        }
                         if (anterior != null) {
-                          if (anterior["Presupuestos"]["Estado"] !=
-                            mapPresupuesto["Presupuestos"]["Estado"]) {
+                          if (anterior["Presupuestos"]["Estado"] != mapPresupuesto["Presupuestos"]["Estado"]) {
                             estadosIguales = false;
                           }
-                          if (anterior["Presupuestos"]["IdCliente"] !=
-                            mapPresupuesto["Presupuestos"]["IdCliente"]) {
+                          if (anterior["Presupuestos"]["IdCliente"] != mapPresupuesto["Presupuestos"]["IdCliente"]) {
                             clientesIguales = false;
                           }
                         }
@@ -584,75 +586,6 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                       }
                     }
                     return <Widget>[
-                      Visibility(
-                        visible: estadosIguales && estado != null,
-                        child: Row(
-                          children: [
-                            ZMStdButton(
-                              color: Colors.white,
-                              text: Text(
-                                (estado == "A"
-                                        ? "Dar de baja"
-                                        : "Dar de alta") +
-                                    " (" +
-                                    presupuestos.length.toString() +
-                                    ")",
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              icon: Icon(
-                                estado == "A"
-                                    ? Icons.arrow_downward
-                                    : Icons.arrow_upward,
-                                color:
-                                    estado == "A" ? Colors.red : Colors.green,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  barrierColor: Theme.of(context)
-                                      .backgroundColor
-                                      .withOpacity(0.5),
-                                  builder: (BuildContext context) {
-                                    return MultipleRequestView(
-                                      models: presupuestos,
-                                      title: (estado == "A"
-                                              ? "Dar de baja"
-                                              : "Dar de alta") +
-                                          " " +
-                                          presupuestos.length.toString() +
-                                          " presupuestos",
-                                      service: PresupuestosService(),
-                                      doMethodConfiguration: estado == "E" ? null : null,
-                                      payload: (mapModel) {
-                                        return {
-                                          "Presupuestos": {
-                                            "IdPresupuesto": mapModel["Presupuestos"]["IdPresupuesto"]
-                                          }
-                                        };
-                                      },
-                                      itemBuilder: (mapModel) {
-                                        return Text(mapModel["Presupuestos"]["Presupuesto"]);
-                                      },
-                                      onFinished: () {
-                                        setState(() {
-                                          refreshValue =
-                                              Random().nextInt(99999);
-                                        });
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                            SizedBox(
-                              width: 15,
-                            )
-                          ],
-                        ),
-                      ),
                       Visibility(
                         visible: clientesIguales && estadosIguales && estado == "C",
                         child: ZMStdButton(
@@ -687,57 +620,73 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                       SizedBox(
                         width: 15,
                       ),
-                      ZMStdButton(
-                        color: Colors.red,
-                        text: Text(
-                          "Borrar (" + presupuestos.length.toString() + ")",
-                          style: TextStyle(
-                              color: Colors.white, 
+                      Visibility(
+                        visible: (algunVendido),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            "Sin acciones",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
                               fontWeight: FontWeight.bold
+                            ),
                           ),
-                        ),                        
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: Colors.white,
-                          size: 20,
                         ),
-                        onPressed: () {
-                          if(presupuestos != null){
-                            showDialog(
-                              context: context,
-                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                              builder: (BuildContext context) {
-                                return MultipleRequestView(
-                                  models: presupuestos,
-                                  title: "Borrar "+presupuestos.length.toString()+" presupuestos",
-                                  service: PresupuestosService(),
-                                  doMethodConfiguration: PresupuestosService().borraConfiguration(),
-                                  payload: (mapModel) {
-                                    return {
-                                      "Presupuestos": {
-                                        "IdPresupuesto": mapModel["Presupuestos"]["IdPresupuesto"]
-                                      }
-                                    };
-                                  },
-                                  itemBuilder: (mapModel) {
-                                    return Text(mapModel["Presupuestos"]["Presupuesto"]);
-                                  },
-                                  onFinished: () {
-                                    setState(() {
-                                      refreshValue = Random().nextInt(99999);
-                                    });
-                                  },
-                                );
-                              },
-                            );
-                          }
-                        },
+                      ),
+                      Visibility(
+                        visible: !algunVendido,
+                        child: ZMStdButton(
+                          color: Colors.red,
+                          text: Text(
+                            "Borrar (" + presupuestos.length.toString() + ")",
+                            style: TextStyle(
+                                color: Colors.white, 
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),                        
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            if(presupuestos != null){
+                              showDialog(
+                                context: context,
+                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                builder: (BuildContext context) {
+                                  return MultipleRequestView(
+                                    models: presupuestos,
+                                    title: "Borrar "+presupuestos.length.toString()+" presupuestos",
+                                    service: PresupuestosService(),
+                                    doMethodConfiguration: PresupuestosService().borraConfiguration(),
+                                    payload: (mapModel) {
+                                      return {
+                                        "Presupuestos": {
+                                          "IdPresupuesto": mapModel["Presupuestos"]["IdPresupuesto"]
+                                        }
+                                      };
+                                    },
+                                    itemBuilder: (mapModel) {
+                                      return Text(mapModel["Presupuestos"]["IdPresupuesto"].toString());
+                                    },
+                                    onFinished: () {
+                                      setState(() {
+                                        refreshValue = Random().nextInt(99999);
+                                      });
+                                    },
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
                       )
                     ];
                   },
                   rowActions: (mapModel, index, itemsController) {
                     Presupuestos presupuesto;
-                    String estado = "A";
+                    String estado = "C";
                     int idPresupuesto = 0;
                     if (mapModel != null) {
                       presupuesto = Presupuestos().fromMap(mapModel);
@@ -757,9 +706,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                           if (idPresupuesto != 0) {
                             showDialog(
                               context: context,
-                              barrierColor: Theme.of(context)
-                                  .backgroundColor
-                                  .withOpacity(0.5),
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               builder: (BuildContext context) {
                                 return ModelViewDialog(
                                   content: ModelView(
@@ -775,47 +722,6 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                             );
                           }
                         }
-                      ),
-                      IconButtonTableAction(
-                        iconData: (estado == "A"
-                            ? Icons.arrow_downward
-                            : Icons.arrow_upward),
-                        color: estado == "A" ? Colors.redAccent : Colors.green,
-                        onPressed: () {
-                          if (idPresupuesto != 0) {
-                            if (estado == "A") {
-                              PresupuestosService(scheduler: scheduler).baja({
-                                "Presupuestos": {"IdPresupuesto": idPresupuesto}
-                              }).then((response) {
-                                if (response.status == RequestStatus.SUCCESS) {
-                                  itemsController.add(
-                                    ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration:
-                                        PresupuestosService().dameConfiguration(
-                                            presupuesto.idPresupuesto
-                                        )
-                                    )
-                                  );
-                                }
-                              });
-                            } else {
-                              PresupuestosService().alta({
-                                "Presupuestos": {"IdPresupuesto": idPresupuesto}
-                              }).then((response) {
-                                if (response.status == RequestStatus.SUCCESS) {
-                                  itemsController.add(ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration:
-                                          PresupuestosService().dameConfiguration(
-                                              presupuesto.idPresupuesto)));
-                                }
-                              });
-                            }
-                          }
-                        },
                       ),
                       IconButtonTableAction(
                         iconData: Icons.edit,
