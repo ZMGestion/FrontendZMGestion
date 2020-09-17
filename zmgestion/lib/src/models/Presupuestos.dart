@@ -74,7 +74,7 @@ class Presupuestos extends Equatable with Models{
         precioTotal:      mapModel["Presupuestos"]["_PrecioTotal"],
         cliente:        mapModel["Clientes"] != null ? Clientes().fromMap({"Clientes": mapModel["Clientes"]}) : null,
         usuario:        mapModel["Usuarios"] != null ? Usuarios().fromMap({"Usuarios": mapModel["Usuarios"]}) : null,
-        ubicacion:      mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap({"Ubicaciones": mapModel["Ubicaciones"]}) : null,
+        ubicacion:      mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
         lineasProducto: _lineasProducto,
     );
   }
