@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Roles.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
@@ -24,7 +25,7 @@ class Clientes extends Equatable with Models {
 
   /* -Other-*/
   Roles rol;
-  Ubicaciones ubicacion;
+  final Domicilios domicilio;
 
   Clientes(
       {this.idCliente,
@@ -40,7 +41,8 @@ class Clientes extends Equatable with Models {
       this.fechaNacimiento,
       this.fechaAlta,
       this.fechaBaja,
-      this.estado});
+      this.estado, 
+      this.domicilio});
 
   @override
   List<Object> get props => [idCliente];
@@ -75,7 +77,9 @@ class Clientes extends Equatable with Models {
         fechaBaja: mapModel["Clientes"]["FechaBaja"] != null
             ? DateTime.parse(mapModel["Clientes"]["FechaBaja"])
             : null,
-        estado: mapModel["Clientes"]["Estado"]);
+        estado: mapModel["Clientes"]["Estado"],
+        domicilio: mapModel["Domicilios"] != null ? Domicilios().fromMap(mapModel) : null
+      );
   }
 
   @override
@@ -104,8 +108,9 @@ class Clientes extends Equatable with Models {
         "Estado": this.estado,
       }
     };
-
+    Map<String, dynamic> domicilios = this.domicilio?.toMap();
     Map<String, dynamic> result = {};
+    result.addAll(domicilios != null ? domicilios :{});
     result.addAll(clientes);
 
     return result;

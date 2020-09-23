@@ -183,7 +183,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
           });
           await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
             if(response.status == RequestStatus.SUCCESS){
-              Navigator.of(context).pop();
+              Navigator.pop(context, true);
               widget.onSuccess();
             }
           });
@@ -196,6 +196,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
 
   Widget encabezado(){
     return Card(
+      color: Theme.of(context).primaryColorLight,
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Column(
@@ -212,13 +213,15 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           padding: EdgeInsets.zero,
                           labelText: "Cliente",
                           fontSize: 14,
+                          color: Color(0xff97D2FF).withOpacity(1),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Text(
                             cliente,
                             style: TextStyle(
-                              color: Theme.of(context).primaryColorDark,
+                              color: Color(0xff97D2FF).withOpacity(1),
+                              fontWeight: FontWeight.w500
                             ),
                           ),
                         ),
@@ -240,8 +243,21 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                       allOption: false,
                       errorMessage:
                         "Debe seleccionar una ubicación",
+                      textStyle: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                      ),
+                      dropdownColor: Theme.of(context).primaryColor,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                        ),
+                        hintStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                        labelStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
                       ),
                       onChanged: (idSelected) {
                         setState(() {
@@ -266,10 +282,22 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                       displayedName: "Domicilio",
                       valueName: "IdDomicilio",
                       allOption: false,
-                      errorMessage:
-                        "Debe seleccionar un domicilio",
+                      errorMessage: "Debe seleccionar un domicilio",
+                      textStyle: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                      ),
+                      dropdownColor: Theme.of(context).primaryColor,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                        ),
+                        hintStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                        labelStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
                       ),
                       onChanged: (idSelected) {
                         setState(() {
@@ -282,7 +310,13 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                 SizedBox(width: 12,),
                 Expanded(
                   child: Container(
-                    child: Text("Total: \$" + _total.toString()),
+                    child: Text(
+                      "Total: \$" + _total.toString(),
+                      style: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                        fontWeight: FontWeight.w700
+                      ),
+                    ),
                   ),
                 ),
               ],
