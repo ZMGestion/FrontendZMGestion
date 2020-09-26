@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
@@ -7,7 +8,9 @@ import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
+import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
@@ -65,6 +68,56 @@ Map<int, Ventas> ventas = {};
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: BreadCrumb(
+                      items: <BreadCrumbItem>[
+                        BreadCrumbItem(
+                          content: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text(
+                              "Inicio",
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor.withOpacity(0.45),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            final NavigationService _navigationService = locator<NavigationService>();
+                            _navigationService.navigateTo('/inicio');
+                          }
+                        ),
+                        BreadCrumbItem(
+                          content: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text(
+                              "Ventas",
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800
+                              ),
+                            ),
+                          ),
+                          onTap: null
+                        ),
+                      ],
+                      divider: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Container(
               height: 90,
               child: Card(
@@ -802,7 +855,16 @@ Map<int, Ventas> ventas = {};
                           );
                         }
                       },
-                    )
+                    ),
+                    IconButtonTableAction(
+                        iconData: Icons.description,
+                        onPressed: () {
+                          if (idVenta != 0) {
+                            final NavigationService _navigationService = locator<NavigationService>();
+                            _navigationService.navigateTo("/comprobantes");
+                          }
+                        }
+                    ),
                   ];
                 },
                 searchArea: TableTitle(
