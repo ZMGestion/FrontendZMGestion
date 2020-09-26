@@ -51,33 +51,37 @@ class ZMTable extends StatefulWidget {
   final EdgeInsets padding;
   final ListMethodConfiguration initialSelectionConfiguration;
   final Services initialService;
+  final String idName;
+  final String Function(Map<String, dynamic> mapModel) idValue;
 
-  const ZMTable(
-      {Key key,
-      this.modelViewKey = "",
-      this.cellBuilder,
-      this.tableLabels,
-      this.tableWeights,
-      this.defaultWeight = 1,
-      this.onSelectActions,
-      this.tableBackgroundColor,
-      this.onEmpty,
-      this.searchArea,
-      this.rowActions,
-      this.service,
-      this.listMethodConfiguration,
-      this.model,
-      this.fixedActions,
-      this.paginate = false,
-      this.height = 280,
-      this.pageLength = 12,
-      this.showCheckbox = false,
-      this.initialSelection,
-      this.initialSelectionConfiguration,
-      this.initialService,
-      this.padding = const EdgeInsets.all(12),
-      this.bottomAction})
-      : super(key: key);
+  const ZMTable({
+    Key key,
+    this.modelViewKey = "",
+    this.cellBuilder,
+    this.tableLabels,
+    this.tableWeights,
+    this.defaultWeight = 1,
+    this.onSelectActions,
+    this.tableBackgroundColor,
+    this.onEmpty,
+    this.searchArea,
+    this.rowActions,
+    this.service,
+    this.listMethodConfiguration,
+    this.model,
+    this.fixedActions,
+    this.paginate = false,
+    this.height = 280,
+    this.pageLength = 12,
+    this.showCheckbox = false,
+    this.initialSelection,
+    this.initialSelectionConfiguration,
+    this.initialService,
+    this.padding = const EdgeInsets.all(12),
+    this.bottomAction,
+    this.idName = "",
+    this.idValue
+  }) : super(key: key);
 
   @override
   _ZMTableState createState() => _ZMTableState();
@@ -306,18 +310,7 @@ class _ZMTableState extends State<ZMTable> {
                             value: false,
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             onChanged: (s) {},
-                          ),
-                          Container(
-                              padding: EdgeInsets.all(12),
-                              child: Text(
-                                " ",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .primaryTextTheme
-                                        .bodyText1
-                                        .color,
-                                    fontWeight: FontWeight.bold),
-                              ))
+                          )
                         ]),
                       ),
                     ),
@@ -340,7 +333,30 @@ class _ZMTableState extends State<ZMTable> {
                                   ]),
                               borderRadius: BorderRadius.circular(30)),
                           child: Row(
-                            children: columns,
+                            children: [
+                              Visibility(
+                                visible: widget.idValue != null,
+                                child: Container(
+                                  width: 80,
+                                  child: Text(
+                                    widget.idName,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: <Shadow>[
+                                          Shadow(
+                                              color: Colors.black38, offset: Offset(0, 1), blurRadius: 2)
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  children: columns,
+                                ),
+                              ),
+                            ]
                           ),
                         ),
                       ),
@@ -411,25 +427,9 @@ class _ZMTableState extends State<ZMTable> {
                                                 ? models.remove(model)
                                                 : models.add(model);
                                           });
-                                          print(models);
                                         },
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: models.contains(model)
-                                              ? Theme.of(context).primaryColor.withOpacity(0.3)
-                                              : Colors.transparent,
-                                        ),
-                                        child: Text(
-                                          widget.paginate ? (pageInfo.longitudPagina * (pageInfo.pagina - 1) + index + 1).toString() : (index + 1).toString(),
-                                          style: TextStyle(
-                                              color: Theme.of(context).primaryTextTheme.bodyText1.color,
-                                              fontWeight: FontWeight.bold
-                                          ),
-                                        )
-                                      ),
+                                      
                                     ],
                                   ),
                                 ),
@@ -439,6 +439,35 @@ class _ZMTableState extends State<ZMTable> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12),
                                       child: Row(children: [
+                                        Visibility(
+                                          visible: widget.idValue != null,
+                                          child: Container(
+                                            width: 80,
+                                            padding: EdgeInsets.all(10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    color: models.contains(model)
+                                                        ? Theme.of(context).primaryColor.withOpacity(0.2)
+                                                        : Colors.transparent,
+                                                  ),
+                                                  child: Text(
+                                                    widget.idValue != null ? (widget.idValue(mapModel) != null ? widget.idValue(mapModel) : "") : "",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      color: models.contains(model) ? Theme.of(context).primaryColor : null
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                         Expanded(
                                           child: Container(
                                             padding: EdgeInsets.symmetric(

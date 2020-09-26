@@ -2,9 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:printing/printing.dart';
+import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Response.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
+import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/Telas.dart';
@@ -16,7 +21,7 @@ import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
-import 'package:zmgestion/src/views/presupuestos/CrearPresupuestosAlertDialog.dart';
+import 'package:zmgestion/src/views/presupuestos/PresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/ModificarPresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/TransformarPresupuestosVentaAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -34,6 +39,10 @@ import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 class PresupuestosIndex extends StatefulWidget {
+  final Map<String, String> args;
+
+  const PresupuestosIndex({Key key, this.args}) : super(key: key);
+
   @override
   _PresupuestosIndexState createState() => _PresupuestosIndexState();
 }
@@ -59,6 +68,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
   @override
   void initState() {
     // TODO: implement initState
+    print(widget.args);
     super.initState();
   }
 
@@ -396,6 +406,10 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                   }),
                   pageLength: 12,
                   paginate: true,
+                  idName: "Cod.",
+                  idValue: (mapModel){
+                    return mapModel["Presupuestos"]["IdPresupuesto"].toString();
+                  },
                   cellBuilder: {
                     "Clientes": {
                       "*": (mapModel){
@@ -408,15 +422,9 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                         return Text(
                           displayedName,
                           textAlign: TextAlign.center,
-                        );
-                      }
-                    },
-                    "Usuarios": {
-                      "*": (mapModel){
-                        String displayedName = mapModel["Usuarios"]["Nombres"]+" "+mapModel["Usuarios"]["Apellidos"];
-                        return Text(
-                          displayedName,
-                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          ),
                         );
                       }
                     },
@@ -439,13 +447,12 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                "x"+_lineaProducto.cantidad.toString(),
+                                                _lineaProducto.cantidad.toString(),
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
+                                                  fontWeight: FontWeight.w600,
                                                   color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7-index*0.15),
-                                                  fontSize: 12
-                                                
+                                                  fontSize: 13
                                                 ),
                                               ),
                                               SizedBox(
@@ -458,7 +465,8 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                                                   " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33)
+                                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33),
+                                                    fontWeight: FontWeight.w600
                                                   ),
                                                 ),
                                               ),
@@ -481,10 +489,28 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                       }
                     },
                     "Presupuestos": {
+                      "FechaAlta": (value){
+                        if(value != null){
+                          return Text(
+                            Utils.cuteDateTimeText(DateTime.parse(value)),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600
+                            ),
+                          );
+                        }else{
+                          return Text(
+                            "-",
+                            textAlign: TextAlign.center);
+                        }
+                      },
                       "_PrecioTotal": (value) {
                         return Text(
                           value != null ? "\$"+value.toString() : "-",
                           textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600
+                          ),
                         );
                       },
                       "Estado": (value) {
@@ -507,11 +533,9 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                     "Clientes": {
                       "*": "Cliente"
                     },
-                    "Usuarios": {
-                      "*": "Usuario"
-                    },
                     "Presupuestos": {
-                      "_PrecioTotal": "Total"
+                      "_PrecioTotal": "Total",
+                      "FechaAlta": "Fecha"
                     },
                     "LineasPresupuesto": {
                       "*": "Detalle"
@@ -546,10 +570,9 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                           context: context,
                           barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                           builder: (BuildContext context) {
-                            return CrearPresupuestosAlertDialog(
+                            return PresupuestosAlertDialog(
                               title: "Crear Presupuestos",
-                              onSuccess: () {
-                                Navigator.of(context).pop();
+                              updateAllCallback: () {
                                 setState(() {
                                   refreshValue = Random().nextInt(99999);
                                 });
@@ -709,61 +732,69 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                       }
                     }
                     return <Widget>[
-                      IconButtonTableAction(
-                        iconData: Icons.show_chart,
-                        onPressed: () {
-                          if (idPresupuesto != 0) {
-                            showDialog(
-                              context: context,
-                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                              builder: (BuildContext context) {
-                                return ModelViewDialog(
-                                  content: ModelView(
-                                    service: PresupuestosService(),
-                                    getMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto),
-                                    isList: false,
-                                    itemBuilder: (mapModel, index, itemController) {
-                                      return Presupuestos().fromMap(mapModel).viewModel(context);
-                                    },
-                                  ),
-                                );
-                              },
-                            );
+                      Opacity(
+                        opacity: idPresupuesto == 0 ? 0.2 : (estado  != "E" ? 1 : 0.2),
+                        child: IconButtonTableAction(
+                          iconData: Icons.remove_red_eye,
+                          onPressed: idPresupuesto == 0 ? null : estado  == "E" ? null : () async{
+                            Response<Models<dynamic>> response;
+                            Presupuestos _presupuesto;
+                            
+                            if(presupuesto?.idPresupuesto != null){
+                              response = await PresupuestosService().damePor(PresupuestosService().dameConfiguration(presupuesto.idPresupuesto));
+                            }
+                            if(response?.status == RequestStatus.SUCCESS){
+                              _presupuesto = Presupuestos().fromMap(response.message.toMap());
+                            }
+                            await Printing.layoutPdf(onLayout: (format) => PDFManager.generarPresupuestoPDF(
+                              format, 
+                              _presupuesto
+                            ));
                           }
-                        }
+                        ),
                       ),
-                      IconButtonTableAction(
-                        iconData: Icons.edit,
-                        onPressed: () {
-                          if (idPresupuesto != 0) {
-                            showDialog(
-                              context: context,
-                              barrierColor: Theme.of(context)
-                                  .backgroundColor
-                                  .withOpacity(0.5),
-                              builder: (BuildContext context) {
-                                return ModelView(
-                                  service: PresupuestosService(),
-                                  getMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto),
-                                  isList: false,
-                                  itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarPresupuestosAlertDialog(
-                                    title: "Modificar presupuesto",
-                                    presupuesto: Presupuestos().fromMap(updatedMapModel),
-                                    onSuccess: () {
-                                      Navigator.of(context).pop();
-                                      itemsController.add(ItemAction(
-                                          event: ItemEvents.Update,
-                                          index: index,
-                                          updateMethodConfiguration:
-                                              PresupuestosService().dameConfiguration(
-                                                  presupuesto.idPresupuesto)));
-                                    },
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        },
+                      Opacity(
+                        opacity: idPresupuesto == 0 ? 0.2 : (estado  != "V" ? 1 : 0.2),
+                        child: IconButtonTableAction(
+                          iconData: Icons.edit,
+                          onPressed: idPresupuesto == 0 ? null : estado  == "V" ? null : (){
+                            if (idPresupuesto != 0) {
+                              showDialog(
+                                context: context,
+                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                builder: (BuildContext context) {
+                                  return ModelViewDialog(
+                                    content: ModelView(
+                                      service: PresupuestosService(),
+                                      getMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto),
+                                      isList: false,
+                                      itemBuilder: (mapModel, internalIndex, itemController) {
+                                        return PresupuestosAlertDialog(
+                                          title: "Modificar presupuesto",
+                                          presupuesto: Presupuestos().fromMap(mapModel),
+                                          updateAllCallback: (){
+                                            setState(() {
+                                              refreshValue = Random().nextInt(99999);
+                                            });
+                                          },
+                                          updateRowCallback: (){
+                                            itemsController.add(
+                                              ItemAction(
+                                                event: ItemEvents.Update,
+                                                index: index,
+                                                updateMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto)
+                                              )
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
                       ),
                       IconButtonTableAction(
                         iconData: Icons.delete_outline,

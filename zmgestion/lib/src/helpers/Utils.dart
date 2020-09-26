@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:zmgestion/src/models/Clientes.dart';
 
 abstract class Utils{
   static cuteDateTimeText(DateTime tm){
@@ -85,6 +86,19 @@ abstract class Utils{
       var hour = tm.hour < 10 ? "0"+tm.hour.toString() : tm.hour.toString();
       var minute = tm.minute < 10 ? "0"+tm.minute.toString() : tm.minute.toString();
       return withoutHour + " a las " + hour + ":" + minute; //at
+  }
+
+  static String clientName(Clientes cliente){
+    if(cliente != null){
+      String nombre = "";
+      if(cliente.nombres != null && cliente.nombres != ""){
+        nombre = cliente.nombres+" "+cliente.apellidos;
+      }else{
+        nombre = cliente.razonSocial;
+      }
+      return nombre;
+    }
+    return "";
   }
 }
 

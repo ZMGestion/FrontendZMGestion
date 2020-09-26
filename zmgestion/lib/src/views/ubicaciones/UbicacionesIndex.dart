@@ -427,7 +427,6 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                         "IdUbicacion": idUbicacion
                                       }
                                     }).then((response) {
-                                      print(response);
                                       if (response.status ==
                                           RequestStatus.SUCCESS) {
                                         itemsController.add(ItemAction(

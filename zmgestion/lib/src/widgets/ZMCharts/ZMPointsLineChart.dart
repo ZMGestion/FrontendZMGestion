@@ -59,8 +59,6 @@ class _ZMPointsLineChartState<T> extends State<ZMPointsLineChart> {
   }
 
   List<charts.Series<Map<String, dynamic>, DateTime>> getData() {
-    print(modelsList);
-
     return [
       new charts.Series<Map<String, dynamic>, DateTime>(
         id: 'LineChart',
