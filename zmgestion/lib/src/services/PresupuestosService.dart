@@ -167,6 +167,31 @@ class PresupuestosService extends Services{
   }
 
   @override
+  DoMethodConfiguration modificarLineaPresupuesto(LineasProducto lineaProducto) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/presupuestos/lineasPresupuesto/modificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: lineaProducto,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de presupuesto se ha modificado con éxito"
+      ),
+      attributes: {
+        "LineasProducto": [
+          "IdLineaProducto", "IdReferencia", "Cantidad", "PrecioUnitario"
+        ],
+        "ProductosFinales": [
+          "IdProducto", "IdTela", "IdLustre"
+        ],
+      }
+    );
+  }
+
+  @override
   DoMethodConfiguration pasarACreado(Map<String, dynamic> payload) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(

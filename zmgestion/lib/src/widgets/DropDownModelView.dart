@@ -16,6 +16,7 @@ class DropDownModelView extends StatefulWidget {
   final bool allOption;
   final dynamic allOptionValue;
   final String allOptionText;
+  final bool enabled;
   final TextStyle textStyle;
   final String Function(Map<String, dynamic> mapModel) displayedNameFunction;
   final Function(dynamic value) onSaved;
@@ -40,8 +41,9 @@ class DropDownModelView extends StatefulWidget {
     this.valueName,
     this.displayedName,
     this.allOption = false,
-    this.allOptionText = "",
     this.allOptionValue,
+    this.allOptionText = "",
+    this.enabled = true,
     this.textStyle = const TextStyle(color: Colors.black, fontSize: 16),
     this.displayedNameFunction,
     this.onSaved,
@@ -114,7 +116,6 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             }
             response.message.forEach((model) {
               Map<String, dynamic> mapModel = model.toMap();
-              print(mapModel);
               _models.addAll({mapModel[widget.parentName][widget.valueName]: mapModel});
               _items.add(DropdownMenuItem(
                 value: mapModel[widget.parentName][widget.valueName],
@@ -208,7 +209,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
                     dropdownColor: widget.dropdownColor,
                     iconDisabledColor: widget.iconDisabledColor,
                     iconEnabledColor: widget.iconEnabledColor,
-                    onChanged: (newValue) {
+                    onChanged: !widget.enabled ? null : (newValue) {
                       if (!widget.disable) {
                         if (newValue != null) {
                           state.didChange(newValue);

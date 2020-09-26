@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 
 class ConfirmationAlertDialog extends StatefulWidget {
   final Function onAccept;
   final Function onCancel;
   final String cancelText;
   final String acceptText;
+  final Color acceptColor;
+  final Color cancelColor;
+  final Icon cancelIcon;
+  final Icon acceptIcon;
   final String title;
   final String message;
 
@@ -14,6 +19,10 @@ class ConfirmationAlertDialog extends StatefulWidget {
     this.onCancel, 
     this.acceptText = "Aceptar",
     this.cancelText = "Cancelar",
+    this.acceptIcon, 
+    this.cancelIcon, 
+    this.cancelColor,
+    this.acceptColor,
     this.title = "", 
     this.message = ""
   }):super(key: key);
@@ -33,16 +42,18 @@ class _ConfirmationAlertDialogState extends State<ConfirmationAlertDialog> {
           fontSize: 20,
           fontWeight: FontWeight.w600),
       actions: <Widget>[
-        FlatButton(
-            color: Colors.green,
-            child: Text(widget.acceptText),
-            onPressed: widget.onAccept
-          ),
-        FlatButton(
-          color: Colors.red,
-          child: Text(widget.cancelText),
-          onPressed: widget.onCancel
+        ZMStdButton(
+          icon: widget.acceptIcon,
+          text: Text(widget.acceptText),
+          color: widget.acceptColor,
+          onPressed: widget.onAccept,
         ),
+        ZMStdButton(
+          icon: widget.cancelIcon,
+          text: Text(widget.cancelText),
+          color: widget.cancelColor,
+          onPressed: widget.onCancel,
+        )
       ],
     );
     ;

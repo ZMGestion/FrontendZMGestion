@@ -7,6 +7,7 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
@@ -42,25 +43,27 @@ import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMLineaProducto.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMListLineasProducto.dart';
 
-class CrearPresupuestosAlertDialog extends StatefulWidget{
+class PresupuestosAlertDialog extends StatefulWidget{
   final String title;
-  final Function() onSuccess;
+  final Function() updateAllCallback;
+  final Function() updateRowCallback;
   final Presupuestos presupuesto;
   final Function(dynamic) onError;
 
-  const CrearPresupuestosAlertDialog({
+  const PresupuestosAlertDialog({
     Key key,
     this.title,
-    this.onSuccess,
+    this.updateAllCallback,
+    this.updateRowCallback,
     this.presupuesto,
     this.onError
   }) : super(key: key);
 
   @override
-  _CrearPresupuestosAlertDialogState createState() => _CrearPresupuestosAlertDialogState();
+  _PresupuestosAlertDialogState createState() => _PresupuestosAlertDialogState();
 }
 
-class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDialog> {
+class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
   final _formKey = GlobalKey<FormState>();
   
   int _idCliente;
@@ -70,15 +73,18 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
   Presupuestos presupuesto;
   bool showLineasForm = false;
   LineasProducto _lineaProductoEditando;
+  bool _editing = false;
+  bool _changed = false;
 
   List<LineasProducto> _lineasProducto = [];
-
-  final TextEditingController _precioUnitarioController = TextEditingController();
-  final TextEditingController _precioTotalController = TextEditingController();
 
   @override
   void initState() {
     presupuesto = widget.presupuesto;
+    if(presupuesto != null){
+      _editing = true;
+      _lineasProducto = widget.presupuesto.lineasProducto;
+    }
     super.initState();
   }
 
@@ -90,7 +96,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
       setState(() {
         usuario = _usuariosProvider.usuario;
         ubicacionCargada = true;
-        _idUbicacion = usuario.idUbicacion;
+        _idUbicacion = presupuesto != null ? presupuesto?.idUbicacion : usuario.idUbicacion;
       });
     }
       return AppLoader(
@@ -133,6 +139,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                 children: [
                                   Expanded(
                                     child: AutoCompleteField(
+                                        enabled: presupuesto == null,
                                         prefixIcon: Icon(
                                           Icons.person_outline,
                                           color: Color(0xff87C2F5).withOpacity(0.8),
@@ -145,6 +152,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                         ),
                                         labelText: "Cliente",
                                         hintText: "Ingrese un cliente",
+                                        initialValue: Utils.clientName(presupuesto?.cliente),
                                         invalidTextColor: Color(0xffffaaaa),
                                         validTextColor: Color(0xffaaffaa),
                                         parentName: "Clientes",
@@ -194,7 +202,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                         displayedName: "Ubicacion",
                                         valueName: "IdUbicacion",
                                         allOption: false,
-                                        initialValue: usuario.idUbicacion,
+                                        initialValue: _idUbicacion,
                                         errorMessage: "Debe seleccionar una ubicación",
                                         textStyle: TextStyle(
                                           color: Color(0xff97D2FF).withOpacity(1),
@@ -264,6 +272,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                                           })).then((response) {
                                                             if (response.status == RequestStatus.SUCCESS){
                                                               setState(() {
+                                                                _changed = true;
                                                                 _lineasProducto.remove(lp);
                                                               });
                                                             }
@@ -306,9 +315,20 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                ZMTextButton(
+                                                ZMStdButton(
                                                   color: Theme.of(context).primaryTextTheme.headline6.color,
-                                                  text: "Agregar linea",
+                                                  icon: Icon(
+                                                    Icons.add,
+                                                    color: Theme.of(context).primaryColorLight,
+                                                    size: 16,
+                                                  ),
+                                                  text: Text(
+                                                    "Agregar linea",
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).primaryColorLight,
+                                                      fontWeight: FontWeight.w600
+                                                    )
+                                                  ),
                                                   onPressed: (){
                                                     setState(() {
                                                       showLineasForm = true;
@@ -326,6 +346,7 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                           lineaProducto: _lineaProductoEditando,
                                           onCancel: (){
                                             setState(() {
+                                              _lineaProductoEditando = null;
                                               showLineasForm = false;
                                             });
                                           },
@@ -336,59 +357,96 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                               });
                                             }else{
                                               if(_formKey.currentState.validate()){
-                                                bool success = true;
-                                                if(presupuesto == null){
-                                                  //Creamos el presupuesto
-                                                  Presupuestos _presupuesto = Presupuestos(
-                                                    idCliente: _idCliente,
-                                                    idUbicacion: _idUbicacion
-                                                  );
-                                                  await PresupuestosService().crear(_presupuesto).then(
-                                                    (response){
-                                                      if(response.status == RequestStatus.SUCCESS){
-                                                        Presupuestos _presupuestoCreado = Presupuestos().fromMap(response.message);
-                                                        setState(() {
-                                                          presupuesto = _presupuestoCreado;
-                                                        });
-                                                      }else{
-                                                        success = false;
-                                                        if(widget.onError != null){
-                                                          widget.onError(response.message);
+                                                if(_lineaProductoEditando != null){
+                                                  if(presupuesto != null){
+                                                    LineasProducto _lp = LineasProducto(
+                                                      idLineaProducto: _lineaProductoEditando.idLineaProducto,
+                                                      idReferencia: presupuesto.idPresupuesto,
+                                                      cantidad: lp.cantidad,
+                                                      precioUnitario: lp.precioUnitario,
+                                                      productoFinal: ProductosFinales(
+                                                        idProducto: lp.productoFinal?.idProducto,
+                                                        idTela: lp.productoFinal?.idTela,
+                                                        idLustre: lp.productoFinal?.idLustre,
+                                                        producto: lp.productoFinal?.producto,
+                                                        tela: lp.productoFinal?.tela,
+                                                        lustre: lp.productoFinal?.lustre
+                                                      ),
+                                                    );
+                                                    PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().modificarLineaPresupuesto(_lp)).then(
+                                                      (response){
+                                                        if(response.status == RequestStatus.SUCCESS){
+                                                          setState(() {
+                                                            _changed = true;
+                                                            _lineasProducto.add(
+                                                              LineasProducto().fromMap(response.message)
+                                                            );
+                                                            showLineasForm = false;
+                                                          });
+                                                        }else{
+                                                          if(widget.onError != null){
+                                                            widget.onError(response.message);
+                                                          }
                                                         }
                                                       }
-                                                    }
-                                                  );
-                                                }
-                                                if(success){
-                                                  LineasProducto _lp = LineasProducto(
-                                                    idReferencia: presupuesto.idPresupuesto,
-                                                    cantidad: lp.cantidad,
-                                                    precioUnitario: lp.precioUnitario,
-                                                    productoFinal: ProductosFinales(
-                                                      idProducto: lp.productoFinal?.idProducto,
-                                                      idTela: lp.productoFinal?.idTela,
-                                                      idLustre: lp.productoFinal?.idLustre,
-                                                      producto: lp.productoFinal?.producto,
-                                                      tela: lp.productoFinal?.tela,
-                                                      lustre: lp.productoFinal?.lustre
-                                                    ),
-                                                  );
-                                                  PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().crearLineaPrespuesto(_lp)).then(
-                                                    (response){
-                                                      if(response.status == RequestStatus.SUCCESS){
-                                                        setState(() {
-                                                          _lineasProducto.add(
-                                                            LineasProducto().fromMap(response.message)
-                                                          );
-                                                          showLineasForm = false;
-                                                        });
-                                                      }else{
-                                                        if(widget.onError != null){
-                                                          widget.onError(response.message);
+                                                    );
+                                                  }
+                                                }else{
+                                                  bool success = true;
+                                                  if(presupuesto == null){
+                                                    //Creamos el presupuesto
+                                                    Presupuestos _presupuesto = Presupuestos(
+                                                      idCliente: _idCliente,
+                                                      idUbicacion: _idUbicacion
+                                                    );
+                                                    await PresupuestosService().crear(_presupuesto).then(
+                                                      (response){
+                                                        if(response.status == RequestStatus.SUCCESS){
+                                                          Presupuestos _presupuestoCreado = Presupuestos().fromMap(response.message);
+                                                          setState(() {
+                                                            presupuesto = _presupuestoCreado;
+                                                          });
+                                                        }else{
+                                                          success = false;
+                                                          if(widget.onError != null){
+                                                            widget.onError(response.message);
+                                                          }
                                                         }
                                                       }
-                                                    }
-                                                  );
+                                                    );
+                                                  }
+                                                  if(success){
+                                                    LineasProducto _lp = LineasProducto(
+                                                      idReferencia: presupuesto.idPresupuesto,
+                                                      cantidad: lp.cantidad,
+                                                      precioUnitario: lp.precioUnitario,
+                                                      productoFinal: ProductosFinales(
+                                                        idProducto: lp.productoFinal?.idProducto,
+                                                        idTela: lp.productoFinal?.idTela,
+                                                        idLustre: lp.productoFinal?.idLustre,
+                                                        producto: lp.productoFinal?.producto,
+                                                        tela: lp.productoFinal?.tela,
+                                                        lustre: lp.productoFinal?.lustre
+                                                      ),
+                                                    );
+                                                    PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().crearLineaPrespuesto(_lp)).then(
+                                                      (response){
+                                                        if(response.status == RequestStatus.SUCCESS){
+                                                          setState(() {
+                                                            _changed = true;
+                                                            _lineasProducto.add(
+                                                              LineasProducto().fromMap(response.message)
+                                                            );
+                                                            showLineasForm = false;
+                                                          });
+                                                        }else{
+                                                          if(widget.onError != null){
+                                                            widget.onError(response.message);
+                                                          }
+                                                        }
+                                                      }
+                                                    );
+                                                  }
                                                 }
                                               }
                                             }                                          
@@ -420,28 +478,39 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                   ),
                                   onPressed: scheduler.isLoading() ? null : () async{
                                     if(presupuesto != null){
-                                      PresupuestosService().doMethod(PresupuestosService().pasarACreado(
-                                        presupuesto.toMap()
-                                      )).then(
-                                        (response) async{
-                                          if(response.status == RequestStatus.SUCCESS){
-                                            await showDialog(
-                                              context: context,
-                                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                              barrierDismissible: false,
-                                              builder: (BuildContext context) {
-                                                return PresupuestoCreadoDialog(
-                                                  presupuesto: presupuesto
-                                                );
-                                              },
-                                            );
-                                            Navigator.of(context).pop();
+                                      if(presupuesto.estado == null || presupuesto.estado == "E"){
+                                        await PresupuestosService().doMethod(PresupuestosService().pasarACreado(
+                                          presupuesto.toMap()
+                                        )).then(
+                                          (response) async{
+                                            if(response.status == RequestStatus.SUCCESS){
+                                              await showDialog(
+                                                context: context,
+                                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return PresupuestoCreadoDialog(
+                                                    presupuesto: presupuesto
+                                                  );
+                                                },
+                                              );
+                                              if(_editing){
+                                                if(presupuesto.estado == "E"){
+                                                  if(widget.updateRowCallback != null){
+                                                    widget.updateRowCallback();
+                                                  }
+                                                }
+                                              }else{
+                                                if(widget.updateAllCallback != null){
+                                                  widget.updateAllCallback();
+                                                }
+                                              }
+                                            }
                                           }
-                                        }
-                                      );
-                                    }else{
-                                      Navigator.of(context).pop();
+                                        );
+                                      }
                                     }
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 SizedBox(
@@ -452,26 +521,51 @@ class _CrearPresupuestosAlertDialogState extends State<CrearPresupuestosAlertDia
                                   text: "Cancelar",
                                   onPressed: () async{
                                     if(presupuesto != null){
-                                      await showDialog(
-                                        context: context,
-                                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                        barrierDismissible: false,
-                                        builder: (BuildContext context) {
-                                          return ConfirmationAlertDialog(
-                                            title: "Presupuesto",
-                                            message: "¿Qué desea hacer con los cambios?",
-                                            acceptText: "Conservar borrador",
-                                            cancelText: "Descartar cambios",
-                                            onAccept: () async {
-                                              Navigator.of(context).pop();
-                                            },
-                                            onCancel: () async {
-                                              await PresupuestosService().borra(presupuesto.toMap());
-                                              Navigator.of(context).pop();
-                                            },
-                                          );
-                                        },
-                                      );
+                                      if(presupuesto.estado == null || presupuesto.estado == "E"){
+                                        await showDialog(
+                                          context: context,
+                                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) {
+                                            return ConfirmationAlertDialog(
+                                              title: "Presupuesto",
+                                              message: "¿Qué desea hacer con el presupuesto?",
+                                              acceptText: "Conservar",
+                                              cancelText: "Borrar",
+                                              acceptColor: Theme.of(context).primaryColorLight,
+                                              cancelColor: Colors.red,
+                                              acceptIcon: Icon(
+                                                Icons.check,
+                                                color: Colors.white.withOpacity(0.7),
+                                                size: 16,
+                                              ),
+                                              cancelIcon: Icon(
+                                                Icons.delete_outline,
+                                                color: Colors.white.withOpacity(0.7),
+                                                size: 16,
+                                              ),
+                                              onAccept: () async {
+                                                if(_editing && _changed){
+                                                  if(widget.updateRowCallback != null){
+                                                    widget.updateRowCallback();
+                                                  }
+                                                }
+                                                if(!_editing){
+                                                  widget.updateAllCallback();
+                                                }
+                                                Navigator.of(context).pop();
+                                              },
+                                              onCancel: () async {
+                                                await PresupuestosService().borra(presupuesto.toMap());
+                                                if(widget.updateAllCallback != null){
+                                                  widget.updateAllCallback();
+                                                }
+                                                Navigator.of(context).pop();
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
                                     }
                                     Navigator.of(context).pop();
                                   },

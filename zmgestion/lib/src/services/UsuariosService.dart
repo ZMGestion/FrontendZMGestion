@@ -156,7 +156,6 @@ class UsuariosService extends Services{
           var localStorage = window.localStorage;
           localStorage["tokenType"] = "JWT";
           localStorage["token"] = usuario.token;
-          print(response);
           ZMLoader.of(context).rebuild();
         },
         onError: (error){

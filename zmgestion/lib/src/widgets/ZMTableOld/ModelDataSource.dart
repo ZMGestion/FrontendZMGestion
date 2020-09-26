@@ -16,17 +16,13 @@ class ModelDataSource extends DataTableSource {
   });
 
   void sort<T>(Comparable<T> Function(Map<String, dynamic> mapModel) getField, bool ascending) {
-    print("SI LLEGa");
     List<Map<String, dynamic>> mapModels = List<Map<String, dynamic>>();
     models.forEach((element) {
       mapModels.add(element.toMap());
     });
     mapModels.sort((a, b) {
-      print("Si");
-      print(a);
       final aValue = getField(a);
       final bValue = getField(b);
-      print(aValue);
       return ascending
           ? Comparable.compare(aValue, bValue)
           : Comparable.compare(bValue, aValue);

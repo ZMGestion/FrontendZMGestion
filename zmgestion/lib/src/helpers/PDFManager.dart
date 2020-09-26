@@ -488,7 +488,7 @@ abstract class PDFManager{
                                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                                 children: [
                                   pw.Text(
-                                    DateFormat('dd-MM-yyyy HH:mm').format(new DateTime.now()),
+                                    DateFormat('dd-MM-yyyy HH:mm').format(presupuesto.fechaAlta),
                                     style: pw.TextStyle(
                                       fontSize: 11
                                     )

@@ -8,6 +8,7 @@ import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class AutoCompleteField extends StatefulWidget {
+  final bool enabled;
   final String labelText;
   final String hintText;
   final Function(Map<String, dynamic> mapModel) onSelect;
@@ -28,6 +29,7 @@ class AutoCompleteField extends StatefulWidget {
 
   const AutoCompleteField({
     Key key, 
+    this.enabled = true,
     this.labelText,
     this.hintText,
     this.onSelect,
@@ -186,6 +188,7 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
     return CompositedTransformTarget(
       link: this._layerLink,
       child: TextFormField(
+        enabled: widget.enabled,
         focusNode: this._focusNode,
         controller: _textController,
         style: TextStyle(

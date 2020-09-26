@@ -24,6 +24,7 @@ class IconButtonTableAction extends StatelessWidget {
       shape: GFIconButtonShape.circle,
       color: Colors.transparent,
       hoverColor: Colors.black.withOpacity(0.1),
+      disabledColor: Colors.black.withOpacity(0.16),
       onPressed: onPressed
     );
   }
