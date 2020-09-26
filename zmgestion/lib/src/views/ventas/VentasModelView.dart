@@ -32,7 +32,7 @@ class _VentasModelViewState extends State<VentasModelView> {
   RequestScheduler scheduler;
   var dateFormat = DateFormat("dd/MM/yyyy HH:mm");
   Color color;
-  String cliente, domicilio;
+  String cliente, domicilio = '';
   List<Widget> _lineasVenta = [];
 
   @override
@@ -45,11 +45,7 @@ class _VentasModelViewState extends State<VentasModelView> {
       }else{
         cliente = venta.cliente.razonSocial;
       }
-      if(venta.cliente.domicilio?.domicilio != null){
-      domicilio = venta.cliente.domicilio.domicilio;
-      }else{
-        domicilio = "";
-      }
+      domicilio = venta.domicilio?.domicilio;
       switch (venta.estado) {
         case 'A':{
           color = Colors.red;

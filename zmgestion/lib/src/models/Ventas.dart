@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
+import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
@@ -36,6 +37,7 @@ class Ventas extends Equatable with Models{
   final Clientes cliente;
   final Usuarios usuario;
   final Ubicaciones ubicacion;
+  final Domicilios domicilio;
 
   Ventas({
     this.idVenta,
@@ -50,6 +52,7 @@ class Ventas extends Equatable with Models{
     this.cliente, 
     this.usuario, 
     this.ubicacion,
+    this.domicilio,
     this.precioTotal,
   });
 
@@ -89,6 +92,7 @@ class Ventas extends Equatable with Models{
         cliente:        mapModel["Clientes"] != null ? Clientes().fromMap({"Clientes": mapModel["Clientes"]}) : null,
         usuario:        mapModel["Usuarios"] != null ? Usuarios().fromMap({"Usuarios": mapModel["Usuarios"]}) : null,
         ubicacion:      mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
+        domicilio:      mapModel["Domicilios"] != null? Domicilios().fromMap(mapModel): null,
         lineasProducto: _lineasProducto,
     );
   }
@@ -123,6 +127,7 @@ class Ventas extends Equatable with Models{
     Map<String, dynamic> clientes = this.cliente?.toMap();
     Map<String, dynamic> usuarios = this.usuario?.toMap();
     Map<String, dynamic> ubicaciones = this.ubicacion?.toMap();
+    Map<String, dynamic> domicilios = this.domicilio?.toMap();
 
     Map<String, dynamic> result = {};
     result.addAll(presupuestos);
@@ -130,6 +135,7 @@ class Ventas extends Equatable with Models{
     result.addAll(clientes != null ? clientes : {});
     result.addAll(usuarios != null ? usuarios : {});
     result.addAll(ubicaciones != null ? ubicaciones : {});
+    result.addAll(domicilios != null ? domicilios : {});
 
     return result;
   }

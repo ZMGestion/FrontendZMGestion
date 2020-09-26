@@ -230,6 +230,21 @@ class VentasService extends Services{
     );
   }
 
+  ListMethodConfiguration buscarComprobantesConfiguration(Map<String, dynamic> payload){
+    return ListMethodConfiguration(
+      method: Methods.POST,
+      path:"/ventas/comprobantes",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showLoading: true,
+        showError: true,
+        errorMessage: "Ha ocurrido un error"
+      )
+    );
+  }
+
   @override
   DoMethodConfiguration altaConfiguration() {
     // TODO: implement altaConfiguration
