@@ -41,7 +41,6 @@ class _CrearLineaVentaState extends State<CrearLineaVenta> {
           color: Theme.of(context).primaryColorLight,
           child: ZMLineaProducto(
             onAccept: (lineaProducto){
-              print(lineaProducto.toMap());
               widget.onAccept(lineaProducto);
               Navigator.of(context).pop();
             },

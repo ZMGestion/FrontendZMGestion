@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
@@ -22,10 +23,12 @@ import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 class TransformarPresupuestosVentaAlertDialog extends StatefulWidget {
   final List<Models> presupuestos;
+  final Function onSuccess;
 
   const TransformarPresupuestosVentaAlertDialog({
     Key key, 
-    this.presupuestos
+    this.presupuestos, 
+    this.onSuccess
   }) : super(key: key);
 
   @override
@@ -113,65 +116,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
             children: [
               encabezado(),
               cuerpo(),
-              ProgressButton.icon(
-                radius: 7,
-                iconedButtons: {
-                  ButtonState.idle: IconedButton(
-                      text: "Crear Venta",
-                      icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-                      color: Colors.blueAccent),
-                  ButtonState.loading: IconedButton(
-                      text: "Cargando", color: Colors.grey.shade400),
-                  ButtonState.fail: IconedButton(
-                      text: "Error",
-                      icon: Icon(Icons.cancel, color: Colors.white),
-                      color: Colors.red.shade300),
-                  ButtonState.success: IconedButton(
-                      text: "Éxito",
-                      icon: Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                      ),
-                      color: Colors.green.shade400)
-                },
-                onPressed: () async{
-                  List<int> _lineasProducto = [];
-                  List<LineasProducto> _nuevasLineas = new List<LineasProducto>();
-                  _lineasVenta.forEach((element) {
-                    if(element.idLineaProducto != null){
-                      _lineasProducto.add(element.idLineaProducto);
-                    }else{
-                      _nuevasLineas.add(element);
-                    }
-                    
-                  });
-
-                  Map<String, dynamic> _payload = new Map<String, dynamic>();
-                  _payload.addAll({
-                    "Ventas":{
-                      "IdUbicacion":_idUbicacion,
-                      "IdDomicilio": _idDomicilio,
-                    },
-                    "LineasProducto": _lineasProducto,
-                    "LineasVenta": _nuevasLineas
-                  });
-
-                  setState(() {
-                    creatingVenta = true;
-                  });
-                  await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
-                    if(response.status == RequestStatus.SUCCESS){
-                      print(response.message);
-                    }else{
-                      print("Ha ocurrido un error");
-                    }
-                  });
-                  setState(() {
-                    creatingVenta = false;
-                  });
-                },
-                state: creatingVenta ? ButtonState.loading : ButtonState.idle,
-              )
+              boton(scheduler)
             ],
           )
         )
@@ -180,8 +125,78 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
     );
   }
 
+  Widget boton(RequestScheduler scheduler){
+    return ProgressButton.icon(
+      radius: 7,
+      state: creatingVenta ? ButtonState.loading : ButtonState.idle,
+      iconedButtons: {
+        ButtonState.idle: IconedButton(
+            text: "Crear Venta",
+            icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+            color: Colors.blueAccent),
+        ButtonState.loading: IconedButton(
+            text: "Cargando", color: Colors.grey.shade400),
+        ButtonState.fail: IconedButton(
+            text: "Error",
+            icon: Icon(Icons.cancel, color: Colors.white),
+            color: Colors.red.shade300),
+        ButtonState.success: IconedButton(
+            text: "Éxito",
+            icon: Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+            color: Colors.green.shade400)
+      },
+      onPressed: (_lineasVenta.isNotEmpty && _idUbicacion != null && _idDomicilio != null) ? () async{
+          List<int> _lineasProducto = [];
+          List<Map<String, dynamic>> _nuevasLineas = new List<Map<String, dynamic>>();
+
+          _lineasVenta.forEach((element) {
+            if(element.idLineaProducto != null){
+              _lineasProducto.add(element.idLineaProducto);
+            }else{
+              _nuevasLineas.add({
+                "LineasProducto":{
+                  "Cantidad": element.cantidad,
+                  "PrecioUnitario": element.precioUnitario
+                },
+                "ProductosFinales":{
+                  "IdProducto": element.productoFinal.producto?.idProducto,
+                  "IdTela": element.productoFinal.tela != null ? element.productoFinal.tela.idTela : 0,
+                  "IdLustre": element.productoFinal.lustre != null ? element.productoFinal.lustre.idLustre : 0,
+                }
+              });
+            }
+          });
+          Map<String, dynamic> _payload = new Map<String, dynamic>();
+          _payload.addAll({
+            "Ventas":{
+              "IdUbicacion":_idUbicacion,
+              "IdDomicilio": _idDomicilio,
+            },
+            "LineasPresupuesto": _lineasProducto,
+            "LineasVenta": _nuevasLineas
+          });
+          setState(() {
+            creatingVenta = true;
+          });
+          await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
+            if(response.status == RequestStatus.SUCCESS){
+              Navigator.pop(context, true);
+              widget.onSuccess();
+            }
+          });
+          setState(() {
+            creatingVenta = false;
+          });
+        } : null,
+    );
+  }
+
   Widget encabezado(){
     return Card(
+      color: Theme.of(context).primaryColorLight,
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Column(
@@ -198,13 +213,15 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           padding: EdgeInsets.zero,
                           labelText: "Cliente",
                           fontSize: 14,
+                          color: Color(0xff97D2FF).withOpacity(1),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Text(
                             cliente,
                             style: TextStyle(
-                              color: Theme.of(context).primaryColorDark,
+                              color: Color(0xff97D2FF).withOpacity(1),
+                              fontWeight: FontWeight.w500
                             ),
                           ),
                         ),
@@ -226,8 +243,21 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                       allOption: false,
                       errorMessage:
                         "Debe seleccionar una ubicación",
+                      textStyle: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                      ),
+                      dropdownColor: Theme.of(context).primaryColor,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                        ),
+                        hintStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                        labelStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
                       ),
                       onChanged: (idSelected) {
                         setState(() {
@@ -252,10 +282,22 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                       displayedName: "Domicilio",
                       valueName: "IdDomicilio",
                       allOption: false,
-                      errorMessage:
-                        "Debe seleccionar un domicilio",
+                      errorMessage: "Debe seleccionar un domicilio",
+                      textStyle: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                      ),
+                      dropdownColor: Theme.of(context).primaryColor,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                        ),
+                        hintStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                        labelStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
                       ),
                       onChanged: (idSelected) {
                         setState(() {
@@ -268,7 +310,13 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                 SizedBox(width: 12,),
                 Expanded(
                   child: Container(
-                    child: Text("Total: \$" + _total.toString()),
+                    child: Text(
+                      "Total: \$" + _total.toString(),
+                      style: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                        fontWeight: FontWeight.w700
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -278,6 +326,8 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
       ),
     );
   }
+
+
 
   Widget cuerpo(){
     return Card(
@@ -371,7 +421,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
           ),
           Divider(),
           Container(
-            height: SizeConfig.blockSizeVertical*40,
+            height: SizeConfig.blockSizeVertical*35,
             child: ListView.separated(
               itemCount: _lineasPresupuesto.length,
               itemBuilder: (context, index){
@@ -556,7 +606,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
           ),
           Divider(),
           Container(
-            height: SizeConfig.blockSizeVertical*40,
+            height: SizeConfig.blockSizeVertical*35,
             child: ListView.separated(
               itemCount: _lineasVenta.length,
               itemBuilder: (context, index){

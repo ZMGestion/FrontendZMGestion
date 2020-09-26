@@ -6,27 +6,28 @@ import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
+import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/services/Services.dart';
 
-class PresupuestosService extends Services{
+class VentasService extends Services{
 
   RequestScheduler scheduler;
   BuildContext context;
 
-  PresupuestosService({RequestScheduler scheduler, BuildContext context}){
+  VentasService({RequestScheduler scheduler, BuildContext context}){
     this.scheduler = scheduler;
     this.context = context;
   }
 
-  GetMethodConfiguration dameConfiguration(int idPresupuesto){
+  GetMethodConfiguration dameConfiguration(int idVenta){
     return GetMethodConfiguration(
       method: Methods.POST,
       authorizationHeader: true,
-      model: Presupuestos(),
-      path: "/presupuestos/dame",
+      model: Ventas(),
+      path: "/ventas/dame",
       payload: {
-        "Presupuestos": {
-          "IdPresupuesto": idPresupuesto
+        "Ventas": {
+          "IdVenta": idVenta
         }
       },
       scheduler: scheduler
@@ -38,52 +39,19 @@ class PresupuestosService extends Services{
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/crear",
+      path: "/ventas/crear",
       authorizationHeader: true,
       scheduler: scheduler,
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,
-        successMessage: "El presupuesto se ha creado con éxito"
+        successMessage: "La venta se ha creado con éxito"
       ),
       attributes: {
-        "Presupuestos": [
-          "IdCliente", "IdUsuario", "IdUbicacion" /*COMPLETAR*/
+        "Ventas": [
+          "IdCliente", "IdDomicilio", "IdUbicacion", "Observaciones"
         ]
       }
-    );
-  }
-
-  @override
-  DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
-    return DoMethodConfiguration(
-      method: Methods.POST,
-      path: "/presupuestos/darAlta",
-      authorizationHeader: true,
-      requestConfiguration: RequestConfiguration(
-        successMessage: "El presupuesto se ha activado con éxito",
-        showSuccess: true,
-        errorMessage: "No se ha podido activar el presupuesto, intentelo nuevamente más tarde",
-        showError: true
-      )
-    );
-  }
-
-  @override
-  DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
-    return DoMethodConfiguration(
-      method: Methods.POST,
-      path: "/presupuestos/darBaja",
-      authorizationHeader: true,
-      scheduler: scheduler,
-      requestConfiguration: RequestConfiguration(
-        successMessage: "El presupuesto se ha dado de baja con éxito",
-        showSuccess: true,
-        errorMessage: "No se ha podido dar de baja el presupuesto, intentelo nuevamente más tarde",
-        showError: true
-      )
     );
   }
 
@@ -92,13 +60,13 @@ class PresupuestosService extends Services{
     // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/borrar",
+      path: "/ventas/borrar",
       authorizationHeader: true,
       payload: payload,
       requestConfiguration: RequestConfiguration(
-        successMessage: "El presupuesto ha sido eliminado con éxito",
+        successMessage: "La venta ha sido eliminado con éxito",
         showSuccess: true,
-        errorMessage: "No se ha podido eliminar el presupuesto, intentelo nuevamente más tarde",
+        errorMessage: "No se ha podido eliminar la venta, intentelo nuevamente más tarde",
         showError: true
       )
     );
@@ -115,7 +83,7 @@ class PresupuestosService extends Services{
     // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/modificar",
+      path: "/ventas/modificar",
       authorizationHeader: true,
       scheduler: scheduler,
       requestConfiguration: RequestConfiguration(
@@ -126,34 +94,34 @@ class PresupuestosService extends Services{
     );
   }
 
-  ListMethodConfiguration buscarPresupuestos(Map<String, dynamic> payload){
+  ListMethodConfiguration buscarVentas(Map<String, dynamic> payload){
     return ListMethodConfiguration(
       method: Methods.POST,
       authorizationHeader: true,
-      model: Presupuestos(),
-      path: "/presupuestos",
+      model: Ventas(),
+      path: "/ventas",
       scheduler: scheduler,
       payload: payload,
       requestConfiguration: RequestConfiguration(
         showError: true,
-        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto"
+        errorMessage: "Ha ocurrido un error"
       )
     );
   }
 
   @override
-  DoMethodConfiguration crearLineaPrespuesto(LineasProducto lineaProducto) {
+  DoMethodConfiguration crearLineaVentaConfiguration(LineasProducto lineaProducto) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/lineasPresupuesto/crear",
+      path: "/ventas/lineasVenta/crear",
       authorizationHeader: true,
       scheduler: scheduler,
       model: lineaProducto,
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,
-        successMessage: "La linea de presupuesto se ha creado con éxito"
+        successMessage: "La linea de venta se ha creado con éxito"
       ),
       attributes: {
         "LineasProducto": [
@@ -167,66 +135,111 @@ class PresupuestosService extends Services{
   }
 
   @override
-  DoMethodConfiguration pasarACreado(Map<String, dynamic> payload) {
+  DoMethodConfiguration revisarVentaConfiguration(int idVenta) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/pasarACreado",
+      path: "/ventas/revisar",
       authorizationHeader: true,
       scheduler: scheduler,
-      payload: payload,
+      payload: {
+        "Ventas":{
+          "IdVenta":idVenta
+        }
+      },
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,
-        successMessage: "El presupuesto se ha creado con éxito"
+        successMessage: "La venta ha sido confirmada con éxito"
       )
     );
   }
 
   @override
-  DoMethodConfiguration borrarLineaPrespuesto(Map<String, dynamic> payload) {
+  DoMethodConfiguration chequearVentaConfiguration(int idVenta) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
-      path: "/presupuestos/lineasPresupuesto/borrar",
+      path: "/ventas/chequearPrecios",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: {
+        "Ventas":{
+          "IdVenta":idVenta
+        }
+      },
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true
+      )
+    );
+  }
+
+    @override
+  DoMethodConfiguration cancelarVentaConfiguration(int idVenta) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/cancelar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: {
+        "Ventas":{
+          "IdVenta":idVenta
+        }
+      },
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La venta ha sido cancelada con éxito"
+      )
+    );
+  }
+
+  @override
+  DoMethodConfiguration borrarLineaVentaConfiguration(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/lineasVenta/borrar",
       authorizationHeader: true,
       scheduler: scheduler,
       payload: payload,
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,
-        successMessage: "La linea de presupuesto se ha eliminado con éxito"
+        successMessage: "La linea de venta se ha eliminado con éxito"
       )
     );
   }
 
-  ListMethodConfiguration dameMultiplesConfiguration(Map<String, dynamic> payload){
-    return ListMethodConfiguration(
-      method: Methods.POST,
-      authorizationHeader: true,
-      model: Presupuestos(),
-      path: "/presupuestos/dameMultiple",
-      scheduler: scheduler,
-      payload: payload,
-      requestConfiguration: RequestConfiguration(
-        showError: true,
-        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto"
-      )
-    );
-  }
-
-  DoMethodConfiguration transformarPresupuestoEnVentaConfiguration(Map<String, dynamic> payload){
+  @override
+  DoMethodConfiguration cancelarLineaVentaConfiguration(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
+      path: "/ventas/lineasVenta/cancelar",
       authorizationHeader: true,
-      path: "/presupuestos/transformarEnVenta",
       scheduler: scheduler,
       payload: payload,
       requestConfiguration: RequestConfiguration(
-        showError: true,
-        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto",
-        successMessage: "La venta se ha creado con éxito"
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de venta se ha cancelado con éxito"
       )
     );
   }
+
+  @override
+  DoMethodConfiguration altaConfiguration() {
+    // TODO: implement altaConfiguration
+    throw UnimplementedError();
+  }
+
+  @override
+  DoMethodConfiguration bajaConfiguration() {
+    // TODO: implement bajaConfiguration
+    throw UnimplementedError();
+  }
+
 }
