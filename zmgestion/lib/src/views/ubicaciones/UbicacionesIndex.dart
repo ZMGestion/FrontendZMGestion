@@ -12,6 +12,7 @@ import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
+import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
@@ -23,8 +24,13 @@ class UbicacionesIndex extends StatefulWidget {
 
 class _UbicacionesIndexState extends State<UbicacionesIndex> {
   int refreshValue = 0;
+  Map<String, String> breadcrumb = new Map<String, String>();
 
   void initState() {
+    breadcrumb.addAll({
+      "Inicio":"/inicio",
+      "Ubicaciones": null,
+    });
     super.initState();
   }
 
@@ -36,6 +42,17 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ZMBreadCrumb(
+                    config: breadcrumb,
+                  ),
+                ),
+              ],
+            ),
               AppLoader(builder: (scheduler) {
                 return ZMTable(
                   key: Key(refreshValue.toString()),

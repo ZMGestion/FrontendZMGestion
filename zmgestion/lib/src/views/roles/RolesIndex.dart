@@ -14,6 +14,7 @@ import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
+import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
@@ -30,10 +31,16 @@ class _RolesIndexState extends State<RolesIndex> {
   int key = 0;
   Map<int, dynamic> permisosRol = new Map<int, dynamic>();
   FlareController animationController;
+  Map<String, String> breadcrumb = new Map<String, String>();
+
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
+
+    breadcrumb.addAll({
+      "Inicio":"/inicio",
+      "Roles": null,
+    });
+
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (MediaQuery.of(context).size.width < 900) {
         _cardsPerRow = 2;
@@ -58,63 +65,76 @@ class _RolesIndexState extends State<RolesIndex> {
         });
       });
     });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8,8,24,8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                TableTitle(
-                  title: "Roles y Permisos",
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ZMBreadCrumb(
+                    config: breadcrumb,
+                  ),
                 ),
-                ZMStdButton(
-                      color: Colors.green,
-                      text: Text(
-                        "Nuevo Rol",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierColor: Theme.of(context)
-                              .backgroundColor
-                              .withOpacity(0.5),
-                          builder: (BuildContext context) {
-                            return CrearRolesAlertDialog(
-                              title: "Crear Rol",
-                              onSuccess: () async{
-                                Navigator.of(context).pop();
-                                await refreshRoles();
-                                // setState(() {
-                                //   key ++;
-                                // });
-                              },
-                            );
-                          },
-                        );
-                      },
-                    )
               ],
             ),
-          ),
-          _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : !_hasError ? _roleWidget() : _errorWidget(),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8,8,24,8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TableTitle(
+                    title: "Roles y Permisos",
+                  ),
+                  ZMStdButton(
+                        color: Colors.green,
+                        text: Text(
+                          "Nuevo Rol",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        icon: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                            builder: (BuildContext context) {
+                              return CrearRolesAlertDialog(
+                                title: "Crear Rol",
+                                onSuccess: () async{
+                                  Navigator.of(context).pop();
+                                  await refreshRoles();
+                                  // setState(() {
+                                  //   key ++;
+                                  // });
+                                },
+                              );
+                            },
+                          );
+                        },
+                      )
+                ],
+              ),
+            ),
+            _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : !_hasError ? _roleWidget() : _errorWidget(),
+          ],
+        ),
       ),
     );
   }

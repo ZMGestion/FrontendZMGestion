@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zmgestion/src/views/HomePage.dart';
 import 'package:zmgestion/src/views/clientes/ClientesIndex.dart';
+import 'package:zmgestion/src/views/comprobantes/ComprobantesIndex.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestosIndex.dart';
 import 'package:zmgestion/src/views/productos/ProductosIndex.dart';
@@ -27,6 +28,7 @@ const String RolesRoute = '/roles';
 const String PdfPreview = '/pdf'; //Eliminar despues
 const String LoaderRoute = '/';
 const String VentasRoute = '/ventas';
+const String ComprobantesRoute = '/comprobantes';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   print(settings.name);
@@ -69,6 +71,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(VentasIndex(), settings);
     case PdfPreview:
       return _getPageRoute(PdfIndex(), settings);
+    case ComprobantesRoute:
+      return _getPageRoute(ComprobantesIndex(args: queryParameters,), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

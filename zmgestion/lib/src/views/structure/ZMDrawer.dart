@@ -90,6 +90,15 @@ class ZMDrawerState extends State<ZMDrawer>
             _navigationService.navigateTo("/ventas");
           }),
       NavigationModel(
+      title: "Comprobantes",
+      icon: Icons.money,
+      size: 32,
+      onTap: () {
+        final NavigationService _navigationService =
+            locator<NavigationService>();
+        _navigationService.navigateTo("/comprobantes");
+      }),
+      NavigationModel(
           title: "Remitos",
           icon: Icons.local_shipping,
           size: 32,

@@ -13,6 +13,7 @@ class TextFormFieldDialog extends StatelessWidget {
   final TextStyle hintStyle;
   final TextStyle labelStyle;
   final TextStyle textStyle;
+  final Widget icon;
 
   const TextFormFieldDialog({
     Key key, 
@@ -27,6 +28,7 @@ class TextFormFieldDialog extends StatelessWidget {
     this.hintStyle,
     this.labelStyle,
     this.textStyle,
+    this.icon,
   }) : super(key: key);
 
   @override
@@ -44,6 +46,7 @@ class TextFormFieldDialog extends StatelessWidget {
           hintStyle: hintStyle,
           labelStyle: labelStyle,
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+          icon: icon != null ? icon : null
         ),
         style: textStyle,
     );
