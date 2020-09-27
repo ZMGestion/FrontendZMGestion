@@ -861,7 +861,7 @@ Map<int, Ventas> ventas = {};
                         onPressed: () {
                           if (idVenta != 0) {
                             final NavigationService _navigationService = locator<NavigationService>();
-                            _navigationService.navigateTo("/comprobantes");
+                            _navigationService.navigateTo("/comprobantes?IdVenta="+idVenta.toString());
                           }
                         }
                     ),

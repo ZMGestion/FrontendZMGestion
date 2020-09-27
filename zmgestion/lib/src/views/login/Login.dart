@@ -18,6 +18,14 @@ class _LoginState extends State<Login> {
   final TextEditingController passController = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    userController.text = "lchoua";
+    passController.text = "Loik1234";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Stack(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
+import 'package:zmgestion/src/models/Comprobantes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Precios.dart';
@@ -75,7 +76,7 @@ class VentasService extends Services{
   @override
   Models getModel() {
     // TODO: implement getModel
-    return Presupuestos();
+    return Ventas();
   }
 
   @override
@@ -234,6 +235,7 @@ class VentasService extends Services{
     return ListMethodConfiguration(
       method: Methods.POST,
       path:"/ventas/comprobantes",
+      model: Comprobantes(),
       authorizationHeader: true,
       scheduler: scheduler,
       payload: payload,
@@ -242,6 +244,98 @@ class VentasService extends Services{
         showError: true,
         errorMessage: "Ha ocurrido un error"
       )
+    );
+  }
+
+  DoMethodConfiguration crearComprobanteConfiguration(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/crear",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El comprobante se ha creado con éxito"
+      ),
+    );
+  }
+  DoMethodConfiguration modificarComprobanteConfiguration(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/modificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El comprobante se ha modificado con éxito"
+      ),
+    );
+  }
+  DoMethodConfiguration darAltaComprobanteConfiguration(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/darAlta",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El comprobante se ha dado de alta con éxito"
+      ),
+    );
+  }
+
+  DoMethodConfiguration darBajaComprobanteConfiguration(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/darBaja",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El comprobante se ha dado de baja con éxito"
+      ),
+    );
+  }
+  GetMethodConfiguration dameComprobanteConfiguration(int idComprobante){
+    return GetMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/dame",
+      authorizationHeader: true,
+      model: Comprobantes(),
+      scheduler: scheduler,
+      payload: {
+        "Comprobantes":{
+          "IdComprobante": idComprobante
+        }
+      },
+    );
+  }
+  DoMethodConfiguration borrarComprobanteConfiguration(int idComprobante){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/comprobantes/borrar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: {
+        "Comprobantes":{
+          "IdComprobante": idComprobante
+        }
+      },
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        showError: true,
+        successMessage: "El comprobante se ha borrado con éxito",
+        errorMessage: "Ha ocurrido un error al intentar borrar el comprobante"
+      ),
     );
   }
 
