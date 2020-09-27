@@ -28,6 +28,7 @@ import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
+import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
@@ -55,9 +56,14 @@ Map<int, Ventas> ventas = {};
   /*Search filters*/
   bool showFilters = false;
 
+  Map<String, String> breadcrumb = new Map<String, String>();
+
   @override
   void initState() {
-    // TODO: implement initState
+    breadcrumb.addAll({
+      "Inicio":"/inicio",
+      "Ventas": null,
+    });
     super.initState();
   }
 
@@ -68,55 +74,16 @@ Map<int, Ventas> ventas = {};
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: BreadCrumb(
-                      items: <BreadCrumbItem>[
-                        BreadCrumbItem(
-                          content: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Text(
-                              "Inicio",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor.withOpacity(0.45),
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            final NavigationService _navigationService = locator<NavigationService>();
-                            _navigationService.navigateTo('/inicio');
-                          }
-                        ),
-                        BreadCrumbItem(
-                          content: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Text(
-                              "Ventas",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800
-                              ),
-                            ),
-                          ),
-                          onTap: null
-                        ),
-                      ],
-                      divider: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: Colors.black54,
-                      ),
-                    ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ZMBreadCrumb(
+                    config: breadcrumb,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             Container(
               height: 90,

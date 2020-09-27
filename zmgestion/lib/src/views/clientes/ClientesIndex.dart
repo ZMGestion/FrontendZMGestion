@@ -23,6 +23,7 @@ import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
+import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
@@ -57,10 +58,14 @@ class _ClientesIndexState extends State<ClientesIndex> {
   //List<String> columnNames = ["Nombres", "Apellidos","Usuario", "Telefono", "Email"];
 
   List<Widget> columns = new List<Widget>();
+  Map<String, String> breadcrumb = new Map<String, String>();
 
   @override
   void initState() {
-    // TODO: implement initState
+    breadcrumb.addAll({
+      "Inicio":"/inicio",
+      "Clientes": null,
+    });
     super.initState();
   }
 
@@ -72,6 +77,17 @@ class _ClientesIndexState extends State<ClientesIndex> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ZMBreadCrumb(
+                      config: breadcrumb,
+                    ),
+                  ),
+                ],
+              ),
               Container(
                 height: 90,
                 child: Card(

@@ -1,29 +1,20 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/models/Telas.dart';
-import 'package:zmgestion/src/services/RolesService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/views/telas/CrearTelasAlertDialog.dart';
 import 'package:zmgestion/src/views/telas/ModificarTelasAlertDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
-import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
+import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
@@ -45,10 +36,14 @@ class _TelasIndexState extends State<TelasIndex> {
   /*Search filters*/
   bool showFilters = false;
   bool searchByTela = true;
+  Map<String, String> breadcrumb = new Map<String, String>();
 
   @override
   void initState() {
-    // TODO: implement initState
+    breadcrumb.addAll({
+      "Inicio":"/inicio",
+      "Telas": null,
+    });
     super.initState();
   }
 
@@ -59,6 +54,17 @@ class _TelasIndexState extends State<TelasIndex> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ZMBreadCrumb(
+                    config: breadcrumb,
+                  ),
+                ),
+              ],
+            ),
               Container(
                 height: 90,
                 child: Card(
