@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TableTitle extends StatelessWidget {
   final String title;
@@ -11,49 +12,28 @@ class TableTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            height: 80,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColorLight.withOpacity(0.05),
-                    fontSize: 80,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 80,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Theme.of(context).canvasColor,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        offset: Offset(1,1)
-                      )
-                    ]
-                  ),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              title,
+              style: GoogleFonts.nunito(
+                fontSize: 36,
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                shadows: <Shadow>[
+                  Shadow(
+                    color: Theme.of(context).primaryColorLight,
+                    offset: Offset(1, 1),
+                  )
+                ]
+              )
             ),
           ),
         ],
-      ),
+      )
     );
   }
 }

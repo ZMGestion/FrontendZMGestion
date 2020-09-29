@@ -4,6 +4,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Paginaciones.dart';
@@ -176,22 +177,27 @@ class _ZMTableState extends State<ZMTable> {
     return _result;
   }
 
+  Text columnName(String name){
+    return Text(
+      name,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.openSans(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+        shadows: <Shadow>[
+          Shadow(
+              color: Colors.black38, offset: Offset(0, 1), blurRadius: 2)
+        ]
+      ),
+    );
+  }
+
   List<Widget> generateColumns(Map<String, int> columnNames) {
     List<Widget> result = new List<Widget>();
     columnNames.forEach((name, weight) {
       result.add(Expanded(
         flex: weight,
-        child: Text(
-          name,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              shadows: <Shadow>[
-                Shadow(
-                    color: Colors.black38, offset: Offset(0, 1), blurRadius: 2)
-              ]),
-        ),
+        child: columnName(name)
       ));
     });
     return result;
@@ -237,294 +243,290 @@ class _ZMTableState extends State<ZMTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        //Table
-        Padding(
-          padding: widget.padding,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
+        Flexible(
+          flex: 1,
+          child: Column(
             children: [
-              Expanded(
-                  child: widget.searchArea != null
-                      ? widget.searchArea
-                      : Container()),
-              Visibility(
-                visible: models.length > 0  && widget.onSelectActions != null,
-                child: Card(
-                  color: Theme.of(context).primaryColor.withOpacity(0.7),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          models.length.toString() +
-                              " seleccionado" +
-                              (models.length > 1 ? "s" : ""),
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 15),
+              //Table
+              Padding(
+                padding: widget.padding,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                        child: widget.searchArea != null
+                            ? widget.searchArea
+                            : Container()),
+                    Visibility(
+                      visible: models.length > 0  && widget.onSelectActions != null,
+                      child: Card(
+                        color: Theme.of(context).primaryColor.withOpacity(0.7),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Row(
+                            children: [
+                              Text(
+                                models.length.toString() +
+                                    " seleccionado" +
+                                    (models.length > 1 ? "s" : ""),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 15),
+                              ),
+                              SizedBox(
+                                width: 12,
+                              ),
+                              Row(
+                                children: widget.onSelectActions != null
+                                    ? widget.onSelectActions(models)
+                                    : []
+                                  )
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Row(
-                          children: widget.onSelectActions != null
-                              ? widget.onSelectActions(models)
-                              : []
-                            )
-                      ],
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(6),
+                      child: Row(
+                        children:
+                            widget.fixedActions != null ? widget.fixedActions : [],
+                      ),
+                    )
+                  ],
                 ),
               ),
-              SizedBox(
-                width: 15,
-              ),
-              Container(
-                padding: EdgeInsets.all(6),
-                child: Row(
-                  children:
-                      widget.fixedActions != null ? widget.fixedActions : [],
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: Card(
+                    color: widget.tableBackgroundColor,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 6, 10, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Visibility(
+                                visible: widget.onSelectActions != null || widget.showCheckbox,
+                                child: Opacity(
+                                  opacity: 0,
+                                  child: Row(children: [
+                                    CircularCheckBox(
+                                      value: false,
+                                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                                      onChanged: (s) {},
+                                    )
+                                  ]),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    decoration: BoxDecoration(
+                                      gradient: RadialGradient(
+                                        center: Alignment.bottomCenter,
+                                        radius: 15,
+                                        colors: [
+                                          Theme.of(context).primaryColor.withOpacity(0.7),
+                                          Theme.of(context).primaryColor.withOpacity(0.6)
+                                        ]
+                                      ),
+                                      borderRadius: BorderRadius.circular(30)
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Visibility(
+                                          visible: widget.idValue != null,
+                                          child: Container(
+                                            width: 80,
+                                            child: columnName(widget.idName),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            children: columns,
+                                          ),
+                                        ),
+                                      ]
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Opacity(
+                                opacity: 0,
+                                child: Row(
+                                  children: widget.rowActions != null
+                                      ? widget.rowActions(null, null, null)
+                                      : [],
+                                ),
+                              )
+                            ]
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: ModelView(
+                              key: Key(pageInfo.pagina.toString()+widget.modelViewKey),
+                              isList: true,
+                              service: widget.service,
+                              listMethodConfiguration: paginatedListMethodConfiguration(),
+                              onEmpty: () {
+                                if(widget.onEmpty != null){
+                                  return widget.onEmpty;
+                                }
+                                return DefaultResultEmpty();
+                              },
+                              onPageInfo: (newPageInfo) {
+                                if (newPageInfo != null) {
+                                  setState(() {
+                                    this.pageInfo = newPageInfo;
+                                  });
+                                }
+                              },
+                              itemBuilder: (mapModel, index, itemsController) {
+                                Models model = widget.model.fromMap(mapModel);
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: models.contains(model)
+                                                ? Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .bodyText1
+                                                    .color
+                                                    .withOpacity(0.5)
+                                                : Theme.of(context)
+                                                    .primaryTextTheme
+                                                    .bodyText1
+                                                    .color
+                                                    .withOpacity(0.3),
+                                            width: 1)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Visibility(
+                                        visible: widget.onSelectActions != null || widget.showCheckbox,
+                                        child: Row(
+                                          children: [
+                                            CircularCheckBox(
+                                              value: models.contains(model),
+                                              materialTapTargetSize:
+                                                  MaterialTapTargetSize.padded,
+                                              onChanged: (s) {
+                                                setState(() {
+                                                  models.contains(model)
+                                                      ? models.remove(model)
+                                                      : models.add(model);
+                                                });
+                                              },
+                                            ),
+                                            
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            child: Row(children: [
+                                              Visibility(
+                                                visible: widget.idValue != null,
+                                                child: Container(
+                                                  width: 80,
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(20),
+                                                          color: models.contains(model)
+                                                              ? Theme.of(context).primaryColor.withOpacity(0.2)
+                                                              : Colors.transparent,
+                                                        ),
+                                                        child: Text(
+                                                          widget.idValue != null ? (widget.idValue(mapModel) != null ? widget.idValue(mapModel) : "") : "",
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.w600,
+                                                            color: models.contains(model) ? Theme.of(context).primaryColor : null
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 8),
+                                                  child: Row(
+                                                    children: generateRow(mapModel),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: widget.rowActions != null
+                                            ? widget.rowActions(
+                                                mapModel, index, itemsController)
+                                            : [],
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          Visibility(
+                              visible: widget.paginate,
+                              child: PageInfoHandler(
+                                key: Key(
+                                  pageInfo.pagina.toString() +
+                                      pageInfo.cantidadTotal.toString(),
+                                ),
+                                initialPageInfo: Paginaciones(
+                                    longitudPagina: widget.pageLength,
+                                    pagina: pageInfo.pagina,
+                                    cantidadTotal: pageInfo.cantidadTotal),
+                                onChange: (newPageInfo) {
+                                  setState(() {
+                                    pageInfo = newPageInfo;
+                                    _updatePage(pageInfo);
+                                  });
+                                },
+                              )
+                            ),
+                            Visibility(
+                              visible: widget.bottomAction != null,
+                              child: widget.bottomAction != null ? Padding(
+                                padding: const EdgeInsets.only(top:4),
+                                child: widget.bottomAction(models),
+                              ) : Container(),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               )
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 50),
-          child: Card(
-            color: widget.tableBackgroundColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(children: [
-                    Visibility(
-                      visible: widget.onSelectActions != null || widget.showCheckbox,
-                      child: Opacity(
-                        opacity: 0,
-                        child: Row(children: [
-                          CircularCheckBox(
-                            value: false,
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            onChanged: (s) {},
-                          )
-                        ]),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                              gradient: RadialGradient(
-                                  center: Alignment.bottomCenter,
-                                  radius: 15,
-                                  colors: [
-                                    Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.7),
-                                    Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.6)
-                                  ]),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Row(
-                            children: [
-                              Visibility(
-                                visible: widget.idValue != null,
-                                child: Container(
-                                  width: 80,
-                                  child: Text(
-                                    widget.idName,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: <Shadow>[
-                                          Shadow(
-                                              color: Colors.black38, offset: Offset(0, 1), blurRadius: 2)
-                                        ]),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  children: columns,
-                                ),
-                              ),
-                            ]
-                          ),
-                        ),
-                      ),
-                    ),
-                    Opacity(
-                      opacity: 0,
-                      child: Row(
-                        children: widget.rowActions != null
-                            ? widget.rowActions(null, null, null)
-                            : [],
-                      ),
-                    )
-                  ]),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Container(
-                      height: widget.height,
-                      child: ModelView(
-                        key: Key(pageInfo.pagina.toString()+widget.modelViewKey),
-                        isList: true,
-                        service: widget.service,
-                        listMethodConfiguration: paginatedListMethodConfiguration(),
-                        onEmpty: () {
-                          if(widget.onEmpty != null){
-                            return widget.onEmpty;
-                          }
-                          return DefaultResultEmpty();
-                        },
-                        onPageInfo: (newPageInfo) {
-                          if (newPageInfo != null) {
-                            setState(() {
-                              this.pageInfo = newPageInfo;
-                            });
-                          }
-                        },
-                        itemBuilder: (mapModel, index, itemsController) {
-                          Models model = widget.model.fromMap(mapModel);
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: models.contains(model)
-                                          ? Theme.of(context)
-                                              .primaryTextTheme
-                                              .bodyText1
-                                              .color
-                                              .withOpacity(0.5)
-                                          : Theme.of(context)
-                                              .primaryTextTheme
-                                              .bodyText1
-                                              .color
-                                              .withOpacity(0.3),
-                                      width: 1)),
-                            ),
-                            child: Row(
-                              children: [
-                                Visibility(
-                                  visible: widget.onSelectActions != null || widget.showCheckbox,
-                                  child: Row(
-                                    children: [
-                                      CircularCheckBox(
-                                        value: models.contains(model),
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.padded,
-                                        onChanged: (s) {
-                                          setState(() {
-                                            models.contains(model)
-                                                ? models.remove(model)
-                                                : models.add(model);
-                                          });
-                                        },
-                                      ),
-                                      
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  child: Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12),
-                                      child: Row(children: [
-                                        Visibility(
-                                          visible: widget.idValue != null,
-                                          child: Container(
-                                            width: 80,
-                                            padding: EdgeInsets.all(10),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(20),
-                                                    color: models.contains(model)
-                                                        ? Theme.of(context).primaryColor.withOpacity(0.2)
-                                                        : Colors.transparent,
-                                                  ),
-                                                  child: Text(
-                                                    widget.idValue != null ? (widget.idValue(mapModel) != null ? widget.idValue(mapModel) : "") : "",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      color: models.contains(model) ? Theme.of(context).primaryColor : null
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8),
-                                            child: Row(
-                                              children: generateRow(mapModel),
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  children: widget.rowActions != null
-                                      ? widget.rowActions(
-                                          mapModel, index, itemsController)
-                                      : [],
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                      visible: widget.paginate,
-                      child: PageInfoHandler(
-                        key: Key(
-                          pageInfo.pagina.toString() +
-                              pageInfo.cantidadTotal.toString(),
-                        ),
-                        initialPageInfo: Paginaciones(
-                            longitudPagina: widget.pageLength,
-                            pagina: pageInfo.pagina,
-                            cantidadTotal: pageInfo.cantidadTotal),
-                        onChange: (newPageInfo) {
-                          setState(() {
-                            pageInfo = newPageInfo;
-                            _updatePage(pageInfo);
-                          });
-                        },
-                      )
-                    ),
-                    Visibility(
-                      visible: widget.bottomAction != null,
-                      child: widget.bottomAction != null ? Padding(
-                        padding: const EdgeInsets.only(top:4),
-                        child: widget.bottomAction(models),
-                      ) : Container(),
-                    )
-                ],
-              ),
-            ),
-          ),
-        )
       ],
     );
   }

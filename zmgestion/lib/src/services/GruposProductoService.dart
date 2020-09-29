@@ -113,13 +113,14 @@ class GruposProductoService extends Services{
     );
   }
 
-  DoMethodConfiguration modificarPreciosConfiguration() {
+  DoMethodConfiguration modificarPreciosConfiguration(Map<String, dynamic> payload) {
     // TODO: implement modificarPreciosConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/modificarPrecios",
       authorizationHeader: true,
       scheduler: scheduler,
+      payload: payload,
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,

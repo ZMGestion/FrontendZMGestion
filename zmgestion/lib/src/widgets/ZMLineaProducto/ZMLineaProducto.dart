@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Response.dart';
@@ -129,7 +130,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
         Visibility(
           visible: !_loading,
           child: Card(
-            key: Key(_productoSeleccionado?.producto??""),
             color: Color(0xff042949).withOpacity(0.55),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -204,7 +204,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                     ),
                   ),
                   Visibility(
-                    key: Key(_productoSeleccionado?.esFabricable().toString()??"-"),
                     visible: _productoSeleccionado != null ? _productoSeleccionado.esFabricable() : false,
                     child: Expanded(
                       flex: _productoSeleccionado != null ? (_productoSeleccionado.longitudTela > 0 ? 2 : 1) : 1,

@@ -5,10 +5,12 @@ import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMLineaProducto.dart';
 
 class CrearLineaVenta extends StatefulWidget {
   final Function(LineasProducto lp) onAccept;
+  final Function() onCancel;
 
   const CrearLineaVenta({
     Key key,
-    this.onAccept
+    this.onAccept,
+    this.onCancel
   }):super(key:key);
   @override
   _CrearLineaVentaState createState() => _CrearLineaVentaState();
@@ -28,18 +30,20 @@ class _CrearLineaVentaState extends State<CrearLineaVenta> {
       backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: AlertDialogTitle(
-        title: "Nueva Linea de Venta", 
-        titleColor: Theme.of(context).primaryColorLight.withOpacity(0.8),
+        title: "Nueva linea de venta", 
+        titleColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       content: Container(
         padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
         ),
         child: Card(
           color: Theme.of(context).primaryColorLight,
           child: ZMLineaProducto(
+            onCancel: widget.onCancel,
             onAccept: (lineaProducto){
               widget.onAccept(lineaProducto);
               Navigator.of(context).pop();

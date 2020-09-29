@@ -64,138 +64,139 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ZMBreadCrumb(
-                    config: breadcrumb,
-                  ),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ZMBreadCrumb(
+                  config: breadcrumb,
                 ),
-              ],
-            ),
-            Visibility(
-              visible: idVenta == 0,
-              child: Container(
-                height: 90,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextFormField(
-                                inputFormatters: [],
-                                decoration: InputDecoration(
-                                    hintText: "Número de comprobante",
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(Icons.search),
-                                    alignLabelWithHint: true,
-                                    contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 0)
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value != null && value != ''){
-                                      numeroComprobante = int.parse(value);
-                                    }else{
-                                      numeroComprobante = 0;
-                                    }
-                                  });
-                                },
+              ),
+            ],
+          ),
+          Visibility(
+            visible: idVenta == 0,
+            child: Container(
+              height: 90,
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextFormField(
+                              inputFormatters: [],
+                              decoration: InputDecoration(
+                                  hintText: "Número de comprobante",
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(Icons.search),
+                                  alignLabelWithHint: true,
+                                  contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 0)
                               ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            constraints: BoxConstraints(minWidth: 200),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TopLabel(
-                                  labelText: "Tipo de comprobante",
-                                ),
-                                Container(
-                                  width: 250,
-                                  child: DropDownMap(
-                                    map: Comprobantes().mapTipos(),
-                                    addAllOption: true,
-                                    addAllText: "Todos",
-                                    addAllValue: "T",
-                                    initialValue: "T",
-                                    onChanged: (value) {
-                                      setState(() {
-                                        searchTipo = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value != null && value != ''){
+                                    numeroComprobante = int.parse(value);
+                                  }else{
+                                    numeroComprobante = 0;
+                                  }
+                                });
+                              },
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          flex: 1,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          constraints: BoxConstraints(minWidth: 200),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TopLabel(
-                                labelText: "Empleado",
+                                labelText: "Tipo de comprobante",
                               ),
-                              AutoCompleteField(
-                                labelText: "",
-                                hintText: "Ingrese un empleado",
-                                parentName: "Usuarios",
-                                keyName: "Usuario",
-                                service: UsuariosService(),
-                                paginate: true,
-                                pageLength: 4,
-                                onClear: (){
-                                  setState(() {
-                                    searchIdUsuario = 0;
-                                  });
-                                },
-                                listMethodConfiguration: (searchText){
-                                  return UsuariosService().buscarUsuarios({
-                                    "Usuarios": {
-                                      "Usuario": searchText
-                                    }
-                                  });
-                                },
-                                onSelect: (mapModel){
-                                  if(mapModel != null){
-                                    Usuarios usuario = Usuarios().fromMap(mapModel);
+                              Container(
+                                width: 250,
+                                child: DropDownMap(
+                                  map: Comprobantes().mapTipos(),
+                                  addAllOption: true,
+                                  addAllText: "Todos",
+                                  addAllValue: "T",
+                                  initialValue: "T",
+                                  onChanged: (value) {
                                     setState(() {
-                                      searchIdUsuario = usuario.idUsuario;
+                                      searchTipo = value;
                                     });
-                                  }
-                                },
+                                  },
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 12,
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TopLabel(
+                              labelText: "Empleado",
+                            ),
+                            AutoCompleteField(
+                              labelText: "",
+                              hintText: "Ingrese un empleado",
+                              parentName: "Usuarios",
+                              keyName: "Usuario",
+                              service: UsuariosService(),
+                              paginate: true,
+                              pageLength: 4,
+                              onClear: (){
+                                setState(() {
+                                  searchIdUsuario = 0;
+                                });
+                              },
+                              listMethodConfiguration: (searchText){
+                                return UsuariosService().buscarUsuarios({
+                                  "Usuarios": {
+                                    "Usuario": searchText
+                                  }
+                                });
+                              },
+                              onSelect: (mapModel){
+                                if(mapModel != null){
+                                  Usuarios usuario = Usuarios().fromMap(mapModel);
+                                  setState(() {
+                                    searchIdUsuario = usuario.idUsuario;
+                                  });
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                    ],
                   ),
                 ),
-              )
-            ),
-            AppLoader(
+              ),
+            )
+          ),
+          Flexible(
+            fit: FlexFit.tight,
+            child: AppLoader(
               builder: (scheduler){
                 return ZMTable(
                   key: Key(refreshValue.toString() + idVenta.toString() + searchTipo + searchIdUsuario.toString() + numeroComprobante.toString()),
@@ -507,9 +508,9 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                   // },
                 );
               },
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
       
     );
