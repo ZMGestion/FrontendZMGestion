@@ -85,7 +85,7 @@ abstract class Utils{
       }
       var hour = tm.hour < 10 ? "0"+tm.hour.toString() : tm.hour.toString();
       var minute = tm.minute < 10 ? "0"+tm.minute.toString() : tm.minute.toString();
-      return withoutHour + " a las " + hour + ":" + minute; //at
+      return withoutHour + " " + hour + ":" + minute; //at
   }
 
   static String clientName(Clientes cliente){

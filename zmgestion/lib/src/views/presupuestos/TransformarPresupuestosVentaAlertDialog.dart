@@ -18,6 +18,7 @@ import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
+import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
@@ -103,20 +104,25 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
         backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: AlertDialogTitle(
-          title: "Transformar presupuestos en venta"
+          title: "Transformar presupuestos en venta",
+          backgroundColor: Theme.of(context).primaryColorLight,
+          titleColor: Colors.white,
         ),
         content: Container(
           padding: EdgeInsets.fromLTRB(24, 12, 24, 12),
           width: SizeConfig.blockSizeHorizontal * 90,
+          constraints: BoxConstraints(
+            maxWidth: 1300,
+            minWidth: 600
+          ),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              encabezado(),
-              cuerpo(),
-              boton(scheduler)
+              generadorDetalle(),
+              formulario(scheduler)
             ],
           )
         )
@@ -125,108 +131,82 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
     );
   }
 
-  Widget boton(RequestScheduler scheduler){
-    return ProgressButton.icon(
-      radius: 7,
-      state: creatingVenta ? ButtonState.loading : ButtonState.idle,
-      iconedButtons: {
-        ButtonState.idle: IconedButton(
-            text: "Crear Venta",
-            icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-            color: Colors.blueAccent),
-        ButtonState.loading: IconedButton(
-            text: "Cargando", color: Colors.grey.shade400),
-        ButtonState.fail: IconedButton(
-            text: "Error",
-            icon: Icon(Icons.cancel, color: Colors.white),
-            color: Colors.red.shade300),
-        ButtonState.success: IconedButton(
-            text: "Éxito",
-            icon: Icon(
-              Icons.check_circle,
-              color: Colors.white,
-            ),
-            color: Colors.green.shade400)
-      },
-      onPressed: (_lineasVenta.isNotEmpty && _idUbicacion != null && _idDomicilio != null) ? () async{
-          List<int> _lineasProducto = [];
-          List<Map<String, dynamic>> _nuevasLineas = new List<Map<String, dynamic>>();
-
-          _lineasVenta.forEach((element) {
-            if(element.idLineaProducto != null){
-              _lineasProducto.add(element.idLineaProducto);
-            }else{
-              _nuevasLineas.add({
-                "LineasProducto":{
-                  "Cantidad": element.cantidad,
-                  "PrecioUnitario": element.precioUnitario
-                },
-                "ProductosFinales":{
-                  "IdProducto": element.productoFinal.producto?.idProducto,
-                  "IdTela": element.productoFinal.tela != null ? element.productoFinal.tela.idTela : 0,
-                  "IdLustre": element.productoFinal.lustre != null ? element.productoFinal.lustre.idLustre : 0,
-                }
-              });
-            }
-          });
-          Map<String, dynamic> _payload = new Map<String, dynamic>();
-          _payload.addAll({
-            "Ventas":{
-              "IdUbicacion":_idUbicacion,
-              "IdDomicilio": _idDomicilio,
-            },
-            "LineasPresupuesto": _lineasProducto,
-            "LineasVenta": _nuevasLineas
-          });
-          setState(() {
-            creatingVenta = true;
-          });
-          await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
-            if(response.status == RequestStatus.SUCCESS){
-              Navigator.pop(context, true);
-              widget.onSuccess();
-            }
-          });
-          setState(() {
-            creatingVenta = false;
-          });
-        } : null,
-    );
-  }
-
-  Widget encabezado(){
+  Widget formulario(RequestScheduler scheduler){
     return Card(
-      color: Theme.of(context).primaryColorLight,
+      color: Color(0xff042949).withOpacity(0.55),
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Column(
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 2.5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TopLabel(
-                          padding: EdgeInsets.zero,
-                          labelText: "Cliente",
-                          fontSize: 14,
-                          color: Color(0xff97D2FF).withOpacity(1),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Text(
-                            cliente,
-                            style: TextStyle(
-                              color: Color(0xff97D2FF).withOpacity(1),
-                              fontWeight: FontWeight.w500
-                            ),
+                Container(
+                  constraints: BoxConstraints(minWidth: 200),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TopLabel(
+                        labelText: "Cliente",
+                        color: Color(0xff97D2FF).withOpacity(0.9),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 12),
+                        child: Text(
+                          cliente,
+                          style: TextStyle(
+                            color: Color(0xff97D2FF),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  )
+                ),
+                SizedBox(width: 12,),
+                Expanded(
+                    child: Container(
+                    constraints: BoxConstraints(minWidth: 200),
+                    child: DropDownModelView(
+                      service: ClientesService(),
+                      listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
+                      parentName: "Domicilios",
+                      labelName: "Seleccione un domicilio",
+                      displayedName: "Domicilio",
+                      valueName: "IdDomicilio",
+                      allOption: false,
+                      errorMessage: "Debe seleccionar un domicilio",
+                      textStyle: TextStyle(
+                        color: Color(0xff97D2FF).withOpacity(1),
+                      ),
+                      dropdownColor: Theme.of(context).primaryColor,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color(0xff87C2F5).withOpacity(0.8),  
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.add_box,
+                            color: Color(0xff87C2F5),
+                          ),
+                          onPressed: (){
+                            
+                          },
+                        ),
+                        hintStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                        labelStyle: TextStyle(
+                          color: Color(0xffBADDFB).withOpacity(0.8)
+                        ),
+                      ),
+                      onChanged: (idSelected) {
+                        setState(() {
+                          _idDomicilio = idSelected;
+                        });
+                      }
+                    )
                   ),
                 ),
                 SizedBox(width: 12,),
@@ -267,56 +247,68 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                     )    
                   ),
                 ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                    child: Container(
-                    constraints: BoxConstraints(minWidth: 200),
-                    child: DropDownModelView(
-                      service: ClientesService(),
-                      listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
-                      parentName: "Domicilios",
-                      labelName: "Seleccione un domicilio",
-                      displayedName: "Domicilio",
-                      valueName: "IdDomicilio",
-                      allOption: false,
-                      errorMessage: "Debe seleccionar un domicilio",
-                      textStyle: TextStyle(
-                        color: Color(0xff97D2FF).withOpacity(1),
-                      ),
-                      dropdownColor: Theme.of(context).primaryColor,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.location_city,
-                          color: Color(0xff87C2F5).withOpacity(0.8),  
-                        ),
-                        hintStyle: TextStyle(
-                          color: Color(0xffBADDFB).withOpacity(0.8)
-                        ),
-                        labelStyle: TextStyle(
-                          color: Color(0xffBADDFB).withOpacity(0.8)
-                        ),
-                      ),
-                      onChanged: (idSelected) {
-                        setState(() {
-                          _idDomicilio = idSelected;
-                        });
-                      },
-                    )
-                  ),
-                ),
                 SizedBox(width: 12,),
-                Expanded(
-                  child: Container(
-                    child: Text(
-                      "Total: \$" + _total.toString(),
+                Container(
+                  constraints: BoxConstraints(minWidth: 180),
+                  child: ZMStdButton(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    text: Text(
+                      "Crear venta",
                       style: TextStyle(
-                        color: Color(0xff97D2FF).withOpacity(1),
-                        fontWeight: FontWeight.w700
+                        color: (_lineasVenta.isNotEmpty && _idUbicacion != null && _idDomicilio != null) ? Colors.white : Colors.white.withOpacity(0.5),
+                        fontWeight: FontWeight.w600
                       ),
                     ),
+                    color: Colors.green,
+                    icon: Icon(
+                      Icons.credit_card_outlined,
+                      color: (_lineasVenta.isNotEmpty && _idUbicacion != null && _idDomicilio != null) ? Colors.white : Colors.white.withOpacity(0.5),
+                      size: 16,
+                    ),
+                    disabledColor: Colors.white.withOpacity(0.5),
+                    onPressed: (_lineasVenta.isNotEmpty && _idUbicacion != null && _idDomicilio != null) ? () async{
+                        List<int> _lineasProducto = [];
+                        List<Map<String, dynamic>> _nuevasLineas = new List<Map<String, dynamic>>();
+
+                        _lineasVenta.forEach((element) {
+                          if(element.idLineaProducto != null){
+                            _lineasProducto.add(element.idLineaProducto);
+                          }else{
+                            _nuevasLineas.add({
+                              "LineasProducto":{
+                                "Cantidad": element.cantidad,
+                                "PrecioUnitario": element.precioUnitario
+                              },
+                              "ProductosFinales":{
+                                "IdProducto": element.productoFinal.producto?.idProducto,
+                                "IdTela": element.productoFinal.tela != null ? element.productoFinal.tela.idTela : 0,
+                                "IdLustre": element.productoFinal.lustre != null ? element.productoFinal.lustre.idLustre : 0,
+                              }
+                            });
+                          }
+                        });
+                        Map<String, dynamic> _payload = new Map<String, dynamic>();
+                        _payload.addAll({
+                          "Ventas":{
+                            "IdUbicacion":_idUbicacion,
+                            "IdDomicilio": _idDomicilio,
+                          },
+                          "LineasPresupuesto": _lineasProducto,
+                          "LineasVenta": _nuevasLineas
+                        });
+                        setState(() {
+                          creatingVenta = true;
+                        });
+                        await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
+                          if(response.status == RequestStatus.SUCCESS){
+                            Navigator.pop(context, true);
+                            widget.onSuccess();
+                          }
+                        });
+                        setState(() {
+                          creatingVenta = false;
+                        });
+                      } : null,
                   ),
                 ),
               ],
@@ -329,99 +321,113 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
 
 
 
-  Widget cuerpo(){
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Row(
+  Widget generadorDetalle(){
+    return Column(
+      children: [
+        Row(
           children: [
             Expanded(
               child: detallePresupuesto()
-            ),
-            SizedBox(
-              width: SizeConfig.blockSizeHorizontal*1.5,
             ),
             Expanded(
               child: detalleVenta()
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
   Widget detallePresupuesto(){
+    TextStyle _columnHeaderTextStyle = TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 13,
+      color: Colors.white.withOpacity(0.8)
+    );
+
     return Card(
       elevation: 0.5,
+      color: Colors.black.withOpacity(0.2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Stack(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: SizeConfig.blockSizeVertical*5,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24)
-                  )
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical:2.5),
+              Expanded(
+                child: Container(
+                  color: Colors.black.withOpacity(0.05),
+                  padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     "Detalles de presupuestos",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Theme.of(context).primaryTextTheme.headline6.color
+                      color: Color(0xff97D2FF),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600
                     ),  
                   ),
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Cantidad",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 5,
-                child: Text(
-                  "Detalle",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Precio Unitario",
-                  textAlign: TextAlign.center,  
-                )
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Total",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  "",
-                  textAlign: TextAlign.center,
-                )
-              ),
-            ],
-          ),
-          Divider(),
           Container(
-            height: SizeConfig.blockSizeVertical*35,
+            padding: EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.5,
+                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.25)
+                )
+              )
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Cantidad",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle,
+                  )
+                ),
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "Detalle",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Precio unitario",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Subtotal",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    "",
+                    textAlign: TextAlign.center,
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: SizeConfig.blockSizeVertical*45,
             child: ListView.separated(
               itemCount: _lineasPresupuesto.length,
               itemBuilder: (context, index){
@@ -439,7 +445,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                            color: Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -451,7 +457,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1)
+                            color: Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -462,7 +468,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                            color: Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -473,7 +479,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                            color: Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -510,103 +516,93 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
   }
 
   Widget detalleVenta(){
+    TextStyle _columnHeaderTextStyle = TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 13
+    );
+
     return Card(
       elevation: 0.5,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Stack(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: SizeConfig.blockSizeVertical*5,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(24)
-                  )
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical:2.5),
+              Expanded(
+                child: Container(
+                  color: Colors.black.withOpacity(0.05),
+                  padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     "Detalles de venta",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Theme.of(context).primaryTextTheme.headline6.color
+                      color: Theme.of(context).primaryTextTheme.bodyText1.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600
                     ),  
                   ),
                 ),
               ),
-              Positioned(
-                right: 2.5,
-                top: SizeConfig.blockSizeVertical*2.5 - 24 ,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.white70,
-                  ),
-                  onPressed: (){
-                    showDialog(
-                      context: context,
-                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                      builder: (BuildContext context) {
-                        return CrearLineaVenta(
-                          onAccept: (lineaProducto){
-                            setState(() {
-                              _lineasVenta.add(lineaProducto);
-                              _total = _total + (lineaProducto.cantidad * lineaProducto.precioUnitario);
-                            });
-                          },
-                        );
-                      },
-                    );
-                  }
-                ),
-              )
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Cantidad",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 5,
-                child: Text(
-                  "Detalle",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Precio Unitario",
-                  textAlign: TextAlign.center,  
-                )
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "Total",
-                  textAlign: TextAlign.center,
-                )
-              ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  "",
-                  textAlign: TextAlign.center,
-                )
-              ),
-            ],
-          ),
-          Divider(),
           Container(
-            height: SizeConfig.blockSizeVertical*35,
+            padding: EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.5,
+                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.25)
+                )
+              )
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Cantidad",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle,
+                  )
+                ),
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "Detalle",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Precio unitario",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Subtotal",
+                    textAlign: TextAlign.center,
+                    style: _columnHeaderTextStyle
+                  )
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    "",
+                    textAlign: TextAlign.center,
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: SizeConfig.blockSizeVertical*45 - 60,
             child: ListView.separated(
               itemCount: _lineasVenta.length,
               itemBuilder: (context, index){
@@ -690,6 +686,68 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                 );
               },
             ),
+          ),
+          Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 60,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.05),
+                        border: Border(
+                          top: BorderSide(
+                            width: 0.5,
+                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.25)
+                          )
+                        )
+                      ),
+                      child: Text(
+                        "Total: \$" + _total.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryTextTheme.bodyText1.color,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Positioned(
+                right: 0,
+                top: 5,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.black,
+                  ),
+                  onPressed: (){
+                    showDialog(
+                      context: context,
+                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                      builder: (BuildContext context) {
+                        return CrearLineaVenta(
+                          onAccept: (lineaProducto){
+                            setState(() {
+                              _lineasVenta.add(lineaProducto);
+                              _total = _total + (lineaProducto.cantidad * lineaProducto.precioUnitario);
+                            });
+                          },
+                          onCancel: (){
+                            Navigator.of(context).pop();
+                          }
+                        );
+                      },
+                    );
+                  }
+                ),
+              ),
+            ],
           ),
         ],
       ),

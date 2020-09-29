@@ -111,273 +111,311 @@ class _ModificarPreciosGrupoProductoAlertDialogState extends State<ModificarPrec
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
               ),
+              height: SizeConfig.blockSizeVertical * 75,
               constraints: BoxConstraints(
-                maxWidth: 800
+                maxWidth: 800,
               ),
               width: SizeConfig.blockSizeHorizontal * 50,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      constraints: BoxConstraints(
-                        maxWidth: 600
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                children: [
+                  Flexible(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                              child: Slider(
-                                min: 0.0,
-                                max: 3.0,
-                                divisions: 300,
-                                value: porcentaje > 3 ? 3 : porcentaje,
-                                label: (porcentaje >= 1 ?  "+"+((porcentaje-1)*100).floor().toString():"-"+((1-porcentaje)*100).floor().toString())+"%",
-                                onChanged: (value){
-                                  setState(() {
-                                    porcentaje = value;
-                                  });
-                                },
-                              ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              Card(
-                                child: Row(
-                                  children: [
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "-5%",
-                                      onPressed: porcentaje < 0.05 ? null : (){
-                                        if(porcentaje >= 0.05){
-                                          setState(() {
-                                            porcentaje -= 0.05;
-                                          });
-                                        }
-                                      }
-                                    ),
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "-1%",
-                                      onPressed: porcentaje < 0.01 ? null : (){
-                                        if(porcentaje >= 0.01){
-                                          setState(() {
-                                            porcentaje -= 0.01;
-                                          });
-                                        }
-                                      }
-                                    ),
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "-0.01%",
-                                      onPressed: porcentaje < 0.001 ? null : (){
-                                        if(porcentaje >= 0.001){
-                                          setState(() {
-                                            porcentaje -= 0.001;
-                                          });
-                                        }
-                                      }
-                                    ),
-                                    Card(
-                                      color: Theme.of(context).primaryColorLight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text.rich(
-                                          TextSpan(
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                text: porcentaje != 1 ? (porcentaje > 1 ?  "Aumento: ":"Descuento: ") : "Deslice para modificar el precio...",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: porcentaje != 1 ? ((porcentaje > 1 ?  ((porcentaje-1)*100).toStringAsFixed(1):((1-porcentaje)*100).toStringAsFixed(1))+"%"):"",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800
-                                                ),
-                                              ),
-                                            ],
-                                            style: TextStyle(
-                                              color: Colors.white
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "+0.01%",
-                                      onPressed: (){
+                          Container(
+                            constraints: BoxConstraints(
+                              maxWidth: 600
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                    child: Slider(
+                                      min: 0.0,
+                                      max: 3.0,
+                                      divisions: 300,
+                                      value: porcentaje > 3 ? 3 : porcentaje,
+                                      label: (porcentaje >= 1 ?  "+"+((porcentaje-1)*100).floor().toString():"-"+((1-porcentaje)*100).floor().toString())+"%",
+                                      onChanged: (value){
                                         setState(() {
-                                          porcentaje += 0.001;
+                                          porcentaje = value;
                                         });
-                                      }
+                                      },
                                     ),
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "+1%",
-                                      onPressed: (){
-                                        setState(() {
-                                          porcentaje += 0.01;
-                                        });
-                                      }
-                                    ),
-                                    incrementDecrementButton(
-                                      context: context,
-                                      text: "+5%",
-                                      onPressed: (){
-                                        setState(() {
-                                          porcentaje += 0.05;
-                                        });
-                                      }
-                                    ),
-                                  ],
                                 ),
-                              ),
-                              ZMTextButton(
-                                color: Theme.of(context).primaryColor,
-                                text: "Reestablecer valores",
-                                onPressed: (){
-                                  setState(() {
-                                    porcentaje = 1.000;
-                                  });
-                                },
-                                outlineBorder: false,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ZMTable(
-                              model: Productos(),
-                              service: ProductosService(),
-                              tableBackgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
-                              listMethodConfiguration: ProductosService().buscarProductos({
-                                "Productos": {
-                                  "Estado": "A",
-                                  "IdGrupoProducto": widget.grupoProducto.idGrupoProducto
-                                }
-                              }),
-                              pageLength: 12,
-                              paginate: true,
-                              cellBuilder: {
-                                "Productos": {
-                                  "Producto": (value) {
-                                    return Text(
-                                      value != null ? value.toString() : "-",
-                                      textAlign: TextAlign.center,
-                                    );
-                                  }
-                                },
-                                "Precios": {
-                                  "Precio": (value) {
-                                    return Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  Card(
+                                    child: Row(
                                       children: [
-                                        Visibility(
-                                          visible: porcentaje != 1,
-                                          child: Row(
-                                            children: [
-                                              Text.rich(TextSpan(
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "-5%",
+                                          onPressed: porcentaje < 0.05 ? null : (){
+                                            if(porcentaje >= 0.05){
+                                              setState(() {
+                                                porcentaje -= 0.05;
+                                              });
+                                            }
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "-1%",
+                                          onPressed: porcentaje < 0.01 ? null : (){
+                                            if(porcentaje >= 0.01){
+                                              setState(() {
+                                                porcentaje -= 0.01;
+                                              });
+                                            }
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "-0.1%",
+                                          onPressed: porcentaje < 0.001 ? null : (){
+                                            if(porcentaje >= 0.001){
+                                              setState(() {
+                                                porcentaje -= 0.001;
+                                              });
+                                            }
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "-0.01%",
+                                          onPressed: porcentaje < 0.0001 ? null : (){
+                                            if(porcentaje >= 0.0001){
+                                              setState(() {
+                                                porcentaje -= 0.0001;
+                                              });
+                                            }
+                                          }
+                                        ),
+                                        Card(
+                                          color: Theme.of(context).primaryColorLight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Text.rich(
+                                              TextSpan(
                                                 children: <TextSpan>[
                                                   TextSpan(
-                                                    text: value != null ? "\$"+(value).toStringAsFixed(2) : "-",
+                                                    text: porcentaje != 1 ? (porcentaje > 1 ?  "Aumento: ":"Descuento: ") : "Deslice para modificar el precio...",
                                                     style: TextStyle(
-                                                      color: Colors.grey,
-                                                      decoration: TextDecoration.lineThrough,
+                                                      fontWeight: FontWeight.w600
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text: porcentaje != 1 ? ((porcentaje > 1 ?  ((porcentaje-1)*100).toStringAsFixed(2):((1-porcentaje)*100).toStringAsFixed(2))+"%"):"",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w800
                                                     ),
                                                   ),
                                                 ],
-                                                ),
+                                                style: TextStyle(
+                                                  color: Colors.white
+                                                )
                                               ),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                child: Icon(
-                                                  Icons.keyboard_arrow_right,
-                                                  size: 24,
-                                                ),
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                          child: Text(
-                                            value != null ? "\$"+(value * porcentaje).toStringAsFixed(2) : "-",
-                                            textAlign: TextAlign.center
-                                          ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "+0.01%",
+                                          onPressed: (){
+                                            setState(() {
+                                              porcentaje += 0.0001;
+                                            });
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "+0.1%",
+                                          onPressed: (){
+                                            setState(() {
+                                              porcentaje += 0.001;
+                                            });
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "+1%",
+                                          onPressed: (){
+                                            setState(() {
+                                              porcentaje += 0.01;
+                                            });
+                                          }
+                                        ),
+                                        incrementDecrementButton(
+                                          context: context,
+                                          text: "+5%",
+                                          onPressed: (){
+                                            setState(() {
+                                              porcentaje += 0.05;
+                                            });
+                                          }
                                         ),
                                       ],
-                                    );
-                                  }
-                                }
-                              },
-                              onEmpty: Center(
-                                child: Text(
-                                  "El grupo seleccionado aún no tiene productos...",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600
+                                    ),
                                   ),
-                                )
+                                  ZMTextButton(
+                                    color: Theme.of(context).primaryColor,
+                                    text: "Reestablecer valores",
+                                    onPressed: (){
+                                      setState(() {
+                                        porcentaje = 1.000;
+                                      });
+                                    },
+                                    outlineBorder: false,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Flexible(
+                            fit: FlexFit.tight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ZMTable(
+                                      model: Productos(),
+                                      service: ProductosService(),
+                                      tableBackgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
+                                      listMethodConfiguration: ProductosService().buscarProductos({
+                                        "Productos": {
+                                          "Estado": "A",
+                                          "IdGrupoProducto": widget.grupoProducto.idGrupoProducto
+                                        }
+                                      }),
+                                      pageLength: 12,
+                                      paginate: true,
+                                      cellBuilder: {
+                                        "Productos": {
+                                          "Producto": (value) {
+                                            return Text(
+                                              value != null ? value.toString() : "-",
+                                              textAlign: TextAlign.center,
+                                            );
+                                          }
+                                        },
+                                        "Precios": {
+                                          "Precio": (value) {
+                                            return Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Visibility(
+                                                  visible: porcentaje != 1,
+                                                  child: Row(
+                                                    children: [
+                                                      Text.rich(TextSpan(
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text: value != null ? "\$"+(value).toStringAsFixed(2) : "-",
+                                                            style: TextStyle(
+                                                              color: Colors.black.withOpacity(0.6),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                        child: Icon(
+                                                          Icons.keyboard_arrow_right,
+                                                          size: 24,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                  child: Text(
+                                                    value != null ? "\$"+(value * porcentaje).toStringAsFixed(2) : "-",
+                                                    textAlign: TextAlign.center
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                        }
+                                      },
+                                      onEmpty: Center(
+                                        child: Text(
+                                          "El grupo seleccionado aún no tiene productos...",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    //Button zone
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ZMStdButton(
-                            color: Theme.of(context).primaryColor,
-                            text: Text(
-                              "Modificar precios",
-                              style: TextStyle(
-                                color: Colors.white
+                          //Button zone
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ZMStdButton(
+                                color: Theme.of(context).primaryColor,
+                                text: Text(
+                                  "Modificar precios",
+                                  style: TextStyle(
+                                    color: Colors.white
+                                  ),
+                                ),
+                                onPressed: scheduler.isLoading() ? null : (){
+                                  if(_formKey.currentState.validate()){
+                                    if(widget.grupoProducto?.idGrupoProducto != null){
+                                      GruposProductoService().doMethod(
+                                        GruposProductoService().modificarPreciosConfiguration(
+                                          {
+                                            "IdGrupoProducto": widget.grupoProducto.idGrupoProducto,
+                                            "Porcentaje": double.parse(porcentaje.toStringAsFixed(3))
+                                          }
+                                        )
+                                      ).then(
+                                        (response){
+                                          if(response.status == RequestStatus.SUCCESS){
+                                            Navigator.of(context).pop();
+                                          }  
+                                        }
+                                      );
+                                    }
+                                  }
+                                },
                               ),
-                            ),
-                            onPressed: scheduler.isLoading() ? null : (){
-                              if(_formKey.currentState.validate()){
-                                
-                              }
-                            },
-                          ),
-                          SizedBox(
-                            width: 15
-                          ),
-                          ZMTextButton(
-                            color: Theme.of(context).primaryColor,
-                            text: "Cancelar",
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                            },
-                            outlineBorder: false,
+                              SizedBox(
+                                width: 15
+                              ),
+                              ZMTextButton(
+                                color: Theme.of(context).primaryColor,
+                                text: "Cancelar",
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                },
+                                outlineBorder: false,
+                              )
+                            ],
                           )
                         ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
         );

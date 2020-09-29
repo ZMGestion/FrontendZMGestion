@@ -7,6 +7,7 @@ class ZMStdButton extends StatelessWidget {
   final Color disabledColor;
   final Icon icon;
   final Function onPressed;
+  final EdgeInsets padding;
 
   const ZMStdButton({
     Key key, 
@@ -14,7 +15,8 @@ class ZMStdButton extends StatelessWidget {
     this.color = Colors.black,
     this.disabledColor = Colors.grey,
     this.icon, 
-    this.onPressed
+    this.onPressed,
+    this.padding = const EdgeInsets.all(0)
   }) : super(key: key);
 
   @override
@@ -46,7 +48,10 @@ class ZMStdButton extends StatelessWidget {
                 ],
               ),
             ),
-            text
+            Padding(
+              padding: padding,
+              child: text,
+            )
           ],
         ),
       ),

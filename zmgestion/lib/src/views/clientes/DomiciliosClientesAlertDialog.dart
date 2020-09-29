@@ -125,112 +125,115 @@ class _DomiciliosClientesAlertDialogState
                   ),
                   showForm
                       ? _form(_domicilioFormKey, scheduler)
-                      : ZMTable(
-                          model: Domicilios(),
-                          height: SizeConfig.blockSizeVertical * 20,
-                          service: ClientesService(),
-                          listMethodConfiguration: ClientesService()
-                              .listarDomiciliosConfiguration(
-                                  widget.cliente.idCliente),
-                          paginate: false,
-                          rowActions: (mapModel, index, itemsController) {
-                            int idDomiclio = 0;
-                            Domicilios domicilio;
-                            if (mapModel != null) {
-                              if (mapModel["Domicilios"] != null) {
-                                domicilio = Domicilios().fromMap(mapModel);
-                                idDomiclio = domicilio.idDomicilio;
+                      : Flexible(
+                        fit: FlexFit.tight,
+                          child: ZMTable(
+                            model: Domicilios(),
+                            height: SizeConfig.blockSizeVertical * 20,
+                            service: ClientesService(),
+                            listMethodConfiguration: ClientesService()
+                                .listarDomiciliosConfiguration(
+                                    widget.cliente.idCliente),
+                            paginate: false,
+                            rowActions: (mapModel, index, itemsController) {
+                              int idDomiclio = 0;
+                              Domicilios domicilio;
+                              if (mapModel != null) {
+                                if (mapModel["Domicilios"] != null) {
+                                  domicilio = Domicilios().fromMap(mapModel);
+                                  idDomiclio = domicilio.idDomicilio;
+                                }
                               }
-                            }
 
-                            return <Widget>[
-                              IconButtonTableAction(
-                                iconData: Icons.delete_outline,
-                                onPressed: () async {
-                                  if (idDomiclio != 0) {
-                                    await showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context)
-                                          .backgroundColor
-                                          .withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return DeleteAlertDialog(
-                                          title: "Borrar Domicilio",
-                                          message:
-                                              "¿Está seguro que desea eliminar el domicilio?",
-                                          onAccept: () async {
-                                            await ClientesService()
-                                                .doMethod(ClientesService(
-                                                        scheduler: scheduler)
-                                                    .quitarDomicilioConfiguration({
-                                              "Clientes": {
-                                                "IdCliente":
-                                                    widget.cliente.idCliente,
-                                              },
-                                              "Domicilios": {
-                                                "IdDomicilio":
-                                                    domicilio.idDomicilio
-                                              }
-                                            }))
-                                                .then((response) {
-                                              if (response.status ==
-                                                  RequestStatus.SUCCESS) {
-                                                itemsController.add(ItemAction(
-                                                    event: ItemEvents.Hide,
-                                                    index: index));
-                                              }
-                                            });
+                              return <Widget>[
+                                IconButtonTableAction(
+                                  iconData: Icons.delete_outline,
+                                  onPressed: () async {
+                                    if (idDomiclio != 0) {
+                                      await showDialog(
+                                        context: context,
+                                        barrierColor: Theme.of(context)
+                                            .backgroundColor
+                                            .withOpacity(0.5),
+                                        builder: (BuildContext context) {
+                                          return DeleteAlertDialog(
+                                            title: "Borrar Domicilio",
+                                            message:
+                                                "¿Está seguro que desea eliminar el domicilio?",
+                                            onAccept: () async {
+                                              await ClientesService()
+                                                  .doMethod(ClientesService(
+                                                          scheduler: scheduler)
+                                                      .quitarDomicilioConfiguration({
+                                                "Clientes": {
+                                                  "IdCliente":
+                                                      widget.cliente.idCliente,
+                                                },
+                                                "Domicilios": {
+                                                  "IdDomicilio":
+                                                      domicilio.idDomicilio
+                                                }
+                                              }))
+                                                  .then((response) {
+                                                if (response.status ==
+                                                    RequestStatus.SUCCESS) {
+                                                  itemsController.add(ItemAction(
+                                                      event: ItemEvents.Hide,
+                                                      index: index));
+                                                }
+                                              });
 
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      },
-                                    );
-                                  }
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                )
+                              ];
+                            },
+                            cellBuilder: {
+                              "Domicilios": {
+                                "Domicilio": (value) {
+                                  return Text(
+                                    value != null ? value.toString() : "-",
+                                    textAlign: TextAlign.center,
+                                  );
                                 },
-                              )
-                            ];
-                          },
-                          cellBuilder: {
-                            "Domicilios": {
-                              "Domicilio": (value) {
-                                return Text(
-                                  value != null ? value.toString() : "-",
-                                  textAlign: TextAlign.center,
-                                );
+                                "CodigoPostal": (value) {
+                                  return Text(
+                                      value != null ? value.toString() : "-",
+                                      textAlign: TextAlign.center);
+                                },
                               },
-                              "CodigoPostal": (value) {
-                                return Text(
-                                    value != null ? value.toString() : "-",
-                                    textAlign: TextAlign.center);
+                              "Ciudades": {
+                                "Ciudad": (value) {
+                                  return Text(
+                                      value != null ? value.toString() : "-",
+                                      textAlign: TextAlign.center);
+                                }
+                              },
+                              "Provincias": {
+                                "Provincia": (value) {
+                                  return Text(
+                                      value != null ? value.toString() : "-",
+                                      textAlign: TextAlign.center);
+                                }
+                              },
+                              "Paises": {
+                                "Pais": (value) {
+                                  return Text(
+                                      value != null ? value.toString() : "-",
+                                      textAlign: TextAlign.center);
+                                }
                               },
                             },
-                            "Ciudades": {
-                              "Ciudad": (value) {
-                                return Text(
-                                    value != null ? value.toString() : "-",
-                                    textAlign: TextAlign.center);
-                              }
+                            tableLabels: {
+                              "Domicilios": {"CodigoPostal": "Código Postal"}
                             },
-                            "Provincias": {
-                              "Provincia": (value) {
-                                return Text(
-                                    value != null ? value.toString() : "-",
-                                    textAlign: TextAlign.center);
-                              }
-                            },
-                            "Paises": {
-                              "Pais": (value) {
-                                return Text(
-                                    value != null ? value.toString() : "-",
-                                    textAlign: TextAlign.center);
-                              }
-                            },
-                          },
-                          tableLabels: {
-                            "Domicilios": {"CodigoPostal": "Código Postal"}
-                          },
-                        ),
+                          ),
+                      ),
                   // : ModelView(
                   //     isList: true,
                   //     key: Key(showForm.toString()),

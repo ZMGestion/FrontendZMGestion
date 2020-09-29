@@ -34,10 +34,6 @@ class _ModelViewDialogState extends State<ModelViewDialog> {
       insetPadding: EdgeInsets.all(0),
       actionsPadding: EdgeInsets.all(0),
       buttonPadding: EdgeInsets.all(0),
-      title: AlertDialogTitle(
-        title: widget.title, 
-        titleColor: Theme.of(context).primaryColorLight.withOpacity(0.8),
-      ),
       elevation: 1.5,
       scrollable: true,
       backgroundColor: Theme.of(context).cardColor,
