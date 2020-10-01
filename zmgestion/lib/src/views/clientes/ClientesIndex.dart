@@ -342,8 +342,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                                           initialValue: "T",
                                                           onChanged: (value) {
                                                             setState(() {
-                                                              searchIdEstado =
-                                                                  value;
+                                                              searchIdEstado = value;
                                                             });
                                                           },
                                                         ),
@@ -363,25 +362,15 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                                       CountryCodePicker(
                                                         onChanged: print,
                                                         countryFilter: ["AR"],
-                                                        // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-                                                        initialSelection:
-                                                            searchIdPais,
-                                                        // optional. Shows only country name and flag
+                                                        initialSelection: searchIdPais,
                                                         showCountryOnly: true,
-                                                        // optional. Shows only country name and flag when popup is closed.
-                                                        showOnlyCountryWhenClosed:
-                                                            true,
-                                                        // optional. aligns the flag and the Text left
+                                                        showOnlyCountryWhenClosed: true,
                                                         alignLeft: false,
                                                         hideMainText: false,
-
                                                         dialogSize: Size(
-                                                            SizeConfig
-                                                                    .blockSizeHorizontal *
-                                                                20,
-                                                            SizeConfig
-                                                                    .blockSizeVertical *
-                                                                25),
+                                                          SizeConfig.blockSizeHorizontal * 20,
+                                                          SizeConfig.blockSizeVertical * 25
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -436,24 +425,35 @@ class _ClientesIndexState extends State<ClientesIndex> {
                               );
                             },
                             "Apellidos": (value) {
-                              return Text(value != null ? value.toString() : "-",
-                                  textAlign: TextAlign.center);
+                              return Text(
+                                value != null ? value.toString() : "-",
+                                textAlign: TextAlign.center
+                              );
                             },
                             "RazonSocial": (value) {
-                              return Text(value != null ? value.toString() : "-",
-                                  textAlign: TextAlign.center);
+                              return Text(
+                                value != null ? value.toString() : "-",
+                                textAlign: TextAlign.center
+                              );
                             },
                             "Tipo": (value) {
-                              return Text(value.toString(),
-                                  textAlign: TextAlign.center);
+                              return Text(
+                                Clientes().mapTipo()[value.toString()] != null ? Clientes().mapTipo()[value.toString()] : "-",
+                                textAlign: TextAlign.center
+                              )
+                              ;
                             },
                             "Documento": (value) {
-                              return Text(value.toString(),
-                                  textAlign: TextAlign.center);
+                              return Text(
+                                value.toString(),
+                                textAlign: TextAlign.center
+                              );
                             },
                             "Telefono": (value) {
-                              return Text(value.toString(),
-                                  textAlign: TextAlign.center);
+                              return Text(
+                                value.toString(),
+                                textAlign: TextAlign.center
+                              );
                             },
                           },
                         },
@@ -479,16 +479,16 @@ class _ClientesIndexState extends State<ClientesIndex> {
                             onPressed: () {
                               showDialog(
                                 context: context,
-                                barrierColor: Theme.of(context)
-                                    .backgroundColor
-                                    .withOpacity(0.5),
+                                barrierDismissible: false,
+                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return CrearClientesAlertDialog(
                                     title: "Crear Cliente",
                                     onSuccess: () {
-                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop(true);
                                       setState(() {
                                         searchText = "";
+                                        refreshValue = Random().nextInt(99999);
                                       });
                                     },
                                   );

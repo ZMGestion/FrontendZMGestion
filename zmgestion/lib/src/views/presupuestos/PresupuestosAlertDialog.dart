@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_bubble/speech_bubble.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
@@ -27,7 +28,9 @@ import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
+import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestoCreadoDialog.dart';
+import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
@@ -132,67 +135,114 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Card(
                             color: Theme.of(context).primaryColorLight,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.all(12),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: AutoCompleteField(
-                                        enabled: presupuesto == null,
-                                        prefixIcon: Icon(
-                                          Icons.person_outline,
-                                          color: Color(0xff87C2F5).withOpacity(0.8),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                            child: AutoCompleteField(
+                                              enabled: presupuesto == null,
+                                              actions: [
+                                                InkWell(
+                                                  borderRadius: BorderRadius.circular(25),
+                                                  onTap: (){
+                                                    showDialog(
+                                                      context: context,
+                                                      barrierDismissible: false,
+                                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                      builder: (BuildContext context) {
+                                                        return CrearClientesAlertDialog(
+                                                          title: "Nuevo cliente",
+                                                          onSuccess: () {
+                                                            Navigator.of(context).pop(true);
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(6),
+                                                    child: Icon(
+                                                      Icons.person_add_sharp,
+                                                      size: 20,
+                                                      color: Colors.tealAccent.withOpacity(0.8)
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                              prefixIcon: Icon(
+                                                Icons.person_outline,
+                                                color: Color(0xff87C2F5).withOpacity(0.8),
+                                              ),
+                                              hintStyle: TextStyle(
+                                                color: Color(0xffBADDFB).withOpacity(0.8)
+                                              ),
+                                              labelStyle: TextStyle(
+                                                color: Color(0xffBADDFB).withOpacity(0.8)
+                                              ),
+                                              labelText: "Cliente",
+                                              hintText: "Ingrese un cliente",
+                                              initialValue: Utils.clientName(presupuesto?.cliente),
+                                              invalidTextColor: Color(0xffffaaaa),
+                                              validTextColor: Color(0xffaaffaa),
+                                              parentName: "Clientes",
+                                              keyNameFunc: (mapModel){
+                                                String displayedName = "";
+                                                if(mapModel["Clientes"]["Nombres"] != null){
+                                                  displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
+                                                }else{
+                                                  displayedName = mapModel["Clientes"]["RazonSocial"];
+                                                }
+                                                return displayedName;
+                                              },
+                                              service: ClientesService(),
+                                              paginate: true,
+                                              pageLength: 4,
+                                              onClear: (){
+                                                setState(() {
+                                                  _idCliente = 0;
+                                                });
+                                              },
+                                              listMethodConfiguration: (searchText){
+                                                return ClientesService().buscarClientes({
+                                                  "Clientes": {
+                                                    "Nombres": searchText
+                                                  }
+                                                });
+                                              },
+                                              onSelect: (mapModel){
+                                                if(mapModel != null){
+                                                  Clientes cliente = Clientes().fromMap(mapModel);
+                                                  setState(() {
+                                                    _idCliente = cliente.idCliente;
+                                                  });
+                                                }
+                                              },
+                                            ),
                                         ),
-                                        hintStyle: TextStyle(
-                                          color: Color(0xffBADDFB).withOpacity(0.8)
-                                        ),
-                                        labelStyle: TextStyle(
-                                          color: Color(0xffBADDFB).withOpacity(0.8)
-                                        ),
-                                        labelText: "Cliente",
-                                        hintText: "Ingrese un cliente",
-                                        initialValue: Utils.clientName(presupuesto?.cliente),
-                                        invalidTextColor: Color(0xffffaaaa),
-                                        validTextColor: Color(0xffaaffaa),
-                                        parentName: "Clientes",
-                                        keyNameFunc: (mapModel){
-                                          String displayedName = "";
-                                          if(mapModel["Clientes"]["Nombres"] != null){
-                                            displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                                          }else{
-                                            displayedName = mapModel["Clientes"]["RazonSocial"];
-                                          }
-                                          return displayedName;
-                                        },
-                                        service: ClientesService(),
-                                        paginate: true,
-                                        pageLength: 4,
-                                        onClear: (){
-                                          setState(() {
-                                            _idCliente = 0;
-                                          });
-                                        },
-                                        listMethodConfiguration: (searchText){
-                                          return ClientesService().buscarClientes({
-                                            "Clientes": {
-                                              "Nombres": searchText
-                                            }
-                                          });
-                                        },
-                                        onSelect: (mapModel){
-                                          if(mapModel != null){
-                                            Clientes cliente = Clientes().fromMap(mapModel);
-                                            setState(() {
-                                              _idCliente = cliente.idCliente;
-                                            });
-                                          }
-                                        },
-                                      ),
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(width: 12,),
                                   Expanded(
                                     child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 4),
+                                      /*
+                                      decoration: BoxDecoration(
+                                        color: Color(0x3f000000),
+                                        borderRadius: BorderRadius.horizontal(
+                                          left: Radius.circular(10),
+                                          right: Radius.circular(10),
+                                        )
+                                      ),
+                                      */
                                       constraints: BoxConstraints(minWidth: 200),
                                       child: DropDownModelView(
                                         service: UbicacionesService(),
@@ -239,6 +289,9 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                             Expanded(
                               child: Card(
                                 color: Theme.of(context).primaryColorLight,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)
+                                ),
                                 child: Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Column(

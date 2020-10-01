@@ -88,6 +88,7 @@ class _DomiciliosIndexState extends State<DomiciliosIndex> {
               builder: (scheduler){
                 return ZMTable(
                   model: Domicilios(),
+                  modelViewKey: refreshValue.toString(),
                   height: SizeConfig.blockSizeVertical * 20,
                   service: ClientesService(),
                   listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(idCliente),
@@ -112,15 +113,16 @@ class _DomiciliosIndexState extends State<DomiciliosIndex> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          barrierColor: Theme.of(context)
-                              .backgroundColor
-                              .withOpacity(0.5),
+                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                           builder: (BuildContext context) {
                             return CrearDomiciliosAlertDialog(
                               title: "Agregar domicilio",
                               cliente: Clientes(idCliente: idCliente),
                               onSuccess: () {
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop(true);
+                                setState(() {
+                                  refreshValue = Random().nextInt(99999);
+                                });
                               },
                             );
                           },

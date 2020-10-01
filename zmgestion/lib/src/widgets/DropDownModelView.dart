@@ -97,6 +97,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
       setState(() {
         loading = true;
       });
+      List<DropdownMenuItem> newItems = List<DropdownMenuItem>();
       await widget.service.listarPor(widget.listMethodConfiguration, showLoading: false).then((response) {
         if (!closed) {
           if (response.status == RequestStatus.SUCCESS) {
@@ -104,7 +105,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
               widget.onComplete(response.message);
             }
             if (widget.allOption) {
-              _items.add(DropdownMenuItem(
+              newItems.add(DropdownMenuItem(
                 value: widget.allOptionValue,
                 child: Text(
                   widget.allOptionText,
@@ -117,7 +118,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             response.message.forEach((model) {
               Map<String, dynamic> mapModel = model.toMap();
               _models.addAll({mapModel[widget.parentName][widget.valueName]: mapModel});
-              _items.add(DropdownMenuItem(
+              newItems.add(DropdownMenuItem(
                 value: mapModel[widget.parentName][widget.valueName],
                 child: Text(
                   _displayedName(mapModel),
@@ -134,7 +135,7 @@ class _DropDownModelViewState extends State<DropDownModelView> {
             });
           }
           setState(() {
-            this.result = result;
+            this._items = newItems;
             loading = false;
           });
         }

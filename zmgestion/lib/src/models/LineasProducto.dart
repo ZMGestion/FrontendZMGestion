@@ -18,6 +18,7 @@ class LineasProducto extends Equatable with Models{
   final String estado;
 
   /* -Other-*/
+  final double precioUnitarioActual;
   final ProductosFinales productoFinal;
 
   LineasProducto({
@@ -32,6 +33,7 @@ class LineasProducto extends Equatable with Models{
     this.fechaAlta,
     this.fechaCancelacion,
     this.estado,
+    this.precioUnitarioActual,
     this.productoFinal
   });
 
@@ -52,7 +54,8 @@ class LineasProducto extends Equatable with Models{
         fechaAlta:  mapModel["LineasProducto"]["FechaAlta"] != null ? DateTime.parse(mapModel["LineasProducto"]["FechaAlta"]) : null,
         fechaCancelacion:  mapModel["LineasProducto"]["FechaCancelacion"] != null ? DateTime.parse(mapModel["LineasProducto"]["FechaCancelacion"]) : null,
         estado: mapModel["LineasProducto"]["Estado"],
-        productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap(mapModel) : null
+        productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap(mapModel) : null,
+        precioUnitarioActual: mapModel["LineasProducto"]["_PrecioUnitarioActual"]
       );
     }
   
@@ -72,6 +75,7 @@ class LineasProducto extends Equatable with Models{
           "FechaAlta":            this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
           "FechaCancelacion":     this.fechaCancelacion!= null ? this.fechaCancelacion.toIso8601String() : null,
           "Estado":               this.estado,
+          "_PrecioUnitarioActual": this.precioUnitarioActual
         }
       };
       
