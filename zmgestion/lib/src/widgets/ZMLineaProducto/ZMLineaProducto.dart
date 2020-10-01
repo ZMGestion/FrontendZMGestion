@@ -45,6 +45,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
 
   final TextEditingController _precioUnitarioController = TextEditingController();
   int _cantidad = 1;
+  int _idLineaProducto;
   double _precioTotal = 0;
   double _precioTotalModificado = 0;
   double _precioUnitario = 0;
@@ -61,7 +62,9 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
     
     if(widget.lineaProducto != null){
       _cantidad = widget.lineaProducto.cantidad;
-      
+      if(widget.lineaProducto.idLineaProducto != 0){
+        _idLineaProducto = widget.lineaProducto.idLineaProducto;
+      }
       _lustreSeleccionado = widget.lineaProducto.productoFinal?.lustre;
       _idLustre = widget.lineaProducto.productoFinal?.idLustre??null;
       SchedulerBinding.instance.addPostFrameCallback((_) async{
@@ -493,6 +496,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
               onPressed: _loading ? null : (){
                 widget.onAccept(
                   LineasProducto(
+                    idLineaProducto: _idLineaProducto,
                     idReferencia: widget.idReferencia,
                     cantidad: _cantidad,
                     precioUnitario: _precioUnitario,

@@ -70,18 +70,18 @@ class _VentaCreadaDialogState extends State<VentaCreadaDialog> {
             // ));
           }
         ),
-        ZMStdButton(
-          color: Theme.of(context).primaryColor,
-          icon: Icon(Icons.edit_outlined),
-          text: Text(
-            "Modificar",
-            style: TextStyle(
-              color: Theme.of(context).primaryTextTheme.headline6.color
-            ),
-          ),
-          onPressed: (){
-          }
-        ),
+        // ZMStdButton(
+        //   color: Theme.of(context).primaryColor,
+        //   icon: Icon(Icons.edit_outlined),
+        //   text: Text(
+        //     "Modificar",
+        //     style: TextStyle(
+        //       color: Theme.of(context).primaryTextTheme.headline6.color
+        //     ),
+        //   ),
+        //   onPressed: (){
+        //   }
+        // ),
         ZMStdButton(
           color: Theme.of(context).primaryColor,
           text: Text(

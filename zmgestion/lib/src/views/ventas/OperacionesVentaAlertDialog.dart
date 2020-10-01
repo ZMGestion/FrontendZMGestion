@@ -1,34 +1,15 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
-import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
-import 'package:zmgestion/src/models/Lustres.dart';
-import 'package:zmgestion/src/models/Precios.dart';
-import 'package:zmgestion/src/models/Presupuestos.dart';
-import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
-import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/providers/UsuariosProvider.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
-import 'package:zmgestion/src/services/GruposProductoService.dart';
-import 'package:zmgestion/src/services/PresupuestosService.dart';
-import 'package:zmgestion/src/services/ProductosFinalesService.dart';
-import 'package:zmgestion/src/services/ProductosService.dart';
-import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/presupuestos/PresupuestoCreadoDialog.dart';
 import 'package:zmgestion/src/views/ventas/VentaCreadaAlertDialog.dart';
 import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
@@ -37,34 +18,33 @@ import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/ConfirmationAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMLineaProducto.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMListLineasProducto.dart';
 
-class CrearVentasAlertDialog extends StatefulWidget{
+class OperacionesVentasAlertDialog extends StatefulWidget{
   final String title;
   final Function() onSuccess;
   final Ventas venta;
+  final String operacion;
   final Function(dynamic) onError;
 
-  const CrearVentasAlertDialog({
+  const OperacionesVentasAlertDialog({
     Key key,
     this.title,
     this.onSuccess,
     this.venta,
-    this.onError
+    this.onError,
+    this.operacion
   }) : super(key: key);
 
   @override
-  _CrearVentasAlertDialogState createState() => _CrearVentasAlertDialogState();
+  _OperacionesVentasAlertDialogState createState() => _OperacionesVentasAlertDialogState();
 }
 
-class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
+class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDialog> {
   final _formKey = GlobalKey<FormState>();
   
   int _idCliente;
@@ -75,29 +55,49 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
   Ventas venta;
   bool showLineasForm = false;
   LineasProducto _lineaProductoEditando;
+  bool editingLine = false;
+  String initialClient = '';
 
   List<LineasProducto> _lineasProducto = [];
 
-  final TextEditingController _precioUnitarioController = TextEditingController();
-  final TextEditingController _precioTotalController = TextEditingController();
 
   @override
   void initState() {
-    venta = widget.venta;
+    if (widget.operacion == 'Modificar'){
+      if(widget.venta != null){
+        venta = widget.venta;
+        _idCliente = venta.idCliente;
+        _idUbicacion = venta.idUbicacion;
+        _idDomicilio = venta.idDomicilio;
+        if(venta.lineasProducto != null){
+          venta.lineasProducto.forEach((linea) {
+            _lineasProducto.add(linea);
+          });
+        }
+        ubicacionCargada = true;
+        if (venta.cliente != null){
+          if (venta.cliente.tipo == 'F'){
+            initialClient = venta.cliente.nombres + venta.cliente.apellidos;
+          }else{
+            initialClient = venta.cliente.razonSocial;
+          }
+        }
+      }
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-    if(!ubicacionCargada){
-      final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
-      setState(() {
-        usuario = _usuariosProvider.usuario;
-        ubicacionCargada = true;
-        _idUbicacion = usuario.idUbicacion;
-      });
-    }
+      SizeConfig().init(context);
+      if(!ubicacionCargada){
+        final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
+        setState(() {
+          usuario = _usuariosProvider.usuario;
+          ubicacionCargada = true;
+          _idUbicacion = usuario.idUbicacion; 
+        });
+      }
       return AppLoader(
         builder: (scheduler){
           return AlertDialog(
@@ -140,54 +140,55 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                     children: [
                                       Expanded(
                                         child: AutoCompleteField(
-                                            prefixIcon: Icon(
-                                              Icons.person_outline,
-                                              color: Color(0xff87C2F5).withOpacity(0.8),
-                                            ),
-                                            hintStyle: TextStyle(
-                                              color: Color(0xffBADDFB).withOpacity(0.8)
-                                            ),
-                                            labelStyle: TextStyle(
-                                              color: Color(0xffBADDFB).withOpacity(0.8)
-                                            ),
-                                            labelText: "Cliente",
-                                            hintText: "Ingrese un cliente",
-                                            invalidTextColor: Color(0xffffaaaa),
-                                            validTextColor: Color(0xffaaffaa),
-                                            parentName: "Clientes",
-                                            keyNameFunc: (mapModel){
-                                              String displayedName = "";
-                                              if(mapModel["Clientes"]["Nombres"] != null){
-                                                displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                                              }else{
-                                                displayedName = mapModel["Clientes"]["RazonSocial"];
-                                              }
-                                              return displayedName;
-                                            },
-                                            service: ClientesService(),
-                                            paginate: true,
-                                            pageLength: 4,
-                                            onClear: (){
-                                              setState(() {
-                                                _idCliente = 0;
-                                              });
-                                            },
-                                            listMethodConfiguration: (searchText){
-                                              return ClientesService().buscarClientes({
-                                                "Clientes": {
-                                                  "Nombres": searchText
-                                                }
-                                              });
-                                            },
-                                            onSelect: (mapModel){
-                                              if(mapModel != null){
-                                                Clientes cliente = Clientes().fromMap(mapModel);
-                                                setState(() {
-                                                  _idCliente = cliente.idCliente;
-                                                });
-                                              }
-                                            },
+                                          prefixIcon: Icon(
+                                            Icons.person_outline,
+                                            color: Color(0xff87C2F5).withOpacity(0.8),
                                           ),
+                                          hintStyle: TextStyle(
+                                            color: Color(0xffBADDFB).withOpacity(0.8)
+                                          ),
+                                          labelStyle: TextStyle(
+                                            color: Color(0xffBADDFB).withOpacity(0.8)
+                                          ),
+                                          labelText: "Cliente",
+                                          hintText: "Ingrese un cliente",
+                                          invalidTextColor: Color(0xffffaaaa),
+                                          validTextColor: Color(0xffaaffaa),
+                                          parentName: "Clientes",
+                                          initialValue: initialClient,
+                                          keyNameFunc: (mapModel){
+                                            String displayedName = "";
+                                            if(mapModel["Clientes"]["Nombres"] != null){
+                                              displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
+                                            }else{
+                                              displayedName = mapModel["Clientes"]["RazonSocial"];
+                                            }
+                                            return displayedName;
+                                          },
+                                          service: ClientesService(),
+                                          paginate: true,
+                                          pageLength: 4,
+                                          onClear: (){
+                                            setState(() {
+                                              _idCliente = 0;
+                                            });
+                                          },
+                                          listMethodConfiguration: (searchText){
+                                            return ClientesService().buscarClientes({
+                                              "Clientes": {
+                                                "Nombres": searchText
+                                              }
+                                            });
+                                          },
+                                          onSelect: (mapModel){
+                                            if(mapModel != null){
+                                              Clientes cliente = Clientes().fromMap(mapModel);
+                                              setState(() {
+                                                _idCliente = cliente.idCliente;
+                                              });
+                                            }
+                                          },
+                                        ),
                                       ),
                                       SizedBox(width: 12,),
                                       Expanded(
@@ -201,7 +202,7 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                             displayedName: "Ubicacion",
                                             valueName: "IdUbicacion",
                                             allOption: false,
-                                            initialValue: usuario.idUbicacion,
+                                            initialValue: _idUbicacion,
                                             errorMessage: "Debe seleccionar una ubicación",
                                             textStyle: TextStyle(
                                               color: Color(0xff97D2FF).withOpacity(1),
@@ -243,6 +244,7 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                           displayedName: "Domicilio",
                                           valueName: "IdDomicilio",
                                           allOption: false,
+                                          initialValue: _idDomicilio,
                                           errorMessage: "Debe seleccionar un domicilio",
                                           textStyle: TextStyle(
                                             color: Color(0xff97D2FF).withOpacity(1),
@@ -301,6 +303,7 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                                   setState(() {
                                                     _lineaProductoEditando = lp;
                                                     showLineasForm = true;
+                                                    editingLine = true;
                                                   });
                                                 },
                                                 onDelete: (LineasProducto lp){
@@ -380,6 +383,9 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                           onCancel: (){
                                             setState(() {
                                               showLineasForm = false;
+                                              if(_lineaProductoEditando != null){
+                                                _lineaProductoEditando = null;
+                                              }
                                             });
                                           },
                                           onAccept: (lp) async{
@@ -388,35 +394,69 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                                 showLineasForm = true;
                                               });
                                             }else{
-                                              if(_formKey.currentState.validate()){
-                                                bool success = true;
-                                                if(venta == null){
-                                                  //Creamos la venta
-                                                  Ventas _ventas = Ventas(
-                                                    idCliente: _idCliente,
-                                                    idUbicacion: _idUbicacion
-                                                  );
-                                                  await VentasService().crear(_ventas).then(
-                                                    (response){
-                                                      if(response.status == RequestStatus.SUCCESS){
-                                                        Ventas _ventaCreada = Ventas().fromMap(response.message);
-                                                        setState(() {
-                                                          venta = _ventaCreada;
-                                                        });
-                                                      }else{
-                                                        success = false;
-                                                        if(widget.onError != null){
-                                                          widget.onError(response.message);
+                                              if(widget.operacion == 'Crear' && !editingLine){
+                                                if(_formKey.currentState.validate()){
+                                                  bool success = true;
+                                                  if(venta == null){
+                                                    //Creamos la venta
+                                                    Ventas _ventas = Ventas(
+                                                      idCliente: _idCliente,
+                                                      idUbicacion: _idUbicacion
+                                                    );
+                                                    await VentasService().crear(_ventas).then((response){
+                                                        if(response.status == RequestStatus.SUCCESS){
+                                                          Ventas _ventaCreada = Ventas().fromMap(response.message);
+                                                          setState(() {
+                                                            venta = _ventaCreada;
+                                                          });
+                                                        }else{
+                                                          success = false;
+                                                          if(widget.onError != null){
+                                                            widget.onError(response.message);
+                                                          }
                                                         }
                                                       }
-                                                    }
-                                                  );
+                                                    );
+                                                  }
+                                                  if(success){
+                                                    LineasProducto _lp = LineasProducto(
+                                                      idReferencia: venta.idVenta,
+                                                      cantidad: lp.cantidad,
+                                                      precioUnitario: lp.precioUnitario,
+                                                      productoFinal: ProductosFinales(
+                                                        idProducto: lp.productoFinal?.idProducto,
+                                                        idTela: lp.productoFinal?.idTela,
+                                                        idLustre: lp.productoFinal?.idLustre,
+                                                        producto: lp.productoFinal?.producto,
+                                                        tela: lp.productoFinal?.tela,
+                                                        lustre: lp.productoFinal?.lustre
+                                                      ),
+                                                    );
+                                                    VentasService(scheduler: scheduler).doMethod(VentasService().crearLineaVentaConfiguration(_lp)).then(
+                                                      (response){
+                                                        if(response.status == RequestStatus.SUCCESS){
+                                                          setState(() {
+                                                            _lineasProducto.add(
+                                                              LineasProducto().fromMap(response.message)
+                                                            );
+                                                            showLineasForm = false;
+                                                          });
+                                                        }else{
+                                                          if(widget.onError != null){
+                                                            widget.onError(response.message);
+                                                          }
+                                                        }
+                                                      }
+                                                    );
+                                                  }
                                                 }
-                                                if(success){
-                                                  LineasProducto _lp = LineasProducto(
+                                              }
+                                              if(editingLine){
+                                                LineasProducto _lp = LineasProducto(
+                                                    idLineaProducto: lp.idLineaProducto,
                                                     idReferencia: venta.idVenta,
                                                     cantidad: lp.cantidad,
-                                                    precioUnitario: 250.0,
+                                                    precioUnitario: lp.precioUnitario,
                                                     productoFinal: ProductosFinales(
                                                       idProducto: lp.productoFinal?.idProducto,
                                                       idTela: lp.productoFinal?.idTela,
@@ -426,25 +466,18 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                                       lustre: lp.productoFinal?.lustre
                                                     ),
                                                   );
-                                                  VentasService(scheduler: scheduler).doMethod(VentasService().crearLineaVentaConfiguration(_lp)).then(
-                                                    (response){
-                                                      if(response.status == RequestStatus.SUCCESS){
-                                                        setState(() {
-                                                          _lineasProducto.add(
-                                                            LineasProducto().fromMap(response.message)
-                                                          );
-                                                          showLineasForm = false;
-                                                        });
-                                                      }else{
-                                                        if(widget.onError != null){
-                                                          widget.onError(response.message);
-                                                        }
-                                                      }
-                                                    }
-                                                  );
-                                                }
+                                                VentasService(scheduler: scheduler).doMethod(VentasService().modificarLineaVenta(_lp)).then((response){
+                                                  if(response.status == RequestStatus.SUCCESS){
+                                                    setState(() {
+                                                      _lineasProducto.remove(lp);
+                                                      _lineasProducto.add(LineasProducto().fromMap(response.message));
+                                                      showLineasForm = false;
+                                                      _lineaProductoEditando = null;
+                                                    });
+                                                  }
+                                                });
                                               }
-                                            }                                          
+                                            }                                         
                                           },
                                         )
                                       ),
@@ -472,42 +505,51 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                     ),
                                   ),
                                   onPressed: scheduler.isLoading() ? null : () async{
+                                    bool _success = true;
                                     if(venta != null){
-                                      VentasService().doMethod(VentasService().chequearVentaConfiguration(
-                                        venta.idVenta
-                                      )).then(
-                                        (response) async{
-                                          if(response.status == RequestStatus.SUCCESS){
-                                            venta = Ventas().fromMap(response.message);
-                                            if (venta.estado == 'C'){
-                                              await showDialog(
-                                                context: context,
-                                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                                barrierDismissible: false,
-                                                builder: (BuildContext context) {
-                                                  return VentaCreadaDialog(
-                                                    venta: venta
-                                                  );
-                                                },
-                                              );
+                                      if(widget.operacion == 'Modificar'){
+                                        await VentasService(scheduler: scheduler).modifica(venta.toMap()).then((response){
+                                          setState(() {
+                                            if(response.status == RequestStatus.SUCCESS){
+                                              _success = true;
                                             }else{
-                                              await showDialog(
-                                                context: context,
-                                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                                barrierDismissible: false,
-                                                builder: (BuildContext context){
-                                                  return VentaRevisionAlertDialog(
-                                                    venta: venta
-                                                  );
-                                                }
-                                              );
+                                              _success = false;
                                             }
-                                            Navigator.of(context).pop();
+                                          });
+                                        }); 
+                                      }
+                                      if((widget.operacion == 'Modificar' && _success) || widget.operacion == 'Crear'){
+                                        await VentasService().doMethod(VentasService().chequearVentaConfiguration(venta.idVenta)).then((response) async{
+                                            if(response.status == RequestStatus.SUCCESS){
+                                              venta = Ventas().fromMap(response.message);
+                                              if (venta.estado == 'C'){
+                                                await showDialog(
+                                                  context: context,
+                                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                  barrierDismissible: false,
+                                                  builder: (BuildContext context) {
+                                                    return VentaCreadaDialog(
+                                                      venta: venta
+                                                    );
+                                                  },
+                                                );
+                                              }else{
+                                                await showDialog(
+                                                  context: context,
+                                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                  barrierDismissible: false,
+                                                  builder: (BuildContext context){
+                                                    return VentaRevisionAlertDialog(
+                                                      venta: venta
+                                                    );
+                                                  }
+                                                );
+                                              }
+                                              widget.onSuccess();
+                                            }
                                           }
-                                        }
-                                      );
-                                    }else{
-                                      Navigator.of(context).pop();
+                                        );
+                                      }
                                     }
                                   },
                                 ),
@@ -529,6 +571,8 @@ class _CrearVentasAlertDialogState extends State<CrearVentasAlertDialog> {
                                             message: "¿Qué desea hacer con los cambios?",
                                             acceptText: "Conservar borrador",
                                             cancelText: "Descartar cambios",
+                                            acceptColor: Colors.green,
+                                            cancelColor: Colors.red,
                                             onAccept: () async {
                                               Navigator.of(context).pop();
                                             },

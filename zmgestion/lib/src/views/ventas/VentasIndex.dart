@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Productos.dart';
@@ -17,7 +17,7 @@ import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/ventas/CrearVentaAlertDialog.dart';
+import 'package:zmgestion/src/views/ventas/OperacionesVentaAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
@@ -200,8 +200,7 @@ Map<int, Ventas> ventas = {};
                                   ),
                                   DropDownModelView(
                                     service: UbicacionesService(),
-                                    listMethodConfiguration:
-                                      UbicacionesService().listar(),
+                                    listMethodConfiguration: UbicacionesService().listar(),
                                     parentName: "Ubicaciones",
                                     labelName: "Seleccione una ubicación",
                                     displayedName: "Ubicacion",
@@ -416,6 +415,10 @@ Map<int, Ventas> ventas = {};
                       }),
                       pageLength: 12,
                       paginate: true,
+                      idName: "Cod.",
+                      idValue: (mapModel){
+                        return mapModel["Ventas"]["IdVenta"].toString();
+                      },
                       cellBuilder: {
                         "Clientes": {
                           "*": (mapModel){
@@ -428,15 +431,9 @@ Map<int, Ventas> ventas = {};
                             return Text(
                               displayedName,
                               textAlign: TextAlign.center,
-                            );
-                          }
-                        },
-                        "Usuarios": {
-                          "*": (mapModel){
-                            String displayedName = mapModel["Usuarios"]["Nombres"]+" "+mapModel["Usuarios"]["Apellidos"];
-                            return Text(
-                              displayedName,
-                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600
+                              ),
                             );
                           }
                         },
@@ -459,13 +456,12 @@ Map<int, Ventas> ventas = {};
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    "x"+_lineaProducto.cantidad.toString(),
+                                                    _lineaProducto.cantidad.toString(),
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight: FontWeight.w600,
                                                       color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7-index*0.15),
-                                                      fontSize: 12
-                                                    
+                                                      fontSize: 13
                                                     ),
                                                   ),
                                                   SizedBox(
@@ -478,7 +474,8 @@ Map<int, Ventas> ventas = {};
                                                       " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
                                                       textAlign: TextAlign.center,
                                                       style: TextStyle(
-                                                        color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33)
+                                                        color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1-index*0.33),
+                                                          fontWeight: FontWeight.w600
                                                       ),
                                                     ),
                                                   ),
@@ -501,6 +498,21 @@ Map<int, Ventas> ventas = {};
                           }
                         },
                         "Ventas": {
+                          "FechaAlta": (value){
+                              if(value != null){
+                                return Text(
+                                  Utils.cuteDateTimeText(DateTime.parse(value)),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600
+                                  ),
+                                );
+                              }else{
+                                return Text(
+                                  "-",
+                                  textAlign: TextAlign.center);
+                              }
+                            },
                           "_PrecioTotal": (value) {
                             return Text(
                               value != null ? "\$"+value.toString() : "-",
@@ -529,11 +541,9 @@ Map<int, Ventas> ventas = {};
                         "Clientes": {
                           "*": "Cliente"
                         },
-                        "Usuarios": {
-                          "*": "Usuario"
-                        },
                         "Ventas": {
-                          "_PrecioTotal": "Total"
+                          "_PrecioTotal": "Total",
+                          "FechaAlta": "Fecha"
                         },
                         "LineasVenta": {
                           "*": "Detalle"
@@ -567,9 +577,11 @@ Map<int, Ventas> ventas = {};
                             showDialog(
                               context: context,
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                              barrierDismissible: false,
                               builder: (BuildContext context) {
-                                return CrearVentasAlertDialog(
-                                  title: "Crear Ventas",
+                                return OperacionesVentasAlertDialog(
+                                  title: "Nueva venta",
+                                  operacion: 'Crear',
                                   onSuccess: () {
                                     Navigator.of(context).pop();
                                     setState(() {
@@ -585,14 +597,14 @@ Map<int, Ventas> ventas = {};
                       onSelectActions: (ventas) {
                         bool estadosIguales = true;
                         bool clientesIguales = true;
-                        bool algunVendido = false;
+                        bool todosBorrables = true;
                         String estado;
                         if (ventas.length >= 1) {
                           Map<String, dynamic> anterior;
                           for (Ventas ventas in ventas) {
                             Map<String, dynamic> mapVentas = ventas.toMap();
-                            if(mapVentas["Ventas"]["Estado"] == 'V'){
-                              algunVendido = true;
+                            if(mapVentas["Ventas"]["Estado"] != 'E'){
+                              todosBorrables = false;
                             }
                             if (anterior != null) {
                               if (anterior["Ventas"]["Estado"] != mapVentas["Ventas"]["Estado"]) {
@@ -651,7 +663,7 @@ Map<int, Ventas> ventas = {};
                           //   width: 15,
                           // ),
                           Visibility(
-                            visible: (algunVendido),
+                            visible: (!todosBorrables),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Text(
@@ -664,7 +676,7 @@ Map<int, Ventas> ventas = {};
                             ),
                           ),
                           Visibility(
-                            visible: !algunVendido,
+                            visible: todosBorrables,
                             child: ZMStdButton(
                               color: Colors.red,
                               text: Text(
@@ -762,39 +774,43 @@ Map<int, Ventas> ventas = {};
                               }
                             }
                           ),
-                          IconButtonTableAction(
-                            iconData: Icons.edit,
-                            onPressed: () {
-                              if (idVenta != 0) {
+                          Opacity(
+                            opacity: idVenta == 0 ? 0.2 : (estado  == "E" ? 1 : 0.2),
+                            child: IconButtonTableAction(
+                              iconData: Icons.edit,
+                              onPressed: idVenta == 0 ? null : estado  != "E" ? null : ()async{
+                                Ventas venta;
+                                await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(idVenta)).then((response){
+                                  if (response.status == RequestStatus.SUCCESS){
+                                    setState(() {
+                                      venta = response.message;
+                                    });
+                                  }
+                                });
                                 showDialog(
                                   context: context,
-                                  barrierColor: Theme.of(context)
-                                      .backgroundColor
-                                      .withOpacity(0.5),
+                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                  barrierDismissible: false,
                                   builder: (BuildContext context) {
-                                    return ModelView(
-                                      service: VentasService(),
-                                      getMethodConfiguration: VentasService().dameConfiguration(idVenta),
-                                      isList: false,
-                                      itemBuilder: (updatedMapModel, internalIndex, itemController) {
-                                        return Container();
-                                        // return ModificarPresupuestosAlertDialog(
-                                        //   title: "Modificar presupuesto",
-                                        //   presupuesto: Presupuestos().fromMap(updatedMapModel),
-                                        //   onSuccess: () {
-                                        //     Navigator.of(context).pop();
-                                        //     itemsController.add(ItemAction(
-                                        //         event: ItemEvents.Update,
-                                        //         index: index,
-                                        //         updateMethodConfiguration: VentasService().dameConfiguration(venta.idVenta)));
-                                        //   },
-                                        // );
-                                      } ,
+                                    return OperacionesVentasAlertDialog(
+                                      title: "Modificar venta",
+                                      operacion: 'Modificar',
+                                      venta: venta,
+                                      onSuccess: () {
+                                        Navigator.of(context).pop();
+                                        itemsController.add(
+                                          ItemAction(
+                                            event: ItemEvents.Update,
+                                            index: index,
+                                            updateMethodConfiguration: VentasService().dameConfiguration(venta.idVenta)
+                                          )
+                                        );
+                                      },
                                     );
                                   },
                                 );
-                              }
-                            },
+                              },
+                            ),
                           ),
                           IconButtonTableAction(
                             iconData: Icons.delete_outline,
