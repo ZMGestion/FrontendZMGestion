@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
+import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class CrearClientesAlertDialog extends StatefulWidget {
   final String title;
@@ -53,13 +55,10 @@ class CrearClientesAlertDialog extends StatefulWidget {
 
 class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   DateTime selectedDate = DateTime.now();
-  final _fisicaFormKey = GlobalKey<FormState>();
-  final _juridicaFormKey = GlobalKey<FormState>();
-  final _domicilioFisicaFormKey = GlobalKey<FormState>();
-  final _domicilioJuridicaFormKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final _domicilioFormKey = GlobalKey<FormState>();
   PageController _pageController;
   final _currentPageNotifier = ValueNotifier<int>(0);
-  int _pageIndex;
 
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController apellidosController = TextEditingController();
@@ -78,6 +77,7 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   int idProvincia;
   int idCiudad;
   bool _showAddress;
+  bool _personaFisica = true;
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -95,28 +95,10 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //Faker faker = new Faker();
     _pageController = new PageController();
-    // nombresController.text = faker.person.firstName();
-    // apellidosController.text = faker.person.lastName();
-    // usuarioController.text = nombresController.text + apellidosController.text;
-    // emailController.text = usuarioController.text + "@gmail.com";
-    // idRol = 2 + Random().nextInt(1);
-    // idUbicacion = 1 + Random().nextInt(2);
-    // idTipoDocumento = 1;
-    // estadoCivil = "S";
     idPais = "AR";
     idPaisDireccion = "AR";
-    _pageIndex = 0;
     _showAddress = false;
-    //documentoController.text = (10000000 + Random().nextInt(40000000)).toString();
-    // fechaNacimientoController.text = (10 + Random().nextInt(18)).toString() +
-    //     "/" +
-    //     (10 + Random().nextInt(2)).toString() +
-    //     "/" +
-    //     (1950 + Random().nextInt(40)).toString();
-    // telefonoController.text =
-    //     "+54 381 4" + (100000 + Random().nextInt(899999)).toString();
   }
 
   @override
@@ -132,213 +114,190 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
           elevation: 1.5,
           scrollable: true,
           backgroundColor: Theme.of(context).cardColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: AlertDialogTitle(title: widget.title),
           content: Container(
-            padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
-            height: SizeConfig.blockSizeVertical * 90,
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
             width: SizeConfig.blockSizeHorizontal * 30,
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(24))),
-            child: Stack(
-              children: [_form(), _circleIndicator(scheduler)],
+            constraints: BoxConstraints(
+              minWidth: 600,
+              maxWidth: 800
             ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
+            ),
+            child: Column(
+              children: [
+                _form(),
+                _sendFormButton(scheduler)
+              ],
+            )
           ));
     });
   }
 
   _form() {
-    return PageView(
-      controller: _pageController,
-      allowImplicitScrolling: false,
-      scrollDirection: Axis.horizontal,
-      physics: NeverScrollableScrollPhysics(),
-      reverse: false,
-      onPageChanged: (index) {
-        setState(() {
-          _pageIndex = index;
-          _currentPageNotifier.value = index;
-        });
-      },
-      children: [_clienteFisicoForm(), _clienteJuridicoForm()],
-    );
-  }
-
-  _clienteFisicoForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _leftArrowButton(_pageIndex),
-            Text("Persona Física",
-                style: TextStyle(
-                    color: Theme.of(context).primaryTextTheme.headline1.color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-            _rightArrowButton(_pageIndex),
-          ],
-        ),
-        Form(
-          key: _fisicaFormKey,
-          child: Column(
+        Container(
+          child: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextFormFieldDialog(
-                        controller: nombresController,
-                        validator: Validator.notEmptyValidator,
-                        labelText: "Nombres",
-                      ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 2,
+                        color: _personaFisica ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
+                      )
+                    )
+                  ),
+                  child: MaterialButton(
+                    onPressed: (){
+                      setState(() {
+                        _personaFisica = true;
+                      });
+                    },
+                    child: Text(
+                      "Persona Física",
+                      style: TextStyle(
+                        color: _personaFisica ? Theme.of(context).primaryColorLight : null,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15
+                      )
                     ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Expanded(
-                      child: TextFormFieldDialog(
-                        controller: apellidosController,
-                        validator: Validator.notEmptyValidator,
-                        labelText: "Apellidos",
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _documentTypeField(idTipoDocumento),
-                    SizedBox(
-                      width: 12,
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 2,
+                        color: !_personaFisica ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
+                      )
+                    )
+                  ),
+                  child: MaterialButton(
+                    onPressed: (){
+                      setState(() {
+                        _personaFisica = false;
+                      });
+                    },
+                    child: Text(
+                      "Persona Jurídica",
+                      style: TextStyle(
+                        color: !_personaFisica ? Theme.of(context).primaryColorLight : null,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15
+                      )
                     ),
-                    _documentField(documentoController),
-                  ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _phoneField(telefonoController),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    _emailField(emailController)
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _birthdayField(fechaNacimientoController),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    _countryField(idPais, "Nacionalidad")
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: _domicilioForm(_domicilioFisicaFormKey),
               ),
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  _clienteJuridicoForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            _leftArrowButton(_pageIndex),
-            Text("Persona Jurídica",
-                style: TextStyle(
-                    color: Theme.of(context).primaryTextTheme.headline1.color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-            _rightArrowButton(_pageIndex)
-          ],
-        ),
-        Form(
-          key: _juridicaFormKey,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextFormFieldDialog(
-                        controller: razonSocialController,
-                        validator: Validator.notEmptyValidator,
-                        labelText: "Razón Social",
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Visibility(
+                  visible: _personaFisica,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextFormFieldDialog(
+                            controller: nombresController,
+                            validator: _personaFisica ? Validator.notEmptyValidator : null,
+                            labelText: "Nombres",
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormFieldDialog(
+                            controller: apellidosController,
+                            validator: _personaFisica ? Validator.notEmptyValidator : null,
+                            labelText: "Apellidos",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: !_personaFisica,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextFormFieldDialog(
+                            controller: razonSocialController,
+                            validator: !_personaFisica ? Validator.notEmptyValidator : null,
+                            labelText: "Razón Social",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _documentTypeField(idTipoDocumento),
+                      SizedBox(
+                        width: 12,
                       ),
-                    ),
-                  ],
+                      _documentField(documentoController),
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _documentTypeField(idTipoDocumento),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    _documentField(documentoController),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _phoneField(telefonoController),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      _emailField(emailController)
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _phoneField(telefonoController),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    _emailField(emailController)
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _birthdayField(fechaNacimientoController),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      _countryField(idPais, "Nacionalidad")
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _birthdayField(fechaNacimientoController),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    _countryField(idPais, "Nacionalidad")
-                  ],
+                Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: _domicilioForm(_domicilioFormKey),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: _domicilioForm(_domicilioJuridicaFormKey),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -352,70 +311,94 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Checkbox(
-                  value: _showAddress,
-                  onChanged: (value) {
-                    setState(() {
-                      _showAddress = value;
-                    });
-                  }),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Domicílio (Opcional)",
-                    style: TextStyle(
-                        color:
-                            Theme.of(context).primaryTextTheme.headline1.color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15)),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 2,
+                        color: _showAddress ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
+                      )
+                    )
+                  ),
+                  child: MaterialButton(
+                    onPressed: (){
+                      setState(() {
+                        _showAddress = !_showAddress;
+                      });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            CircularCheckBox(
+                              value: _showAddress,
+                              materialTapTargetSize: MaterialTapTargetSize.padded,
+                              onChanged: (value) {
+                                setState(() {
+                                  _showAddress = value;
+                                });
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Domicílio (Opcional)",
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColorLight,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15
+                                )
+                              ),
+                            ),
+                          ],
+                        ),
+                        Icon(
+                          _showAddress ? Icons.arrow_drop_up : Icons.arrow_drop_down
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ],
+            ]
           ),
           Visibility(
             visible: _showAddress,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _addressField(direccionController),
-                      SizedBox(
-                        width: 12,
-                      ),
-                      _zipCodeField(codigoPostalController)
-                    ],
+            child: Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _addressField(direccionController),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        _zipCodeField(codigoPostalController)
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _countryField(idPaisDireccion, "Pais"),
-                      SizedBox(
-                        width: 12,
-                      ),
-                      _provinciaField(idPais)
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _provinciaField(idPais),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        _ciudadField(idPais, idProvincia),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _ciudadField(idPais, idProvincia),
-                      SizedBox(
-                        width: 12,
-                      ),
-                      Container()
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],
@@ -547,21 +530,24 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
             labelText: label,
             padding: EdgeInsets.all(0),
           ),
-          CountryCodePicker(
-            onChanged: print,
-            countryFilter: ["AR"],
-            // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
-            initialSelection: idPais,
-            // optional. Shows only country name and flag
-            showCountryOnly: true,
-            // optional. Shows only country name and flag when popup is closed.
-            showOnlyCountryWhenClosed: true,
-            // optional. aligns the flag and the Text left
-            alignLeft: false,
-            hideMainText: false,
-
-            dialogSize: Size(SizeConfig.blockSizeHorizontal * 20,
-                SizeConfig.blockSizeVertical * 25),
+          Row(
+            children: [
+              Expanded(
+                child: CountryCodePicker(
+                  onChanged: print,
+                  countryFilter: ["AR"],
+                  initialSelection: idPais,
+                  showCountryOnly: true,
+                  showOnlyCountryWhenClosed: true,
+                  alignLeft: false,
+                  hideMainText: false,
+                  dialogSize: Size(
+                    SizeConfig.blockSizeHorizontal * 20,
+                    SizeConfig.blockSizeVertical * 25
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -580,8 +566,6 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   }
 
   _crearCliente(RequestScheduler scheduler) {
-    String tipo;
-    _currentPageNotifier.value == 0 ? tipo = "F" : tipo = "J";
     Clientes cliente = Clientes(
       idPais: idPais,
       nombres: _currentPageNotifier.value == 0 ? nombresController.text : null,
@@ -590,135 +574,78 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
       razonSocial:
           _currentPageNotifier.value == 1 ? razonSocialController.text : null,
       idTipoDocumento: idTipoDocumento,
-      tipo: tipo,
+      tipo: !_personaFisica ? "J" : "F",
       documento: documentoController.text,
       telefono: telefonoController.text,
       email: emailController.text,
       fechaNacimiento: fechaNacimientoController.text != ""
-          ? DateTime.parse(Jiffy(fechaNacimientoController.text, "dd/MM/yyyy")
-              .format("yyyy-MM-dd"))
+          ? DateTime.parse(Jiffy(fechaNacimientoController.text, "dd/MM/yyyy").format("yyyy-MM-dd"))
           : null,
     );
     Map<String, dynamic> payload = new Map<String, dynamic>();
     payload.addAll(cliente.toMap());
     if (_showAddress) {
-      if ((_pageIndex == 0 &&
-              _domicilioFisicaFormKey.currentState.validate()) ||
-          (_pageIndex == 1 &&
-              _domicilioJuridicaFormKey.currentState.validate())) {
+      if(_domicilioFormKey.currentState.validate()) {
         Domicilios domicilios = Domicilios(
-            idPais: idPais,
-            domicilio: direccionController.text,
-            codigoPostal: codigoPostalController.text,
-            idProvincia: idProvincia,
-            idCiudad: idCiudad);
+          idPais: idPais,
+          domicilio: direccionController.text,
+          codigoPostal: codigoPostalController.text,
+          idProvincia: idProvincia,
+          idCiudad: idCiudad
+        );
         payload.addAll(domicilios.toMap());
       }
     }
-    ClientesService(scheduler: scheduler)
-        .doMethod(ClientesService(scheduler: scheduler)
-            .crearClienteConfiguration(payload))
-        .then((response) {
-      if (response.status == RequestStatus.SUCCESS) {
-        if (widget.onSuccess != null) {
-          widget.onSuccess();
-        }
-      } else {
-        if (widget.onError != null) {
-          widget.onError(response.message);
+    ClientesService(scheduler: scheduler).doMethod(
+      ClientesService(scheduler: scheduler).crearClienteConfiguration(payload)
+    ).then(
+      (response) {
+        if (response.status == RequestStatus.SUCCESS) {
+          if (widget.onSuccess != null) {
+            widget.onSuccess();
+          }
+        } else {
+          if (widget.onError != null) {
+            widget.onError(response.message);
+          }
         }
       }
-    });
+    );
   }
 
-  _rightArrowButton(int index) {
-    return IconButton(
-        icon: Icon(
-          Icons.arrow_right,
-          color: index == 0 ? Colors.black87 : Colors.black38,
-        ),
-        iconSize: 40,
-        onPressed: () {
-          if (index == 0) {
-            setState(() {
-              _pageIndex = 1;
-            });
-            _pageController.jumpToPage(1);
-          }
-        });
-  }
-
-  _leftArrowButton(int index) {
-    return IconButton(
-        icon: Icon(Icons.arrow_left,
-            color: index == 0 ? Colors.black38 : Colors.black),
-        iconSize: 40,
-        onPressed: () {
-          if (index == 1) {
-            setState(() {
-              _pageIndex = 0;
-            });
-            _pageController.jumpToPage(0);
-          }
-        });
-  }
-
-  _circleIndicator(RequestScheduler scheduler) {
-    return Positioned(
-        left: 0,
-        right: 0,
-        bottom: 0,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CirclePageIndicator(
-                currentPageNotifier: _currentPageNotifier,
-                itemCount: 2,
+  _sendFormButton(RequestScheduler scheduler) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ZMStdButton(
+            color: Theme.of(context).primaryColor,
+            text: Text(
+              "Crear",
+              style: TextStyle(
+                color: Colors.white
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ProgressButton.icon(
-                      radius: 7,
-                      iconedButtons: {
-                        ButtonState.idle: IconedButton(
-                            text: "Crear Cliente",
-                            icon: Icon(Icons.person_add, color: Colors.white),
-                            color: Colors.blueAccent),
-                        ButtonState.loading: IconedButton(
-                            text: "Cargando", color: Colors.grey.shade400),
-                        ButtonState.fail: IconedButton(
-                            text: "Error",
-                            icon: Icon(Icons.cancel, color: Colors.white),
-                            color: Colors.red.shade300),
-                        ButtonState.success: IconedButton(
-                            text: "Éxito",
-                            icon: Icon(
-                              Icons.check_circle,
-                              color: Colors.white,
-                            ),
-                            color: Colors.green.shade400)
-                      },
-                      padding: EdgeInsets.all(4),
-                      onPressed: () {
-                        if (_fisicaFormKey.currentState.validate() ||
-                            _juridicaFormKey.currentState.validate()) {
-                          _crearCliente(scheduler);
-                        }
-                      },
-                      state: scheduler.isLoading()
-                          ? ButtonState.loading
-                          : ButtonState.idle,
-                    ),
-                  ],
-                ),
-              )
-            ],
+            ),
+            onPressed: scheduler.isLoading() ? null : () {
+              if (_formKey.currentState.validate()) {
+                _crearCliente(scheduler);
+              }
+            }
           ),
-        ));
+          SizedBox(
+            width: 15
+          ),
+          ZMTextButton(
+            color: Theme.of(context).primaryColor,
+            text: "Cancelar",
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+            outlineBorder: false,
+          )
+        ],
+      ),
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
+import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/views/ZMLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
@@ -156,7 +157,15 @@ class _LoginState extends State<Login> {
                                         "Password": passController.text
                                       }
                                     }
-                                  ));
+                                  )).then(
+                                    (response){
+                                      Usuarios usuario = Usuarios().fromMap(response.message);
+                                      var localStorage = window.localStorage;
+                                      localStorage["tokenType"] = "JWT";
+                                      localStorage["token"] = usuario.token;
+                                      ZMLoader.of(context).rebuild();
+                                    }
+                                  );
                                 }
                               },
                               child: Padding(

@@ -149,19 +149,7 @@ class UsuariosService extends Services{
       path: "/usuarios/iniciarSesion",
       scheduler: scheduler,
       model: Usuarios(),
-      payload: payload,
-      actionsConfiguration: ActionsConfiguration(
-        onSuccess: (response){
-          Usuarios usuario = Usuarios().fromMap(response);
-          var localStorage = window.localStorage;
-          localStorage["tokenType"] = "JWT";
-          localStorage["token"] = usuario.token;
-          ZMLoader.of(context).rebuild();
-        },
-        onError: (error){
-          ScreenMessage.push(error["mensaje"], MessageType.Error);
-        }
-      )
+      payload: payload
     );
   }
 

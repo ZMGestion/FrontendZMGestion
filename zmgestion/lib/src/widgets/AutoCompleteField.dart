@@ -11,12 +11,19 @@ class AutoCompleteField extends StatefulWidget {
   final bool enabled;
   final String labelText;
   final String hintText;
+  final List<Widget> suffixWidget;
+  final List<Widget> actions;
+  final Color actionsBackgroundColor;
   final Function(Map<String, dynamic> mapModel) onSelect;
   final Services service;
   final String initialValue;
   final String parentName;
   final String keyName;
   final Icon prefixIcon;
+  final Color itemsBackgroundColor;
+  final Color itemsTitleColor;
+  final Color itemsTextColor;
+  final Color itemsTextButtonColor;
   final Color validTextColor;
   final Color invalidTextColor;
   final TextStyle hintStyle;
@@ -32,6 +39,9 @@ class AutoCompleteField extends StatefulWidget {
     this.enabled = true,
     this.labelText,
     this.hintText,
+    this.suffixWidget,
+    this.actions,
+    this.actionsBackgroundColor = const Color(0x3f000000),
     this.onSelect,
     this.service,
     this.parentName,
@@ -39,6 +49,10 @@ class AutoCompleteField extends StatefulWidget {
     this.prefixIcon,
     this.keyNameFunc,
     this.initialValue = "",
+    this.itemsBackgroundColor,
+    this.itemsTitleColor,
+    this.itemsTextColor,
+    this.itemsTextButtonColor,
     this.validTextColor = Colors.green,
     this.invalidTextColor = Colors.red,
     this.hintStyle,
@@ -55,7 +69,10 @@ class AutoCompleteField extends StatefulWidget {
 
 class _AutoCompleteFieldState extends State<AutoCompleteField> {
 
-  final FocusNode _focusNode = FocusNode();
+  FocusNode _focusNode = FocusNode(
+    canRequestFocus: false,
+    descendantsAreFocusable: false
+  );
 
   OverlayEntry _overlayEntry;
 
@@ -78,9 +95,9 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
       if (_focusNode.hasFocus) {
         this._overlayEntry = this._createOverlayEntry();
         Overlay.of(context).insert(this._overlayEntry);
-
       } else {
-        this._overlayEntry.remove();
+        _overlayEntry.remove();
+        _focusNode.unfocus();
       }
     });
     
@@ -152,17 +169,21 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
 
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: size.width,
+        width: size.width > 220 ? size.width : 220,
         child: CompositedTransformFollower(
           link: this._layerLink,
           showWhenUnlinked: false,
-          offset: Offset(0.0, size.height + 2.0),
+          offset: Offset((size.width - 220) < 0 ? (size.width - 220)/2 : 0, size.height + 2.0),
           child: _AutoCompleteSuggestOverlay(
             key: Key(searchText),
             pageInfo: pageInfo,
             focusNode: _focusNode,
             parentName: widget.parentName,
             keyName: widget.keyName,
+            itemsBackgroundColor: widget.itemsBackgroundColor,
+            itemsTitleColor: widget.itemsTitleColor,
+            itemsTextColor: widget.itemsTextColor,
+            itemsTextButtonColor: widget.itemsTextButtonColor,
             keyNameFunc: widget.keyNameFunc,
             listMethodConfiguration: widget.listMethodConfiguration(searchText),
             onSelect: (mapModel){
@@ -187,46 +208,91 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: this._layerLink,
-      child: TextFormField(
-        enabled: widget.enabled,
-        focusNode: this._focusNode,
-        controller: _textController,
-        style: TextStyle(
-          color: _selectedFromList ? widget.validTextColor : widget.invalidTextColor
-        ),
-        decoration: InputDecoration(
-          labelText: widget.labelText,
-          hintText: widget.hintText,
-          hintStyle: widget.hintStyle,
-          labelStyle: widget.labelStyle,
-          prefixIcon: widget.prefixIcon,
-          contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-          suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: (){
-              if(_textController.text != ""){
-                if(widget.onClear != null){
-                  widget.onClear();
-                }
-                setState(() {
-                  _textController.text = "";
-                  _selectedFromList = false;
-                }); 
-                _updateOverlay();
-              }else{
-                _focusNode.unfocus();
-              }
-            },
+      child: Container(
+        decoration: widget.actions == null ? null : BoxDecoration(
+          color: widget.actions != null ? widget.actionsBackgroundColor : null,
+          borderRadius: BorderRadius.horizontal(
+            left: Radius.circular(10),
+            right: Radius.circular(10),
           )
         ),
-        onChanged: (value){
-          setState(() {
-            searchText = _textController.text;
-            _selectedFromList = false;
-          });
-          _updateOverlay();
-          _updatePage(pageInfo);
-        },
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: widget.actions != null ? EdgeInsets.only(left: 5, top: 4, bottom: 4) : null,
+                child: TextFormField(
+                  enabled: widget.enabled,
+                  focusNode: this._focusNode,
+                  controller: _textController,
+                  style: TextStyle(
+                    color: _selectedFromList ? widget.validTextColor : widget.invalidTextColor
+                  ),
+                  decoration: InputDecoration(
+                    labelText: widget.labelText,
+                    hintText: widget.hintText,
+                    hintStyle: widget.hintStyle,
+                    labelStyle: widget.labelStyle,
+                    prefixIcon: widget.prefixIcon,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                    suffixIcon: Material(
+                      color: Colors.transparent,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Row(
+                            children: widget.suffixWidget != null ? widget.suffixWidget : [],
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: (){
+                              if(_textController.text != ""){
+                                if(widget.onClear != null){
+                                  widget.onClear();
+                                }
+                                setState(() {
+                                  _textController.text = "";
+                                  _selectedFromList = false;
+                                }); 
+                                _updateOverlay();
+                              }else{
+                                _focusNode.nextFocus();
+                                _focusNode.unfocus();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
+                  onChanged: (value){
+                    setState(() {
+                      searchText = _textController.text;
+                      _selectedFromList = false;
+                    });
+                    _updateOverlay();
+                    _updatePage(pageInfo);
+                  },
+                ),
+              ),
+            ),
+            Visibility(
+              visible: widget.actions != null,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.horizontal(
+                    right: Radius.circular(10)
+                  )
+                ),
+                child: Row(
+                  children: widget.actions != null ? widget.actions : [],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -239,6 +305,11 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
   final String parentName;
   final String keyName;
   final String Function(Map<String, dynamic>) keyNameFunc;
+  final Color itemsBackgroundColor;
+  final Color itemsTitleColor;
+  final Color itemsTextColor;
+  final Color itemsTextButtonColor;
+  
   final FocusNode focusNode;
   final Services service;
   final ListMethodConfiguration listMethodConfiguration;
@@ -252,6 +323,10 @@ class _AutoCompleteSuggestOverlay extends StatefulWidget {
     this.parentName,
     this.keyName,
     this.keyNameFunc,
+    this.itemsBackgroundColor,
+    this.itemsTitleColor,
+    this.itemsTextColor,
+    this.itemsTextButtonColor,
     this.onSelect,
     this.focusNode, 
     this.service, 
@@ -316,6 +391,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: widget.itemsBackgroundColor,
       elevation: 2.5,
       child: Column(
         children: [
@@ -325,7 +401,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
               child: Text(
                 loading ? "Cargando sugerencias" : "Sugerencias"+(pageInfo.cantidadTotal > 0 ? " ("+pageInfo.cantidadTotal.toString()+")" : ""),
                 style: TextStyle(
-                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
+                  color: widget.itemsTitleColor !=null ? widget.itemsTitleColor : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
                   fontWeight: FontWeight.w400,
                   fontSize: 12
                 ),
@@ -359,6 +435,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                   if(widget.onSelect != null){
                     widget.onSelect(mapModel);
                   }
+                  _focusNode.nextFocus();
                   _focusNode.unfocus();
                 },
                 child: Padding(
@@ -366,7 +443,8 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                   child: Text(
                     widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName],
                     style: TextStyle(
-                      fontSize: 15
+                      fontSize: 15,
+                      color: widget.itemsTextColor,
                     ),
                   ),
                 ),
@@ -394,6 +472,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                 ZMTextButton(
                   text: "Anterior",
                   fontSize: 12,
+                  color: widget.itemsTextButtonColor,
                   onPressed: pageInfo.pagina == 1 ? null : (){
                     pageInfo = Paginaciones(
                       pagina: pageInfo.pagina - 1,
@@ -406,6 +485,7 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
                 ZMTextButton(
                   text: "Siguiente",
                   fontSize: 12,
+                  color: widget.itemsTextButtonColor,
                   onPressed: pageInfo.pagina == _getPageLength(pageInfo) ? null : (){
                     pageInfo = Paginaciones(
                       pagina: pageInfo.pagina + 1,

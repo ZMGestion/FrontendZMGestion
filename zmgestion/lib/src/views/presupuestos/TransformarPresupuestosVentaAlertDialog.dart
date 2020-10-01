@@ -1,15 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
+import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
+import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/CrearLineaVenta.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
@@ -47,6 +51,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
   bool creatingVenta = false;
   String cliente;
   double _total = 0;
+  int refreshDomicilios = 0;
 
   @override
   void initState() {
@@ -168,6 +173,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                     child: Container(
                     constraints: BoxConstraints(minWidth: 200),
                     child: DropDownModelView(
+                      key: Key("do"+refreshDomicilios.toString()),
                       service: ClientesService(),
                       listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
                       parentName: "Domicilios",
@@ -191,7 +197,24 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                             color: Color(0xff87C2F5),
                           ),
                           onPressed: (){
-                            
+                            showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context)
+                                  .backgroundColor
+                                  .withOpacity(0.5),
+                              builder: (BuildContext context) {
+                                return CrearDomiciliosAlertDialog(
+                                  title: "Agregar domicilio",
+                                  cliente: Clientes(idCliente: _idCliente),
+                                  onSuccess: () {
+                                    Navigator.of(context).pop(true);
+                                    setState(() {
+                                      refreshDomicilios = Random().nextInt(99999);
+                                    });
+                                  },
+                                );
+                              },
+                            );
                           },
                         ),
                         hintStyle: TextStyle(
@@ -468,7 +491,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.9),
+                            color: _lineaProducto.precioUnitario != _lineaProducto.precioUnitarioActual ? Colors.yellowAccent : Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -479,7 +502,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.9),
+                            color: _lineaProducto.precioUnitario != _lineaProducto.precioUnitarioActual ? Colors.yellowAccent : Colors.white.withOpacity(0.9),
                           ),
                         ),
                       ),
@@ -643,7 +666,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                            color: _lineaProducto.precioUnitario != _lineaProducto.precioUnitarioActual ? Colors.red : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
                           ),
                         ),
                       ),
@@ -654,7 +677,7 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                            color: _lineaProducto.precioUnitario != _lineaProducto.precioUnitarioActual ? Colors.red : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
                           ),
                         ),
                       ),

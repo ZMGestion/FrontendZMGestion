@@ -593,10 +593,11 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                             onPressed: () {
                               showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return PresupuestosAlertDialog(
-                                    title: "Crear Presupuestos",
+                                    title: "Nuevo presupuesto",
                                     updateAllCallback: () {
                                       setState(() {
                                         refreshValue = Random().nextInt(99999);

@@ -234,15 +234,14 @@ class _CrearDomiciliosAlertDialogState extends State<CrearDomiciliosAlertDialog>
                                 Map<String, dynamic> payload = new Map<String, dynamic>();
                                 payload.addAll(domicilios.toMap());
                                 payload.addAll(widget.cliente.toMap());
-                                ClientesService(scheduler: scheduler)
-                                    .doMethod(ClientesService(scheduler: scheduler)
-                                        .agregarDomicilioConfiguration(payload))
-                                    .then((response) {
+                                ClientesService(scheduler: scheduler).doMethod(ClientesService(scheduler: scheduler).agregarDomicilioConfiguration(payload)).then((response) {
                                   if (response.status == RequestStatus.SUCCESS) {
-                                    Navigator.of(context).pop(true);
                                     direccionController.clear();
                                     codigoPostalController.clear();
-                                  } else {}
+                                    if(widget.onSuccess != null){
+                                      widget.onSuccess();
+                                    }
+                                  }
                                 });
                               }
                             }

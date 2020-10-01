@@ -84,12 +84,12 @@ class _ZMLoaderState extends State<ZMLoader> {
   Widget build(BuildContext context) {
     return Container(
       key: Key(render.toString()+loading.toString()),
-      child: loading ? Loader() : render
+      child: loading ? Center(child: loader()) : render
     );
   }
 }
 
-Widget Loader(){
+Widget loader(){
   return Center(
     child: CircularProgressIndicator(),
     heightFactor: 0.05,
