@@ -310,60 +310,65 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 2,
-                        color: _showAddress ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
+          Container(
+            color: _showAddress ? Colors.black.withOpacity(0.03) : Colors.transparent,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 2,
+                          color: _showAddress ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
+                        )
                       )
-                    )
-                  ),
-                  child: MaterialButton(
-                    onPressed: (){
-                      setState(() {
-                        _showAddress = !_showAddress;
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+                    ),
+                    child: MaterialButton(
+                      onPressed: (){
+                        setState(() {
+                          _showAddress = !_showAddress;
+                        });
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CircularCheckBox(
-                              value: _showAddress,
-                              materialTapTargetSize: MaterialTapTargetSize.padded,
-                              onChanged: (value) {
-                                setState(() {
-                                  _showAddress = value;
-                                });
-                              },
+                            Row(
+                              children: [
+                                CircularCheckBox(
+                                  value: _showAddress,
+                                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _showAddress = value;
+                                    });
+                                  },
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Domicílio (Opcional)",
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColorLight,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15
+                                    )
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Domicílio (Opcional)",
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColorLight,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15
-                                )
-                              ),
-                            ),
+                            Icon(
+                              _showAddress ? Icons.arrow_drop_up : Icons.arrow_drop_down
+                            )
                           ],
                         ),
-                        Icon(
-                          _showAddress ? Icons.arrow_drop_up : Icons.arrow_drop_down
-                        )
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ]
+              ]
+            ),
           ),
           Visibility(
             visible: _showAddress,
