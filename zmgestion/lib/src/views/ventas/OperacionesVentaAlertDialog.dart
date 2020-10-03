@@ -1,16 +1,23 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/providers/UsuariosProvider.dart';
+import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/ventas/VentaCreadaAlertDialog.dart';
+import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
+import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
+import 'package:zmgestion/src/views/ventas/VentaPendienteAlertDialog.dart';
 import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -57,6 +64,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
   LineasProducto _lineaProductoEditando;
   bool editingLine = false;
   String initialClient = '';
+  int refreshDomicilio = 0;
 
   List<LineasProducto> _lineasProducto = [];
 
@@ -75,13 +83,6 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
           });
         }
         ubicacionCargada = true;
-        if (venta.cliente != null){
-          if (venta.cliente.tipo == 'F'){
-            initialClient = venta.cliente.nombres + venta.cliente.apellidos;
-          }else{
-            initialClient = venta.cliente.razonSocial;
-          }
-        }
       }
     }
     super.initState();
@@ -140,6 +141,35 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                     children: [
                                       Expanded(
                                         child: AutoCompleteField(
+                                          enabled: (widget.operacion == 'Crear' && venta == null) || widget.operacion == 'Modificar',
+                                          actions: [
+                                            InkWell(
+                                              borderRadius: BorderRadius.circular(25),
+                                              onTap: (){
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                  builder: (BuildContext context) {
+                                                    return CrearClientesAlertDialog(
+                                                      title: "Nuevo cliente",
+                                                      onSuccess: () {
+                                                        Navigator.of(context).pop(true);
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(6),
+                                                child: Icon(
+                                                  Icons.person_add_sharp,
+                                                  size: 20,
+                                                  color: Colors.tealAccent.withOpacity(0.8)
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                           prefixIcon: Icon(
                                             Icons.person_outline,
                                             color: Color(0xff87C2F5).withOpacity(0.8),
@@ -155,7 +185,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                           invalidTextColor: Color(0xffffaaaa),
                                           validTextColor: Color(0xffaaffaa),
                                           parentName: "Clientes",
-                                          initialValue: initialClient,
+                                          initialValue: Utils.clientName(venta?.cliente),
                                           keyNameFunc: (mapModel){
                                             String displayedName = "";
                                             if(mapModel["Clientes"]["Nombres"] != null){
@@ -236,7 +266,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                     children: [
                                       Expanded(
                                         child: DropDownModelView(
-                                          key: Key(_idCliente.toString()),
+                                          key: Key(_idCliente.toString() + refreshDomicilio.toString()),
                                           service: ClientesService(),
                                           listMethodConfiguration: ClientesService().listarDomiciliosConfiguration(_idCliente),
                                           parentName: "Domicilios",
@@ -255,6 +285,30 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                             prefixIcon: Icon(
                                               Icons.house,
                                               color: Color(0xff87C2F5).withOpacity(0.8),  
+                                            ),
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                Icons.add_box,
+                                                color: Color(0xff87C2F5),
+                                              ),
+                                              onPressed: _idCliente == null ? null : (){
+                                                showDialog(
+                                                  context: context,
+                                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                  builder: (BuildContext context) {
+                                                    return CrearDomiciliosAlertDialog(
+                                                      title: "Agregar domicilio",
+                                                      cliente: Clientes(idCliente: _idCliente),
+                                                      onSuccess: () {
+                                                        Navigator.of(context).pop(true);
+                                                        setState(() {
+                                                          refreshDomicilio = Random().nextInt(99999);
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
                                             ),
                                             hintStyle: TextStyle(
                                               color: Color(0xffBADDFB).withOpacity(0.8)
@@ -528,8 +582,14 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                                   barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                                   barrierDismissible: false,
                                                   builder: (BuildContext context) {
-                                                    return VentaCreadaDialog(
-                                                      venta: venta
+                                                    return VentaPendienteDialog(
+                                                      venta: venta,
+                                                      operacion: widget.operacion,
+                                                      onSuccess: (){
+                                                        Navigator.of(context).pop();                                                          
+                                                        final NavigationService _navigationService = locator<NavigationService>();
+                                                        _navigationService.navigateToWithReplacement('/comprobantes?IdVenta='+ venta.idVenta.toString() + '&Crear=true');
+                                                      },
                                                     );
                                                   },
                                                 );
@@ -544,8 +604,9 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                                     );
                                                   }
                                                 );
+                                                widget.onSuccess();
                                               }
-                                              widget.onSuccess();
+                                              //widget.onSuccess();
                                             }
                                           }
                                         );
@@ -574,6 +635,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                             acceptColor: Colors.green,
                                             cancelColor: Colors.red,
                                             onAccept: () async {
+                                              widget.onSuccess();
                                               Navigator.of(context).pop();
                                             },
                                             onCancel: () async {
@@ -584,7 +646,6 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                         },
                                       );
                                     }
-                                    Navigator.of(context).pop();
                                   },
                                   outlineBorder: false,
                                 )

@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
@@ -27,6 +32,7 @@ import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
+import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
@@ -55,14 +61,47 @@ Map<int, Ventas> ventas = {};
   int searchIdLustre = 0;
   /*Search filters*/
   bool showFilters = false;
+  TextEditingController desdeController = new TextEditingController();
+  TextEditingController hastaController = new TextEditingController();
+  var dateFormat = DateFormat("yyyy-MM-dd");
+  var dateFormatShow = DateFormat("dd/MM/yyyy");
+  String fechaInicio = '';
+  String fechaFin = '';
+  Timer _debounce;
+  RegExp dateRegEx;
 
   Map<String, String> breadcrumb = new Map<String, String>();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    desdeController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     breadcrumb.addAll({
       "Inicio":"/inicio",
       "Ventas": null,
+    });
+    dateRegEx = RegExp(r'^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$');
+    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
+    hastaController.text = dateFormatShow.format(DateTime.now());
+    desdeController.addListener(() {
+      _debounce = Timer(Duration(milliseconds: 500), (){
+        if(dateRegEx.hasMatch(desdeController.text))
+        setState(() {
+          fechaInicio = dateFormat.format(DateFormat('dd/MM/yyyy').parse(desdeController.text));
+        });
+      });
+    });
+    hastaController.addListener(() {
+      _debounce = Timer(Duration(milliseconds: 500), (){
+        setState(() {
+          fechaFin = dateFormat.format(DateFormat('dd/MM/yyyy').parse(hastaController.text));
+        });
+      });
     });
     super.initState();
   }
@@ -88,301 +127,350 @@ Map<int, Ventas> ventas = {};
                   ],
                 ),
                 Container(
-                  height: 90,
                   child: Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                TopLabel(
-                                  labelText: "Cliente",
-                                ),
-                                AutoCompleteField(
-                                  labelText: "",
-                                  hintText: "Ingrese un cliente",
-                                  parentName: "Clientes",
-                                  keyNameFunc: (mapModel){
-                                    String displayedName = "";
-                                    if(mapModel["Clientes"]["Nombres"] != null){
-                                      displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                                    }else{
-                                      displayedName = mapModel["Clientes"]["RazonSocial"];
-                                    }
-                                    return displayedName;
-                                  },
-                                  service: ClientesService(),
-                                  paginate: true,
-                                  pageLength: 4,
-                                  onClear: (){
-                                    setState(() {
-                                      searchIdCliente = 0;
-                                    });
-                                  },
-                                  listMethodConfiguration: (searchText){
-                                    return ClientesService().buscarClientes({
-                                      "Clientes": {
-                                        "Nombres": searchText
-                                      }
-                                    });
-                                  },
-                                  onSelect: (mapModel){
-                                    if(mapModel != null){
-                                      Clientes cliente = Clientes().fromMap(mapModel);
-                                      setState(() {
-                                        searchIdCliente = cliente.idCliente;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TopLabel(
-                                  labelText: "Empleado",
-                                ),
-                                AutoCompleteField(
-                                  labelText: "",
-                                  hintText: "Ingrese un empleado",
-                                  parentName: "Usuarios",
-                                  keyName: "Usuario",
-                                  service: UsuariosService(),
-                                  paginate: true,
-                                  pageLength: 4,
-                                  onClear: (){
-                                    setState(() {
-                                      searchIdUsuario = 0;
-                                    });
-                                  },
-                                  listMethodConfiguration: (searchText){
-                                    return UsuariosService().buscarUsuarios({
-                                      "Usuarios": {
-                                        "Usuario": searchText
-                                      }
-                                    });
-                                  },
-                                  onSelect: (mapModel){
-                                    if(mapModel != null){
-                                      Usuarios usuario = Usuarios().fromMap(mapModel);
-                                      setState(() {
-                                        searchIdUsuario = usuario.idUsuario;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              constraints: BoxConstraints(minWidth: 200),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TopLabel(
-                                    labelText: "Ubicación",
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TopLabel(
+                                        labelText: "Cliente",
+                                      ),
+                                      AutoCompleteField(
+                                        labelText: "",
+                                        hintText: "Ingrese un cliente",
+                                        parentName: "Clientes",
+                                        keyNameFunc: (mapModel){
+                                          String displayedName = "";
+                                          if(mapModel["Clientes"]["Nombres"] != null){
+                                            displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
+                                          }else{
+                                            displayedName = mapModel["Clientes"]["RazonSocial"];
+                                          }
+                                          return displayedName;
+                                        },
+                                        service: ClientesService(),
+                                        paginate: true,
+                                        pageLength: 4,
+                                        onClear: (){
+                                          setState(() {
+                                            searchIdCliente = 0;
+                                          });
+                                        },
+                                        listMethodConfiguration: (searchText){
+                                          return ClientesService().buscarClientes({
+                                            "Clientes": {
+                                              "Nombres": searchText
+                                            }
+                                          });
+                                        },
+                                        onSelect: (mapModel){
+                                          if(mapModel != null){
+                                            Clientes cliente = Clientes().fromMap(mapModel);
+                                            setState(() {
+                                              searchIdCliente = cliente.idCliente;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  DropDownModelView(
-                                    service: UbicacionesService(),
-                                    listMethodConfiguration: UbicacionesService().listar(),
-                                    parentName: "Ubicaciones",
-                                    labelName: "Seleccione una ubicación",
-                                    displayedName: "Ubicacion",
-                                    valueName: "IdUbicacion",
-                                    allOption: true,
-                                    allOptionText: "Todas",
-                                    allOptionValue: 0,
-                                    initialValue: 0,
-                                    errorMessage:
-                                      "Debe seleccionar una ubicación",
-                                    //initialValue: UsuariosProvider.idUbicacion,
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(left: 8)
-                                    ),
-                                    onChanged: (idSelected) {
-                                      setState(() {
-                                        searchIdUbicacion = idSelected;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TopLabel(
-                                  labelText: "Producto",
                                 ),
-                                AutoCompleteField(
-                                  labelText: "",
-                                  hintText: "Ingrese un producto",
-                                  parentName: "Productos",
-                                  keyName: "Producto",
-                                  service: ProductosService(),
-                                  paginate: true,
-                                  pageLength: 4,
-                                  onClear: (){
-                                    setState(() {
-                                      searchIdProducto = 0;
-                                    });
-                                  },
-                                  listMethodConfiguration: (searchText){
-                                    return ProductosService().buscarProductos({
-                                      "Productos": {
-                                        "Producto": searchText
-                                      }
-                                    });
-                                  },
-                                  onSelect: (mapModel){
-                                    if(mapModel != null){
-                                      Productos producto = Productos().fromMap(mapModel);
-                                      setState(() {
-                                        searchIdProducto = producto.idProducto;
-                                      });
-                                    }
-                                  },
+                                SizedBox(
+                                  width: 12,
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TopLabel(
-                                  labelText: "Tela",
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TopLabel(
+                                        labelText: "Empleado",
+                                      ),
+                                      AutoCompleteField(
+                                        labelText: "",
+                                        hintText: "Ingrese un empleado",
+                                        parentName: "Usuarios",
+                                        keyName: "Usuario",
+                                        service: UsuariosService(),
+                                        paginate: true,
+                                        pageLength: 4,
+                                        onClear: (){
+                                          setState(() {
+                                            searchIdUsuario = 0;
+                                          });
+                                        },
+                                        listMethodConfiguration: (searchText){
+                                          return UsuariosService().buscarUsuarios({
+                                            "Usuarios": {
+                                              "Usuario": searchText
+                                            }
+                                          });
+                                        },
+                                        onSelect: (mapModel){
+                                          if(mapModel != null){
+                                            Usuarios usuario = Usuarios().fromMap(mapModel);
+                                            setState(() {
+                                              searchIdUsuario = usuario.idUsuario;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                AutoCompleteField(
-                                  labelText: "",
-                                  hintText: "Ingrese una tela",
-                                  parentName: "Telas",
-                                  keyName: "Tela",
-                                  service: TelasService(),
-                                  paginate: true,
-                                  pageLength: 4,
-                                  onClear: (){
-                                    setState(() {
-                                      searchIdTela = 0;
-                                    });
-                                  },
-                                  listMethodConfiguration: (searchText){
-                                    return TelasService().buscarTelas({
-                                      "Telas": {
-                                        "Tela": searchText
-                                      }
-                                    });
-                                  },
-                                  onSelect: (mapModel){
-                                    if(mapModel != null){
-                                      Telas tela = Telas().fromMap(mapModel);
-                                      setState(() {
-                                        searchIdTela = tela.idTela;
-                                      });
-                                    }
-                                  },
+                                SizedBox(
+                                  width: 12,
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              constraints: BoxConstraints(minWidth: 200),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TopLabel(
-                                    labelText: "Lustre",
-                                  ),
-                                  DropDownModelView(
-                                    service: ProductosFinalesService(),
-                                    listMethodConfiguration:
-                                      ProductosFinalesService().listarLustres(),
-                                    parentName: "Lustres",
-                                    labelName: "Seleccione un lustre",
-                                    displayedName: "Lustre",
-                                    valueName: "IdLustre",
-                                    allOption: true,
-                                    allOptionText: "Todos",
-                                    allOptionValue: 0,
-                                    initialValue: 0,
-                                    errorMessage:
-                                      "Debe seleccionar un lustre",
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.only(left: 8)
-                                    ),
-                                    onChanged: (idSelected) {
-                                      setState(() {
-                                        searchIdLustre = idSelected;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              constraints: BoxConstraints(minWidth: 200),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TopLabel(
-                                    labelText: "Estado",
-                                  ),
-                                  Container(
-                                    width: 250,
-                                    child: DropDownMap(
-                                      map: Ventas().mapEstados(),
-                                      addAllOption: true,
-                                      addAllText: "Todos",
-                                      addAllValue: "T",
-                                      initialValue: "T",
-                                      onChanged: (value) {
-                                        setState(() {
-                                          searchIdEstado = value;
-                                        });
-                                      },
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    constraints: BoxConstraints(minWidth: 200),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          labelText: "Ubicación",
+                                        ),
+                                        DropDownModelView(
+                                          service: UbicacionesService(),
+                                          listMethodConfiguration: UbicacionesService().listar(),
+                                          parentName: "Ubicaciones",
+                                          labelName: "Seleccione una ubicación",
+                                          displayedName: "Ubicacion",
+                                          valueName: "IdUbicacion",
+                                          allOption: true,
+                                          allOptionText: "Todas",
+                                          allOptionValue: 0,
+                                          initialValue: 0,
+                                          errorMessage:
+                                            "Debe seleccionar una ubicación",
+                                          //initialValue: UsuariosProvider.idUbicacion,
+                                          decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.only(left: 8)
+                                          ),
+                                          onChanged: (idSelected) {
+                                            setState(() {
+                                              searchIdUbicacion = idSelected;
+                                            });
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    constraints: BoxConstraints(minWidth: 200),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          labelText: "Estado",
+                                        ),
+                                        Container(
+                                          width: 250,
+                                          child: DropDownMap(
+                                            map: Ventas().mapEstados(),
+                                            addAllOption: true,
+                                            addAllText: "Todos",
+                                            addAllValue: "T",
+                                            initialValue: "T",
+                                            onChanged: (value) {
+                                              setState(() {
+                                                searchIdEstado = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  child: TextFormFieldDialog(
+                                    inputFormatters: [DateTextFormatter()],
+                                    controller: desdeController,
+                                    labelText: "Desde",
+                                    hintText: "dd/mm/yyyy",
+                                  ),
+                                ),
+                                SizedBox(width: 12,),
+                                Expanded(
+                                  child: TextFormFieldDialog(
+                                    inputFormatters: [DateTextFormatter()],
+                                    controller: hastaController,
+                                    labelText: "Hasta",
+                                    hintText: "dd/mm/yyyy",
+                                  ),
+                                ),
+                                
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showFilters = !showFilters;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.filter,
+                                    size: 14,
+                                    color: showFilters
+                                        ? Colors.blueAccent.withOpacity(0.8)
+                                        : Theme.of(context).iconTheme.color.withOpacity(0.7),
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
+                          ),
+                          Visibility(
+                            visible: showFilters,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TopLabel(
+                                        labelText: "Producto",
+                                      ),
+                                      AutoCompleteField(
+                                        labelText: "",
+                                        hintText: "Ingrese un producto",
+                                        parentName: "Productos",
+                                        keyName: "Producto",
+                                        service: ProductosService(),
+                                        paginate: true,
+                                        pageLength: 4,
+                                        onClear: (){
+                                          setState(() {
+                                            searchIdProducto = 0;
+                                          });
+                                        },
+                                        listMethodConfiguration: (searchText){
+                                          return ProductosService().buscarProductos({
+                                            "Productos": {
+                                              "Producto": searchText
+                                            }
+                                          });
+                                        },
+                                        onSelect: (mapModel){
+                                          if(mapModel != null){
+                                            Productos producto = Productos().fromMap(mapModel);
+                                            setState(() {
+                                              searchIdProducto = producto.idProducto;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TopLabel(
+                                        labelText: "Tela",
+                                      ),
+                                      AutoCompleteField(
+                                        labelText: "",
+                                        hintText: "Ingrese una tela",
+                                        parentName: "Telas",
+                                        keyName: "Tela",
+                                        service: TelasService(),
+                                        paginate: true,
+                                        pageLength: 4,
+                                        onClear: (){
+                                          setState(() {
+                                            searchIdTela = 0;
+                                          });
+                                        },
+                                        listMethodConfiguration: (searchText){
+                                          return TelasService().buscarTelas({
+                                            "Telas": {
+                                              "Tela": searchText
+                                            }
+                                          });
+                                        },
+                                        onSelect: (mapModel){
+                                          if(mapModel != null){
+                                            Telas tela = Telas().fromMap(mapModel);
+                                            setState(() {
+                                              searchIdTela = tela.idTela;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    constraints: BoxConstraints(minWidth: 200),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          labelText: "Lustre",
+                                        ),
+                                        DropDownModelView(
+                                          service: ProductosFinalesService(),
+                                          listMethodConfiguration:
+                                            ProductosFinalesService().listarLustres(),
+                                          parentName: "Lustres",
+                                          labelName: "Seleccione un lustre",
+                                          displayedName: "Lustre",
+                                          valueName: "IdLustre",
+                                          allOption: true,
+                                          allOptionText: "Todos",
+                                          allOptionValue: 0,
+                                          initialValue: 0,
+                                          errorMessage:
+                                            "Debe seleccionar un lustre",
+                                          decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.only(left: 8)
+                                          ),
+                                          onChanged: (idSelected) {
+                                            setState(() {
+                                              searchIdLustre = idSelected;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -393,7 +481,7 @@ Map<int, Ventas> ventas = {};
                   child: AppLoader(builder: (scheduler) {
                     return ZMTable(
                       key: Key(searchText + refreshValue.toString() + searchIdEstado.toString() + searchIdCliente.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
-                      searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString()),
+                      searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString() + fechaInicio + fechaFin),
                       model: Ventas(),
                       service: VentasService(),
                       listMethodConfiguration: VentasService().buscarVentas({
@@ -409,9 +497,9 @@ Map<int, Ventas> ventas = {};
                           "IdLustre": searchIdLustre
                         },
                         "ParametrosBusqueda": {
-                          "FechaInicio": "2019-12-12 00:00:00",
-                          "FechaFin": "2022-12-12 00:00:00"
-                        }
+                          "FechaInicio": fechaInicio,
+                          "FechaFin": fechaFin,
+                        },
                       }),
                       pageLength: 12,
                       paginate: true,

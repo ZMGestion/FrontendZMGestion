@@ -21,8 +21,6 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     // TODO: implement initState
-    userController.text = "lchoua";
-    passController.text = "Loik1234";
     super.initState();
   }
 

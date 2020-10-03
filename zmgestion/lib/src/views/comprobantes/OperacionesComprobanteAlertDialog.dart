@@ -177,7 +177,7 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                                       "IdVenta": comprobante.idVenta,
                                       "Tipo": tipo,
                                       "NumeroComprobante": int.parse(numeroComprobanteController.text),
-                                      "Monto": int.parse(montoController.text),
+                                      "Monto": double.parse(montoController.text),
                                       "Observaciones":observacionesController.text
                                     }
                                   };
@@ -196,7 +196,7 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                                       "IdVenta": comprobante.idVenta,
                                       "Tipo": tipo,
                                       "NumeroComprobante": int.parse(numeroComprobanteController.text),
-                                      "Monto": int.parse(montoController.text),
+                                      "Monto": double.parse(montoController.text),
                                       "Observaciones":observacionesController.text
                                     }                               
                                 };
