@@ -54,7 +54,11 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
           title: AlertDialogTitle(title: widget.title),
           content: Container(
             padding: EdgeInsets.fromLTRB(24, 12, 24, 0),
+            height: SizeConfig.blockSizeVertical * 60,
             width: SizeConfig.blockSizeHorizontal * 75,
+            constraints: BoxConstraints(
+              minHeight: 500
+            ),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
@@ -74,34 +78,37 @@ class _CrearRolesAlertDialogState extends State<CrearRolesAlertDialog> {
                     ],
                   ),
                 ),
-                ZMTable(
-                  padding: const EdgeInsets.all(0),
-                  model: Permisos(),
-                  service: PermisosService(),
-                  listMethodConfiguration: PermisosService(scheduler: scheduler).listarPermisos({}),
-                  pageLength: 7,
-                  paginate: true,
-                  cellBuilder: {
-                    "Permisos":{
-                      "Permiso": (value) {
-                        return Text(value.toString(),
-                            textAlign: TextAlign.center);
-                      },
-                      "Descripcion": (value) {
-                        return Text(value.toString(),
-                            textAlign: TextAlign.left);
-                      },
-                    }
-                  },
-                  tableLabels: {
-                    "Permisos":{
-                      "Descripcion":"Descripción"
-                    }
-                  },
-                  showCheckbox: true,
-                  bottomAction: (permisos){
-                    return _createButton(scheduler, permisos);
-                  },
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: ZMTable(
+                    padding: const EdgeInsets.all(0),
+                    model: Permisos(),
+                    service: PermisosService(),
+                    listMethodConfiguration: PermisosService(scheduler: scheduler).listarPermisos({}),
+                    pageLength: 7,
+                    paginate: true,
+                    cellBuilder: {
+                      "Permisos":{
+                        "Permiso": (value) {
+                          return Text(value.toString(),
+                              textAlign: TextAlign.center);
+                        },
+                        "Descripcion": (value) {
+                          return Text(value.toString(),
+                              textAlign: TextAlign.left);
+                        },
+                      }
+                    },
+                    tableLabels: {
+                      "Permisos":{
+                        "Descripcion":"Descripción"
+                      }
+                    },
+                    showCheckbox: true,
+                    bottomAction: (permisos){
+                      return _createButton(scheduler, permisos);
+                    },
+                  ),
                 ),
               ],
             )
