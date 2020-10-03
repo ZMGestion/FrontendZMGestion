@@ -8,7 +8,7 @@ import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/providers/UsuariosProvider.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/ventas/VentaCreadaAlertDialog.dart';
+import 'package:zmgestion/src/views/ventas/VentaPendienteAlertDialog.dart';
 import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
@@ -32,12 +32,12 @@ class _VentasModelViewState extends State<VentasModelView> {
   RequestScheduler scheduler;
   var dateFormat = DateFormat("dd/MM/yyyy HH:mm");
   Color color;
-  String cliente, domicilio = '';
+  String cliente;
+  String domicilio;
   List<Widget> _lineasVenta = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     if(widget.venta != null){
       venta = widget.venta;
       if (venta.cliente.apellidos != null && venta.cliente.nombres != null){
@@ -45,7 +45,9 @@ class _VentasModelViewState extends State<VentasModelView> {
       }else{
         cliente = venta.cliente.razonSocial;
       }
-      domicilio = venta.domicilio?.domicilio;
+      if(venta.domicilio != null){
+        domicilio = venta.domicilio.domicilio ?? '' ; 
+      }
       switch (venta.estado) {
         case 'A':{
           color = Colors.red;
@@ -385,8 +387,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                         barrierDismissible: false,
                         builder: (BuildContext context) {
-                          return VentaCreadaDialog(
-                            venta: venta
+                          return VentaPendienteDialog(
+                            venta: venta,
+                            operacion: "Modificar",
                           );
                         },
                       );

@@ -37,7 +37,7 @@ class _ZMBreadCrumbState extends State<ZMBreadCrumb> {
             ),
             onTap: value != null ?(){
               final NavigationService _navigationService = locator<NavigationService>();
-                _navigationService.navigateTo(value);
+              _navigationService.navigateTo(value);
             }: null 
           );
         items.add(breadcrumb);

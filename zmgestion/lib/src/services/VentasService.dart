@@ -338,6 +338,30 @@ class VentasService extends Services{
       ),
     );
   }
+  @override
+  DoMethodConfiguration modificarLineaVenta(LineasProducto lineaProducto) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/lineasVenta/modificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: lineaProducto,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de venta se ha modificado con éxito"
+      ),
+      attributes: {
+        "LineasProducto": [
+          "IdLineaProducto", "IdReferencia", "Cantidad", "PrecioUnitario"
+        ],
+        "ProductosFinales": [
+          "IdProducto", "IdTela", "IdLustre"
+        ],
+      }
+    );
+  }
 
   @override
   DoMethodConfiguration altaConfiguration() {

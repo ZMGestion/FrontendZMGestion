@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
@@ -9,16 +6,9 @@ import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
-import 'package:zmgestion/src/providers/UsuariosProvider.dart';
-import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/ventas/VentaCreadaAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
 import 'package:zmgestion/src/views/ventas/VentasModelView.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
-import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 
 class Ventas extends Equatable with Models{
   /* -Mysql Model-*/

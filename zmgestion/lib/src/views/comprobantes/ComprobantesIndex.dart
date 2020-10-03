@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Comprobantes.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
@@ -50,6 +51,13 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
         if (idVenta != 0){
           breadcrumb.addAll({
             "Ventas":"/ventas"
+          });
+        }
+      }
+      if(args["Crear"] != null){
+        if(args["Crear"] == "true"){
+          SchedulerBinding.instance.addPostFrameCallback((_) { 
+            crearComprobante();
           });
         }
       }
@@ -264,27 +272,7 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                           color: Colors.white,
                           size: 20,
                         ),
-                        onPressed: () async{
-                          await showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return OperacionesComprobanteAlertDialog(
-                                title: "Crear Comprobante",
-                                comprobante: Comprobantes(idVenta: idVenta),
-                                operacion: "Crear",
-                              );
-                            },
-                          ).then((value){
-                            if(value != null){
-                              if(value){
-                                setState(() {
-                                  refreshValue = Random().nextInt(99999);
-                                });
-                              }
-                            }
-                          });
-                        },
+                        onPressed: crearComprobante,
                       ),
                     )
                   ],
@@ -512,7 +500,28 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
           )
         ],
       ),
-      
     );
+  }
+
+  crearComprobante() async{
+    await showDialog(
+      context: context,
+      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      builder: (BuildContext context) {
+        return OperacionesComprobanteAlertDialog(
+          title: "Crear Comprobante",
+          comprobante: Comprobantes(idVenta: idVenta),
+          operacion: "Crear",
+        );
+      },
+    ).then((value){
+      if(value != null){
+        if(value){
+          setState(() {
+            refreshValue = Random().nextInt(99999);
+          });
+        }
+      }
+    });
   }
 }
