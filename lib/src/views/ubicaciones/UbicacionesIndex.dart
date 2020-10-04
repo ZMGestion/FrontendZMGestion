@@ -212,12 +212,8 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                         builder: (BuildContext context) {
                                           return MultipleRequestView(
                                             models: ubicaciones,
-                                            title: (estado == "A"
-                                                    ? "Dar de baja"
-                                                    : "Dar de alta") +
-                                                " " +
-                                                ubicaciones.length.toString() +
-                                                " ubicaciones",
+                                            title: (estado == "A" ? "Dar de baja" : "Dar de alta") + " " +
+                                                ubicaciones.length.toString() + " ubicaciones",
                                             service: UbicacionesService(),
                                             doMethodConfiguration: estado == "A"
                                                 ? UbicacionesService()
@@ -228,14 +224,12 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                               return {
                                                 "Ubicaciones": {
                                                   "IdUbicacion":
-                                                      mapModel["Ubicaciones"]
-                                                          ["IdUbicacion"]
+                                                      mapModel["Ubicaciones"]["IdUbicacion"]
                                                 }
                                               };
                                             },
                                             itemBuilder: (mapModel) {
-                                              return Text(mapModel["Ubicaciones"]
-                                                  ["Ubicacion"]);
+                                              return Text(mapModel["Ubicaciones"]["Ubicacion"]);
                                             },
                                             onFinished: () {
                                               setState(() {
@@ -269,9 +263,7 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                               onPressed: () {
                                 showDialog(
                                   context: context,
-                                  barrierColor: Theme.of(context)
-                                      .backgroundColor
-                                      .withOpacity(0.5),
+                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                   builder: (BuildContext context) {
                                     return MultipleRequestView(
                                       models: ubicaciones,
@@ -328,21 +320,15 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                 if (idUbicacion != 0) {
                                   showDialog(
                                     context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                     builder: (BuildContext context) {
                                       return ModelViewDialog(
                                         content: ModelView(
                                           service: UbicacionesService(),
-                                          getMethodConfiguration: UbicacionesService()
-                                              .dameConfiguration(idUbicacion),
+                                          getMethodConfiguration: UbicacionesService().dameConfiguration(idUbicacion),
                                           isList: false,
-                                          itemBuilder:
-                                              (mapModel, index, itemController) {
-                                            return Ubicaciones()
-                                                .fromMap(mapModel)
-                                                .viewModel(context);
+                                          itemBuilder: (mapModel, index, itemController) {
+                                            return Ubicaciones().fromMap(mapModel).viewModel(context);
                                           },
                                         ),
                                       );
@@ -352,9 +338,7 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                               },
                             ),
                             IconButtonTableAction(
-                              iconData: (estado == "A"
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward),
+                              iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
                               color: estado == "A" ? Colors.redAccent : Colors.green,
                               onPressed: () {
                                 if (idUbicacion != 0) {
@@ -363,13 +347,13 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                       "Ubicaciones": {"IdUbicacion": idUbicacion}
                                     }).then((response) {
                                       if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
+                                        itemsController.add(
+                                          ItemAction(
                                             event: ItemEvents.Update,
                                             index: index,
-                                            updateMethodConfiguration:
-                                                UbicacionesService()
-                                                    .dameConfiguration(
-                                                        ubicacion.idUbicacion)));
+                                            updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
+                                          )
+                                        );
                                       }
                                     });
                                   } else {
@@ -377,82 +361,43 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                                       "Ubicaciones": {"IdUbicacion": idUbicacion}
                                     }).then((response) {
                                       if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
+                                        itemsController.add(
+                                          ItemAction(
                                             event: ItemEvents.Update,
                                             index: index,
-                                            updateMethodConfiguration:
-                                                UbicacionesService()
-                                                    .dameConfiguration(
-                                                        ubicacion.idUbicacion)));
+                                            updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
+                                          )
+                                        );
                                       }
                                     });
                                   }
                                 }
                               },
                             ),
-                            // IconButtonTableAction(
-                            //   iconData: Icons.edit,
-                            //   onPressed: () {
-                            //     if (idCliente != 0) {
-                            //       showDialog(
-                            //         context: context,
-                            //         barrierColor: Theme.of(context)
-                            //             .backgroundColor
-                            //             .withOpacity(0.5),
-                            //         builder: (BuildContext context) {
-                            //           return ModelView(
-                            //             service: ClientesService(),
-                            //             getMethodConfiguration: ClientesService()
-                            //                 .dameConfiguration(idCliente),
-                            //             isList: false,
-                            //             itemBuilder: (mapModel, internalIndex,
-                            //                 itemController) {
-                            //               return ModificarClientesAlertDialog(
-                            //                 title: "Modificar Cliente",
-                            //                 cliente: Clientes().fromMap(mapModel),
-                            //                 onSuccess: () {
-                            //                   Navigator.of(context).pop();
-                            //                   itemsController.add(ItemAction(
-                            //                       event: ItemEvents.Update,
-                            //                       index: index,
-                            //                       updateMethodConfiguration:
-                            //                           ClientesService()
-                            //                               .dameConfiguration(
-                            //                                   cliente.idCliente)));
-                            //                 },
-                            //               );
-                            //             },
-                            //           );
-                            //         },
-                            //       );
-                            //     }
-                            //   },
-                            // ),
                             IconButtonTableAction(
                               iconData: Icons.delete_outline,
                               onPressed: () {
                                 if (idUbicacion != 0) {
                                   showDialog(
                                     context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                     builder: (BuildContext context) {
                                       return DeleteAlertDialog(
                                         title: "Borrar Ubicación",
-                                        message:
-                                            "¿Está seguro que desea eliminar la ubicación?",
+                                        message: "¿Está seguro que desea eliminar la ubicación?",
                                         onAccept: () async {
                                           await UbicacionesService().borra({
                                             "Ubicaciones": {
                                               "IdUbicacion": idUbicacion
                                             }
                                           }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
-                                              itemsController.add(ItemAction(
+                                            if (response.status == RequestStatus.SUCCESS) {
+                                              itemsController.add(
+                                                ItemAction(
                                                   event: ItemEvents.Hide,
-                                                  index: index));
+                                                  index: index
+                                                )
+                                              );
                                             }
                                           });
                                           Navigator.pop(context);

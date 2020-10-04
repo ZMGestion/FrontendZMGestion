@@ -20,7 +20,7 @@ class Provincias extends Models {
         idPais: mapModel["Provincias"]["IdPais"],
         provincia: mapModel["Provincias"]["Provincia"],
         pais: mapModel["Paises"] != null
-            ? Paises().fromMap({"Paises": mapModel["Paises"]})
+            ? Paises().fromMap(mapModel)
             : null);
   }
 
