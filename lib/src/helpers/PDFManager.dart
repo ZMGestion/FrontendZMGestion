@@ -129,17 +129,19 @@ abstract class PDFManager{
       title: title
     );
 
+    /*
     var myTheme = pw.ThemeData.withFont(
       base: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Regular.ttf")),
       bold: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Bold.ttf")),
       italic: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Italic.ttf")),
       boldItalic: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-BoldItalic.ttf")),
     );
+    */
 
     pdf.addPage(pw.Page(
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.symmetric(horizontal: 12, vertical: 24),
-      theme: myTheme,
+      //theme: myTheme,
       build: (pw.Context context) {
         return pw.Column(
           children: [
