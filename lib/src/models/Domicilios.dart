@@ -45,13 +45,13 @@ class Domicilios extends Models {
         fechaAlta: mapModel["Domicilios"]["FechaAlta"],
         observaciones: mapModel["Domicilios"]["Observaciones"],
         ciudad: mapModel["Ciudades"] != null
-            ? Ciudades().fromMap({"Ciudades": mapModel["Ciudades"]})
+            ? Ciudades().fromMap(mapModel)
             : null,
         provincia: mapModel["Provincias"] != null
-            ? Provincias().fromMap({"Provincias": mapModel["Provincias"]})
+            ? Provincias().fromMap(mapModel)
             : null,
         pais: mapModel["Paises"] != null
-            ? Paises().fromMap({"Paises": mapModel["Paises"]})
+            ? Paises().fromMap(mapModel)
             : null);
   }
 

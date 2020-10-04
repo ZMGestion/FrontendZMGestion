@@ -21,7 +21,6 @@ class _ZMUserActionState extends State<ZMUserAction> {
   final FocusNode _focusNode = FocusNode();
   OverlayEntry _overlayEntry;
   GlobalKey _userActionKey = GlobalKey();
-  final LayerLink _layerLink = LayerLink();
   bool menuVisible = false;
 
   @override
