@@ -22,12 +22,13 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: beta
+      - run: flutter upgrade
       - run: flutter config --enable-web
       
       # Get the latst dependencies
       - run: flutter pub get
       # Build our 
-      - run: flutter build web --debug
+      - run: flutter build web --release
       
       # Using Firebase Actions to deploy to our Firebase Hosting
       - uses: w9jds/firebase-action@master
