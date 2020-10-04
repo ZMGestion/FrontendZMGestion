@@ -77,22 +77,6 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Faker faker = new Faker();
-    nombresController.text = faker.person.firstName();
-    apellidosController.text = faker.person.lastName();
-    usuarioController.text = nombresController.text+apellidosController.text;
-    emailController.text = usuarioController.text + "@gmail.com"; 
-    idRol = 2+Random().nextInt(1);
-    idUbicacion = 1+Random().nextInt(2);
-    idTipoDocumento = 1;
-    estadoCivil = "S";
-    documentoController.text = (10000000+Random().nextInt(40000000)).toString();
-    fechaNacimientoController.text = (10+Random().nextInt(18)).toString()+"/"+(10+Random().nextInt(2)).toString()+"/"+(1950+Random().nextInt(40)).toString();
-    fechaInicioController.text = (10+Random().nextInt(18)).toString()+"/"+(10+Random().nextInt(2)).toString()+"/"+(2005+Random().nextInt(14)).toString();
-    passController.text = "Test1234";
-    pass2Controller.text = "Test1234";
-    telefonoController.text = "+54 381 4"+(100000 + Random().nextInt(899999)).toString();
-
   }
 
   @override
