@@ -26,8 +26,6 @@ jobs:
       
       # Get the latst dependencies
       - run: flutter pub get
-      
-      - run: flutter test
       # Build our 
       - run: flutter build web --release
       
