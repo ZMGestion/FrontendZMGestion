@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
+import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
@@ -64,16 +65,12 @@ class _LoginState extends State<Login> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(26, 26, 26, 12),
-                      color: Theme.of(context).primaryColor,
-                      child: Text(
-                        "ZM",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
-                      ),
+                      padding: EdgeInsets.fromLTRB(26, 12, 26, 12),
+                      child: Image.asset(
+                        "assets/ZM.png",
+                        fit: BoxFit.fitHeight,
+                        height: 60,
+                      )
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(26, 26, 26, 16),
@@ -157,11 +154,13 @@ class _LoginState extends State<Login> {
                                     }
                                   )).then(
                                     (response){
-                                      Usuarios usuario = Usuarios().fromMap(response.message);
-                                      var localStorage = window.localStorage;
-                                      localStorage["tokenType"] = "JWT";
-                                      localStorage["token"] = usuario.token;
-                                      ZMLoader.of(context).rebuild();
+                                      if(response.status == RequestStatus.SUCCESS){
+                                        Usuarios usuario = Usuarios().fromMap(response.message);
+                                        var localStorage = window.localStorage;
+                                        localStorage["tokenType"] = "JWT";
+                                        localStorage["token"] = usuario.token;
+                                        ZMLoader.of(context).rebuild();
+                                      }
                                     }
                                   );
                                 }
