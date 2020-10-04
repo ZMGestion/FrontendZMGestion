@@ -161,8 +161,9 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject();
-    var size = renderBox.size;
+    //RenderBox renderBox = context.findRenderObject();
+    //var size = renderBox.size;
+    Size size = Size(220, 50);
 
     return OverlayEntry(
       builder: (context) => Positioned(
