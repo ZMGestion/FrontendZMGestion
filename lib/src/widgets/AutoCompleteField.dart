@@ -406,61 +406,64 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
               ),
             ),
           ),
-          ModelView(
-            key: Key(pageInfo.pagina.toString()),
-            service: widget.service,
-            listMethodConfiguration: widget.listMethodConfiguration != null ? paginatedlistMethodConfiguration : null,
-            onPageInfo: (newPageInfo) {
-              if (newPageInfo != null) {
-                setState(() {
-                  this.pageInfo = newPageInfo;
-                });
-              }
-            },
-            isList: true,
-            onComplete: (result){
-              setState(() {
-                loading = false;
-              });
-            },
-            itemBuilder: (mapModel, index, itemController){
-              return InkWell(
-                onTap: (){
-                  setState(() { 
-                    _textController.text = widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName];
-                    //_selectedFromList = true;
+          Container(
+            height: 200,
+            child: ModelView(
+              key: Key(pageInfo.pagina.toString()),
+              service: widget.service,
+              listMethodConfiguration: widget.listMethodConfiguration != null ? paginatedlistMethodConfiguration : null,
+              onPageInfo: (newPageInfo) {
+                if (newPageInfo != null) {
+                  setState(() {
+                    this.pageInfo = newPageInfo;
                   });
-                  if(widget.onSelect != null){
-                    widget.onSelect(mapModel);
-                  }
-                  _focusNode.nextFocus();
-                  _focusNode.unfocus();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 12, 10),
-                  child: Text(
-                    widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName],
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: widget.itemsTextColor,
+                }
+              },
+              isList: true,
+              onComplete: (result){
+                setState(() {
+                  loading = false;
+                });
+              },
+              itemBuilder: (mapModel, index, itemController){
+                return InkWell(
+                  onTap: (){
+                    setState(() { 
+                      _textController.text = widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName];
+                      //_selectedFromList = true;
+                    });
+                    if(widget.onSelect != null){
+                      widget.onSelect(mapModel);
+                    }
+                    _focusNode.nextFocus();
+                    _focusNode.unfocus();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 12, 10),
+                    child: Text(
+                      widget.keyNameFunc != null ? widget.keyNameFunc(mapModel) : mapModel[widget.parentName][widget.keyName],
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: widget.itemsTextColor,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-            onEmpty: (){
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,8,16),
-                child: Text(
-                  "No se encontraron sugerencias",
-                  style: TextStyle(
-                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14
+                );
+              },
+              onEmpty: (){
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(8,8,8,16),
+                  child: Text(
+                    "No se encontraron sugerencias",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
           Visibility(
             visible: !loading && pageInfo.cantidadTotal > 0, //&& _getPageLength(pageInfo) > 1,
