@@ -21,14 +21,13 @@ jobs:
       # Switching to Flutter dev branch
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'dev'
-
-      # Enabling Flutter Web
+          channel: beta
       - run: flutter config --enable-web
       
       # Get the latst dependencies
       - run: flutter pub get
       
+      - run: flutter test
       # Build our 
       - run: flutter build web --release
       
