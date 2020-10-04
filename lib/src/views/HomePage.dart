@@ -11,7 +11,9 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: ListView.builder(
+      body: Container()
+      /*
+      ListView.builder(
         padding: EdgeInsets.all(8),
         itemCount: AppTheme.values.length,
         itemBuilder: (context, index) {
@@ -35,6 +37,7 @@ class HomePage extends StatelessWidget {
           );
         },
       ),
+      */
     );
   }
 }
