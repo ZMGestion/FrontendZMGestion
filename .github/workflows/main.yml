@@ -15,6 +15,7 @@ jobs:
     # Job consists of instructions that you want to trigger
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - run: cd zmgestion
 
       # Checkout our code
       - uses: actions/checkout@v1
