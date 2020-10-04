@@ -27,7 +27,7 @@ jobs:
       # Get the latst dependencies
       - run: flutter pub get
       # Build our 
-      - run: flutter build web --release
+      - run: flutter build web --debug
       
       # Using Firebase Actions to deploy to our Firebase Hosting
       - uses: w9jds/firebase-action@master
