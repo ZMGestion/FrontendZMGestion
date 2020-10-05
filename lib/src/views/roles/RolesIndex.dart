@@ -17,6 +17,7 @@ import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class RolesIndex extends StatefulWidget {
   @override
@@ -190,61 +191,68 @@ class _RolesIndexState extends State<RolesIndex> {
                             ),
                             Row(
                               children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                    size: 25,
+                                ZMTooltip(
+                                  message: "Editar",
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                      size: 25,
+                                    ),
+                                    onPressed: (){
+                                      showDialog(
+                                        context: context,
+                                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                        builder: (BuildContext context) {
+                                          return ModificarRolesAlertDialog(
+                                            title: "Modificar Rol",
+                                            rol: _rol,
+                                            onSuccess: () async{
+                                              Navigator.of(context).pop(); 
+                                              setState(() {
+                                                key ++;
+                                              });
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }
                                   ),
-                                  onPressed: (){
-                                    showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return ModificarRolesAlertDialog(
-                                          title: "Modificar Rol",
-                                          rol: _rol,
-                                          onSuccess: () async{
-                                            Navigator.of(context).pop(); 
-                                            setState(() {
-                                              key ++;
-                                            });
-                                          },
-                                        );
-                                      },
-                                    );
-                                  }
                                 ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                    size: 25,
+                                ZMTooltip(
+                                  message: "Borrar",
+                                  theme: ZMTooltipTheme.RED,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                      size: 25,
+                                    ),
+                                    onPressed: (){
+                                      showDialog(
+                                        context: context,
+                                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                        builder: (BuildContext context) {
+                                          return DeleteAlertDialog(
+                                            title: "Borrar Rol",
+                                            message:"¿Está seguro que desea eliminar el rol?",
+                                            onAccept: () async {
+                                              await RolesService().borra({
+                                                "Roles": {"IdRol": _rol.idRol}
+                                              }).then((response) {
+                                                if (response.status ==RequestStatus.SUCCESS) {
+                                                  setState(() {
+                                                    roles.remove(_rol);
+                                                  });
+                                                }
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }
                                   ),
-                                  onPressed: (){
-                                    showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return DeleteAlertDialog(
-                                          title: "Borrar Rol",
-                                          message:"¿Está seguro que desea eliminar el rol?",
-                                          onAccept: () async {
-                                            await RolesService().borra({
-                                              "Roles": {"IdRol": _rol.idRol}
-                                            }).then((response) {
-                                              if (response.status ==RequestStatus.SUCCESS) {
-                                                setState(() {
-                                                  roles.remove(_rol);
-                                                });
-                                              }
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      },
-                                    );
-                                  }
                                 ),
                               ],
                             )

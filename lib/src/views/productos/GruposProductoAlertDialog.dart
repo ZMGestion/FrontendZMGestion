@@ -19,6 +19,7 @@ import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class GruposProductoAlertDialog extends StatefulWidget {
   final String title;
@@ -459,116 +460,130 @@ class _GruposProductoTableState extends State<GruposProductoTable> {
         }
 
         return <Widget>[
-          IconButtonTableAction(
-            iconData: Icons.attach_money,
-            color: Theme.of(context).canvasColor.withOpacity(0.7),
-            onPressed: () {
-              if (idGrupoProducto != 0) {
-                showDialog(
-                  context: context,
-                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                  builder: (BuildContext context) {
-                    return ModificarPreciosGrupoProductoAlertDialog(
-                      title: "Modificar precios",
-                      grupoProducto: grupoProducto,
-                    );
-                  },
-                );
-              }
-            },
-          ),
-          IconButtonTableAction(
-            iconData: (estado == "A"
-                ? Icons.arrow_downward
-                : Icons.arrow_upward),
-            color: estado == "A" ? Colors.redAccent : Colors.green,
-            onPressed: () {
-              if (idGrupoProducto != 0) {
-                if (estado == "A") {
-                  GruposProductoService().baja({
-                    "GruposProducto": {"IdGrupoProducto": idGrupoProducto}
-                  }).then((response) {
-                    if (response.status == RequestStatus.SUCCESS) {
-                      itemsController.add(ItemAction(
-                          event: ItemEvents.Update,
-                          index: index,
-                          updateMethodConfiguration:
-                              GruposProductoService().dameConfiguration(
-                                  idGrupoProducto)));
-                    }
-                  });
-                } else {
-                  GruposProductoService().alta({
-                    "GruposProducto": {"IdGrupoProducto": idGrupoProducto}
-                  }).then((response) {
-                    if (response.status == RequestStatus.SUCCESS) {
-                      itemsController.add(ItemAction(
-                          event: ItemEvents.Update,
-                          index: index,
-                          updateMethodConfiguration:
-                              GruposProductoService().dameConfiguration(
-                                  idGrupoProducto)));
-                    }
-                  });
+          ZMTooltip(
+            message: "Modificar precios",
+            visible: idGrupoProducto != 0,
+            child: IconButtonTableAction(
+              iconData: Icons.attach_money,
+              color: Theme.of(context).canvasColor.withOpacity(0.7),
+              onPressed: idGrupoProducto == 0 ? null : () {
+                if (idGrupoProducto != 0) {
+                  showDialog(
+                    context: context,
+                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                    builder: (BuildContext context) {
+                      return ModificarPreciosGrupoProductoAlertDialog(
+                        title: "Modificar precios",
+                        grupoProducto: grupoProducto,
+                      );
+                    },
+                  );
                 }
-              }
-            },
+              },
+            ),
           ),
-          IconButtonTableAction(
-            iconData: Icons.edit,
-            color: Theme.of(context).canvasColor.withOpacity(0.7),
-            onPressed: () {
-              if (idGrupoProducto != 0) {
-                if(widget.onTapUpdate != null){
-                  widget.onTapUpdate({
-                    "Grupos": {
-                      "IdGrupoProducto": idGrupoProducto,
-                      "Grupo": grupo,
-                      "Descripcion": descripcion
-                    }
-                  });
+          ZMTooltip(
+            key: Key("EstadoGrupoProducto"+estado.toString()),
+            message: estado == "A" ? "Dar de baja" : "Dar de alta",
+            theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+            visible: idGrupoProducto != 0,
+            child: IconButtonTableAction(
+              iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
+              color: estado == "A" ? Colors.redAccent : Colors.green,
+              onPressed: idGrupoProducto == 0 ? null : () {
+                if (idGrupoProducto != 0) {
+                  if (estado == "A") {
+                    GruposProductoService().baja({
+                      "GruposProducto": {"IdGrupoProducto": idGrupoProducto}
+                    }).then((response) {
+                      if (response.status == RequestStatus.SUCCESS) {
+                        itemsController.add(ItemAction(
+                            event: ItemEvents.Update,
+                            index: index,
+                            updateMethodConfiguration:
+                                GruposProductoService().dameConfiguration(
+                                    idGrupoProducto)));
+                      }
+                    });
+                  } else {
+                    GruposProductoService().alta({
+                      "GruposProducto": {"IdGrupoProducto": idGrupoProducto}
+                    }).then((response) {
+                      if (response.status == RequestStatus.SUCCESS) {
+                        itemsController.add(ItemAction(
+                            event: ItemEvents.Update,
+                            index: index,
+                            updateMethodConfiguration:
+                                GruposProductoService().dameConfiguration(
+                                    idGrupoProducto)));
+                      }
+                    });
+                  }
                 }
-              }
-            },
+              },
+            ),
           ),
-          IconButtonTableAction(
-            iconData: Icons.delete_outline,
-            color: Theme.of(context).canvasColor.withOpacity(0.7),
-            onPressed: () async {
-              if (idGrupoProducto != 0) {
-                await showDialog(
-                  context: context,
-                  barrierColor: Theme.of(context)
-                      .backgroundColor
-                      .withOpacity(0.5),
-                  builder: (BuildContext context) {
-                    return DeleteAlertDialog(
-                      title: "Borrar grupo",
-                      message:
-                          "¿Está seguro que desea eliminar el grupo de productos?",
-                      onAccept: () async {
-                        await GruposProductoService().borra(
-                              {
-                                "GruposProducto": {
-                                  "IdGrupoProducto":
-                                      idGrupoProducto,
-                                }
-                              }).then((response) {
-                          if (response.status == RequestStatus.SUCCESS) {
-                            itemsController.add(ItemAction(
-                              event: ItemEvents.Hide,
-                              index: index
-                            ));
-                          }
-                        });
+          ZMTooltip(
+            message: "Editar",
+            visible: idGrupoProducto != 0,
+            child: IconButtonTableAction(
+              iconData: Icons.edit,
+              color: Theme.of(context).canvasColor.withOpacity(0.7),
+              onPressed: idGrupoProducto == 0 ? null : () {
+                if (idGrupoProducto != 0) {
+                  if(widget.onTapUpdate != null){
+                    widget.onTapUpdate({
+                      "Grupos": {
+                        "IdGrupoProducto": idGrupoProducto,
+                        "Grupo": grupo,
+                        "Descripcion": descripcion
+                      }
+                    });
+                  }
+                }
+              },
+            ),
+          ),
+          ZMTooltip(
+            message: "Borrar",
+            theme: ZMTooltipTheme.RED,
+            visible: idGrupoProducto != 0,
+            child: IconButtonTableAction(
+              iconData: Icons.delete_outline,
+              color: Theme.of(context).canvasColor.withOpacity(0.7),
+              onPressed: idGrupoProducto == 0 ? null : () async {
+                if (idGrupoProducto != 0) {
+                  await showDialog(
+                    context: context,
+                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                    builder: (BuildContext context) {
+                      return DeleteAlertDialog(
+                        title: "Borrar grupo",
+                        message: "¿Está seguro que desea eliminar el grupo de productos?",
+                        onAccept: () async {
+                          await GruposProductoService().borra(
+                                {
+                                  "GruposProducto": {
+                                    "IdGrupoProducto":
+                                        idGrupoProducto,
+                                  }
+                                }).then((response) {
+                            if (response.status == RequestStatus.SUCCESS) {
+                              itemsController.add(ItemAction(
+                                event: ItemEvents.Hide,
+                                index: index
+                              ));
+                            }
+                          });
 
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                );
-              }
-            },
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                }
+              },
+            ),
           )
         ];
       },

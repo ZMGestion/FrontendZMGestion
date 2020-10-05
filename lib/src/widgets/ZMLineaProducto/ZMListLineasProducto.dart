@@ -3,6 +3,7 @@ import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class ZMListLineasProducto extends StatefulWidget {
   final List<LineasProducto> lineasProducto;
@@ -32,6 +33,104 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
     super.initState();
   }
 
+  Widget _header(){
+    TextStyle _headerTextStyle = TextStyle(
+      color: Colors.white.withOpacity(0.6),
+      fontWeight: FontWeight.w600
+    );
+
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.black.withOpacity(0.05),
+            Colors.black.withOpacity(0.001),
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter
+        ),
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white.withOpacity(0.1),
+            width: 1
+          )
+        )
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    "Cant.",
+                    textAlign: TextAlign.center,
+                    style: _headerTextStyle,
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    "Detalle",
+                    textAlign: TextAlign.center,
+                    style: _headerTextStyle,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Precio unitario",
+                  textAlign: TextAlign.center,
+                  style: _headerTextStyle,
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Subtotal",
+                  textAlign: TextAlign.center,
+                  style: _headerTextStyle,
+                )
+              ],
+            ),
+          ),
+          Opacity(
+            opacity: 0,
+            child: IconButton(
+              icon: Icon(
+                Icons.edit_outlined,
+                size: 18,
+              ),
+              onPressed: null
+            ),
+          ),
+          Opacity(
+            opacity: 0,
+            child: IconButton(
+              icon: Icon(
+                Icons.delete,
+                size: 20,
+              ),
+              onPressed: null
+            ),
+          )
+        ]
+      ),
+    );
+  }
+
   Widget _lineaProducto(LineasProducto lp){
     return Row(
       children: [
@@ -42,7 +141,7 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  "x"+lp.cantidad.toString(),
+                  lp.cantidad.toString(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
@@ -94,19 +193,27 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
             ],
           ),
         ),
-        IconButton(
-          icon: Icon(
-            Icons.edit_outlined,
-            size: 18,
+        ZMTooltip(
+          message: "Editar",
+          theme: ZMTooltipTheme.WHITE,
+          child: IconButton(
+            icon: Icon(
+              Icons.edit_outlined,
+              size: 18,
+            ),
+            onPressed: () => widget.onEdit(lp)
           ),
-          onPressed: () => widget.onEdit(lp)
         ),
-        IconButton(
-          icon: Icon(
-            Icons.delete,
-            size: 20,
+        ZMTooltip(
+          message: "Eliminar",
+          theme: ZMTooltipTheme.RED,
+          child: IconButton(
+            icon: Icon(
+              Icons.delete,
+              size: 20,
+            ),
+            onPressed: () => widget.onDelete(lp)
           ),
-          onPressed: () => widget.onDelete(lp)
         )
       ]
     );
@@ -115,7 +222,12 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: _lineasProducto
+      children: [
+        _header(),
+        Column(
+          children: _lineasProducto
+        ),
+      ],
     );
   }
 }

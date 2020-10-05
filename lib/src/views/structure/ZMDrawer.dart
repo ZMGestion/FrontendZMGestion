@@ -43,32 +43,27 @@ class ZMDrawerState extends State<ZMDrawer>
     maxWidth = widget.maxWidth;
     minWidth = widget.minWidth;
 
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
 
-    widthAnimation = Tween<double>(begin: maxWidth, end: minWidth)
-        .animate(_animationController);
+    widthAnimation = Tween<double>(begin: maxWidth, end: minWidth).animate(_animationController);
 
     listTitleDefaultTextStyle = TextStyle(
-        color: Theme.of(widget.context)
-            .primaryTextTheme
-            .caption
-            .color
-            .withOpacity(0.7),
-        fontSize: 14.0,
-        fontWeight: FontWeight.w600);
+      color: Theme.of(widget.context).primaryTextTheme.caption.color.withOpacity(0.7),
+      fontSize: 14.0,
+      fontWeight: FontWeight.w600
+    );
     listTitleSelectedTextStyle = TextStyle(
-        color: Theme.of(widget.context).primaryTextTheme.caption.color,
-        fontSize: 14.0,
-        fontWeight: FontWeight.w600);
+      color: Theme.of(widget.context).primaryTextTheme.caption.color,
+      fontSize: 14.0,
+      fontWeight: FontWeight.w600
+    );
     navigationItems = [
       NavigationModel(
           title: "Inicio",
           icon: Icons.home,
           size: 32,
           onTap: () {
-            final NavigationService _navigationService =
-                locator<NavigationService>();
+            final NavigationService _navigationService = locator<NavigationService>();
             _navigationService.navigateTo("/inicio");
           }),
       NavigationModel(
@@ -223,11 +218,11 @@ class ZMDrawerState extends State<ZMDrawer>
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, widget) => Positioned(
-          top: 0,
-          left: 0,
-          width: widthAnimation.value,
-          height: SizeConfig.blockSizeVertical * 100,
-          child: getWidget(context, widget)),
+      top: 0,
+      left: 0,
+      width: widthAnimation.value,
+      height: SizeConfig.blockSizeVertical * 100,
+      child: getWidget(context, widget)),
     );
   }
 

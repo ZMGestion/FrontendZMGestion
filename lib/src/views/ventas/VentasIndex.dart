@@ -38,6 +38,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class VentasIndex extends StatefulWidget {
   @override
@@ -830,115 +831,132 @@ Map<int, Ventas> ventas = {};
                           }
                         }
                         return <Widget>[
-                          IconButtonTableAction(
-                            iconData: Icons.remove_red_eye,
-                            onPressed: () async{
-                              if (idVenta != 0) {
-                                await showDialog(
-                                  context: context,
-                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                  builder: (BuildContext context) {
-                                    return ModelViewDialog(
-                                      title: "Venta",
-                                      content: ModelView(
-                                        service: VentasService(),
-                                        getMethodConfiguration: VentasService().dameConfiguration(idVenta),
-                                        isList: false,
-                                        itemBuilder: (mapModel, index, itemController) {
-                                          return Ventas().fromMap(mapModel).viewModel(context);
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ).then((value){
-                                  if(value != null){
-                                    if (value){
+                          ZMTooltip(
+                            message: "Ver venta",
+                            visible: idVenta != 0,
+                            child: IconButtonTableAction(
+                              iconData: Icons.remove_red_eye,
+                              onPressed: idVenta == 0 ? null : () async{
+                                if (idVenta != 0) {
+                                  await showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    builder: (BuildContext context) {
+                                      return ModelViewDialog(
+                                        title: "Venta",
+                                        content: ModelView(
+                                          service: VentasService(),
+                                          getMethodConfiguration: VentasService().dameConfiguration(idVenta),
+                                          isList: false,
+                                          itemBuilder: (mapModel, index, itemController) {
+                                            return Ventas().fromMap(mapModel).viewModel(context);
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ).then((value){
+                                    if(value != null){
+                                      if (value){
+                                        setState(() {
+                                          refreshValue = Random().nextInt(99999);
+                                        });
+                                      }
+                                    }   
+                                  });
+                                }
+                              }
+                            ),
+                          ),
+                          ZMTooltip(
+                            message: "Editar",
+                            visible: idVenta != 0,
+                            child: Opacity(
+                              opacity: idVenta == 0 ? 0.2 : (estado  == "E" ? 1 : 0.2),
+                              child: IconButtonTableAction(
+                                iconData: Icons.edit,
+                                onPressed: idVenta == 0 ? null : estado  != "E" ? null : ()async{
+                                  Ventas venta;
+                                  await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(idVenta)).then((response){
+                                    if (response.status == RequestStatus.SUCCESS){
                                       setState(() {
-                                        refreshValue = Random().nextInt(99999);
+                                        venta = response.message;
                                       });
                                     }
-                                  }   
-                                });
-                              }
-                            }
+                                  });
+                                  showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return OperacionesVentasAlertDialog(
+                                        title: "Modificar venta",
+                                        operacion: 'Modificar',
+                                        venta: venta,
+                                        onSuccess: () {
+                                          Navigator.of(context).pop();
+                                          itemsController.add(
+                                            ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration: VentasService().dameConfiguration(venta.idVenta)
+                                            )
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
                           ),
-                          Opacity(
-                            opacity: idVenta == 0 ? 0.2 : (estado  == "E" ? 1 : 0.2),
+                          ZMTooltip(
+                            message: "Borrar",
+                            theme: ZMTooltipTheme.RED,
+                            visible: idVenta != 0,
                             child: IconButtonTableAction(
-                              iconData: Icons.edit,
-                              onPressed: idVenta == 0 ? null : estado  != "E" ? null : ()async{
-                                Ventas venta;
-                                await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(idVenta)).then((response){
-                                  if (response.status == RequestStatus.SUCCESS){
-                                    setState(() {
-                                      venta = response.message;
-                                    });
-                                  }
-                                });
-                                showDialog(
-                                  context: context,
-                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                  barrierDismissible: false,
-                                  builder: (BuildContext context) {
-                                    return OperacionesVentasAlertDialog(
-                                      title: "Modificar venta",
-                                      operacion: 'Modificar',
-                                      venta: venta,
-                                      onSuccess: () {
-                                        Navigator.of(context).pop();
-                                        itemsController.add(
-                                          ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration: VentasService().dameConfiguration(venta.idVenta)
-                                          )
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
+                              iconData: Icons.delete_outline,
+                              onPressed: idVenta == 0 ? null : () {
+                                if (idVenta != 0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    builder: (BuildContext context) {
+                                      return DeleteAlertDialog(
+                                        title: "Borrar venta",
+                                        message: "¿Está seguro que desea eliminar la venta?",
+                                        onAccept: () async {
+                                          await VentasService().borra({
+                                            "Ventas": {"IdVenta": idVenta}
+                                          }).then((response) {
+                                            if (response.status == RequestStatus.SUCCESS) {
+                                              itemsController.add(
+                                                ItemAction(
+                                                  event: ItemEvents.Hide,
+                                                  index: index)
+                                                );
+                                            }
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
                               },
                             ),
                           ),
-                          IconButtonTableAction(
-                            iconData: Icons.delete_outline,
-                            onPressed: () {
-                              if (idVenta != 0) {
-                                showDialog(
-                                  context: context,
-                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                  builder: (BuildContext context) {
-                                    return DeleteAlertDialog(
-                                      title: "Borrar venta",
-                                      message: "¿Está seguro que desea eliminar la venta?",
-                                      onAccept: () async {
-                                        await VentasService().borra({
-                                          "Ventas": {"IdVenta": idVenta}
-                                        }).then((response) {
-                                          if (response.status == RequestStatus.SUCCESS) {
-                                            itemsController.add(
-                                              ItemAction(
-                                                event: ItemEvents.Hide,
-                                                index: index)
-                                              );
-                                          }
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                    );
-                                  },
-                                );
+                          ZMTooltip(
+                            message: "Ver comprobantes",
+                            visible: idVenta != 0,
+                            child: IconButtonTableAction(
+                              iconData: Icons.description,
+                              onPressed: idVenta == 0 ? null : () {
+                                if (idVenta != 0) {
+                                  final NavigationService _navigationService = locator<NavigationService>();
+                                  _navigationService.navigateTo("/comprobantes?IdVenta="+idVenta.toString());
+                                }
                               }
-                            },
-                          ),
-                          IconButtonTableAction(
-                            iconData: Icons.description,
-                            onPressed: () {
-                              if (idVenta != 0) {
-                                final NavigationService _navigationService = locator<NavigationService>();
-                                _navigationService.navigateTo("/comprobantes?IdVenta="+idVenta.toString());
-                              }
-                            }
+                            ),
                           ),
                         ];
                       },

@@ -25,6 +25,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class UsuariosIndex extends StatefulWidget {
   @override
@@ -654,137 +655,156 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                             }
                           }
                           return <Widget>[
-                            IconButtonTableAction(
-                              iconData: Icons.remove_red_eye,
-                              onPressed: () {
-                                if (idUsuario != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        content: ModelView(
-                                          service: UsuariosService(),
-                                          getMethodConfiguration: UsuariosService()
-                                              .dameConfiguration(idUsuario),
-                                          isList: false,
-                                          itemBuilder:
-                                              (mapModel, index, itemController) {
-                                            return Usuarios()
-                                                .fromMap(mapModel)
-                                                .viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                            IconButtonTableAction(
-                              iconData: (estado == "A"
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward),
-                              color: estado == "A" ? Colors.redAccent : Colors.green,
-                              onPressed: () {
-                                if (idUsuario != 0) {
-                                  if (estado == "A") {
-                                    UsuariosService(scheduler: scheduler).baja({
-                                      "Usuarios": {"IdUsuario": idUsuario}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                UsuariosService().dameConfiguration(
-                                                    usuario.idUsuario)));
-                                      }
-                                    });
-                                  } else {
-                                    UsuariosService().alta({
-                                      "Usuarios": {"IdUsuario": idUsuario}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                UsuariosService().dameConfiguration(
-                                                    usuario.idUsuario)));
-                                      }
-                                    });
+                            ZMTooltip(
+                              message: "Ver empleado",
+                              visible: idUsuario != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.remove_red_eye,
+                                onPressed: idUsuario == 0 ? null : () {
+                                  if (idUsuario != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          content: ModelView(
+                                            service: UsuariosService(),
+                                            getMethodConfiguration: UsuariosService()
+                                                .dameConfiguration(idUsuario),
+                                            isList: false,
+                                            itemBuilder:
+                                                (mapModel, index, itemController) {
+                                              return Usuarios()
+                                                  .fromMap(mapModel)
+                                                  .viewModel(context);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
                                   }
-                                }
-                              },
+                                },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.edit,
-                              onPressed: () {
-                                if (idUsuario != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelView(
-                                        service: UsuariosService(),
-                                        getMethodConfiguration: UsuariosService().dameConfiguration(idUsuario),
-                                        isList: false,
-                                        itemBuilder: (updatedMapModel, index, itemController) => ModificarUsuariosAlertDialog(
-                                          title: "Modificar usuario",
-                                          usuario: Usuarios().fromMap(updatedMapModel),
-                                          onSuccess: () {
-                                            Navigator.of(context).pop();
-                                            itemsController.add(ItemAction(
-                                                event: ItemEvents.Update,
-                                                index: index,
-                                                updateMethodConfiguration:
-                                                    UsuariosService().dameConfiguration(
-                                                        usuario.idUsuario)));
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                            ZMTooltip(
+                              key: Key("EstadoComprobante"+estado.toString()),
+                              message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                              theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                              visible: idUsuario != 0,
+                              child: IconButtonTableAction(
+                                iconData: (estado == "A"
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward),
+                                color: estado == "A" ? Colors.redAccent : Colors.green,
+                                onPressed: idUsuario == 0 ? null : () {
+                                  if (idUsuario != 0) {
+                                    if (estado == "A") {
+                                      UsuariosService(scheduler: scheduler).baja({
+                                        "Usuarios": {"IdUsuario": idUsuario}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  UsuariosService().dameConfiguration(
+                                                      usuario.idUsuario)));
+                                        }
+                                      });
+                                    } else {
+                                      UsuariosService().alta({
+                                        "Usuarios": {"IdUsuario": idUsuario}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  UsuariosService().dameConfiguration(
+                                                      usuario.idUsuario)));
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idUsuario != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar empleado",
-                                        message:
-                                            "¿Está seguro que desea eliminar el empleado?",
-                                        onAccept: () async {
-                                          await UsuariosService().borra({
-                                            "Usuarios": {"IdUsuario": idUsuario}
-                                          }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
+                            ZMTooltip(
+                              message: "Editar",
+                              visible: idUsuario != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.edit,
+                                onPressed: idUsuario == 0 ? null : () {
+                                  if (idUsuario != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelView(
+                                          service: UsuariosService(),
+                                          getMethodConfiguration: UsuariosService().dameConfiguration(idUsuario),
+                                          isList: false,
+                                          itemBuilder: (updatedMapModel, index, itemController) => ModificarUsuariosAlertDialog(
+                                            title: "Modificar usuario",
+                                            usuario: Usuarios().fromMap(updatedMapModel),
+                                            onSuccess: () {
+                                              Navigator.of(context).pop();
                                               itemsController.add(ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index));
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                                                  event: ItemEvents.Update,
+                                                  index: index,
+                                                  updateMethodConfiguration:
+                                                      UsuariosService().dameConfiguration(
+                                                          usuario.idUsuario)));
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              theme: ZMTooltipTheme.RED,
+                              visible: idUsuario != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.delete_outline,
+                                onPressed: idUsuario == 0 ? null : () {
+                                  if (idUsuario != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return DeleteAlertDialog(
+                                          title: "Borrar empleado",
+                                          message:
+                                              "¿Está seguro que desea eliminar el empleado?",
+                                          onAccept: () async {
+                                            await UsuariosService().borra({
+                                              "Usuarios": {"IdUsuario": idUsuario}
+                                            }).then((response) {
+                                              if (response.status ==
+                                                  RequestStatus.SUCCESS) {
+                                                itemsController.add(ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index));
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             )
                           ];
                         },

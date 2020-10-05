@@ -29,7 +29,7 @@ final appThemeData = {
       headline6: TextStyle(
         color: Color(0xfff7f7f7)
       ),
-    )
+    ),
   ),
   AppTheme.Dark: ThemeData(
     backgroundColor: Color(0xff222222),

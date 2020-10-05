@@ -19,6 +19,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class ComprobantesIndex extends StatefulWidget {
   final Map<String, String> args;
@@ -318,101 +319,116 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                       //     }
                       //   },
                       // ),
-                      IconButtonTableAction(
-                        iconData: (estado == "A"
-                            ? Icons.arrow_downward
-                            : Icons.arrow_upward),
-                        color: estado == "A" ? Colors.redAccent : Colors.green,
-                        onPressed: () {
-                          if (idComprobante != 0) {
-                            if (estado == "A") {
-                              VentasService(scheduler: scheduler).doMethod(VentasService().darBajaComprobanteConfiguration({"Comprobantes":{"IdComprobante": idComprobante}})).then((response){
-                                if (response.status == RequestStatus.SUCCESS) {
-                                  itemsController.add(
-                                    ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
-                                    )
-                                  );
-                                }
-                              });
-                            } else {
-                              VentasService(scheduler: scheduler).doMethod(VentasService().darAltaComprobanteConfiguration({"Comprobantes":{"IdComprobante": idComprobante}})).then((response){
-                                if (response.status == RequestStatus.SUCCESS) {
-                                  itemsController.add(
-                                    ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
-                                    )
-                                  );
-                                }
-                              });
-                            }
-                          }
-                        },
-                      ),
-                      IconButtonTableAction(
-                        iconData: Icons.edit,
-                        onPressed: () async{
-                          if (idComprobante != 0) {
-                            await showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return OperacionesComprobanteAlertDialog(
-                                title: "Modificar Comprobante",
-                                comprobante: Comprobantes().fromMap(mapModel),
-                                operacion: "Modificar",
-                              );
-                            },
-                          ).then((value){
-                            if(value != null){
-                              if(value){
-                                itemsController.add(
-                                  ItemAction(
-                                    event: ItemEvents.Update,
-                                    index: index,
-                                    updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
-                                  )
-                                );
+                      ZMTooltip(
+                        key: Key("EstadoComprobante"+estado),
+                        message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                        theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                        visible: idComprobante != 0,
+                        child: IconButtonTableAction(
+                          iconData: (estado == "A"
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward),
+                          color: estado == "A" ? Colors.redAccent : Colors.green,
+                          onPressed: idComprobante == 0 ? null : () {
+                            if (idComprobante != 0) {
+                              if (estado == "A") {
+                                VentasService(scheduler: scheduler).doMethod(VentasService().darBajaComprobanteConfiguration({"Comprobantes":{"IdComprobante": idComprobante}})).then((response){
+                                  if (response.status == RequestStatus.SUCCESS) {
+                                    itemsController.add(
+                                      ItemAction(
+                                        event: ItemEvents.Update,
+                                        index: index,
+                                        updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
+                                      )
+                                    );
+                                  }
+                                });
+                              } else {
+                                VentasService(scheduler: scheduler).doMethod(VentasService().darAltaComprobanteConfiguration({"Comprobantes":{"IdComprobante": idComprobante}})).then((response){
+                                  if (response.status == RequestStatus.SUCCESS) {
+                                    itemsController.add(
+                                      ItemAction(
+                                        event: ItemEvents.Update,
+                                        index: index,
+                                        updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
+                                      )
+                                    );
+                                  }
+                                });
                               }
                             }
-                          });
-                          }
-                        },
+                          },
+                        ),
                       ),
-                      IconButtonTableAction(
-                        iconData: Icons.delete_outline,
-                        onPressed: () {
-                          if (idComprobante != 0) {
-                            showDialog(
+                      ZMTooltip(
+                        message: "Editar",
+                        visible: idComprobante != 0,
+                        child: IconButtonTableAction(
+                          iconData: Icons.edit,
+                          onPressed: idComprobante == 0 ? null : () async{
+                            if (idComprobante != 0) {
+                              await showDialog(
                               context: context,
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               builder: (BuildContext context) {
-                                return DeleteAlertDialog(
-                                  title: "Borrar Comprobante",
-                                  message:
-                                      "¿Está seguro que desea eliminar el comprobante?",
-                                  onAccept: () async {
-                                    await VentasService(scheduler: scheduler).doMethod(VentasService().borrarComprobanteConfiguration(idComprobante)).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(
-                                          ItemAction(
-                                            event: ItemEvents.Hide,
-                                            index: index
-                                          )
-                                        );
-                                      }
-                                    });
-                                    Navigator.pop(context);
-                                  },
+                                return OperacionesComprobanteAlertDialog(
+                                  title: "Modificar Comprobante",
+                                  comprobante: Comprobantes().fromMap(mapModel),
+                                  operacion: "Modificar",
                                 );
                               },
-                            );
-                          }
-                        },
+                            ).then((value){
+                              if(value != null){
+                                if(value){
+                                  itemsController.add(
+                                    ItemAction(
+                                      event: ItemEvents.Update,
+                                      index: index,
+                                      updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
+                                    )
+                                  );
+                                }
+                              }
+                            });
+                            }
+                          },
+                        ),
+                      ),
+                      ZMTooltip(
+                        message: "Borrar",
+                        theme: ZMTooltipTheme.RED,
+                        visible: idComprobante != 0,
+                        child: IconButtonTableAction(
+                          iconData: Icons.delete_outline,
+                          onPressed: idComprobante == 0 ? null : () {
+                            if (idComprobante != 0) {
+                              showDialog(
+                                context: context,
+                                barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                builder: (BuildContext context) {
+                                  return DeleteAlertDialog(
+                                    title: "Borrar Comprobante",
+                                    message:
+                                        "¿Está seguro que desea eliminar el comprobante?",
+                                    onAccept: () async {
+                                      await VentasService(scheduler: scheduler).doMethod(VentasService().borrarComprobanteConfiguration(idComprobante)).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(
+                                            ItemAction(
+                                              event: ItemEvents.Hide,
+                                              index: index
+                                            )
+                                          );
+                                        }
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
                       )
                     ];
                   },

@@ -18,6 +18,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class TelasIndex extends StatefulWidget {
   @override
@@ -390,137 +391,156 @@ class _TelasIndexState extends State<TelasIndex> {
                             }
                           }
                           return <Widget>[
-                            IconButtonTableAction(
-                              iconData: Icons.show_chart,
-                              onPressed: () {
-                                if (idTela != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        content: ModelView(
-                                          service: TelasService(),
-                                          getMethodConfiguration: TelasService()
-                                              .dameConfiguration(idTela),
-                                          isList: false,
-                                          itemBuilder:
-                                              (mapModel, index, itemController) {
-                                            return Telas()
-                                                .fromMap(mapModel)
-                                                .viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              }
-                            ),
-                            IconButtonTableAction(
-                              iconData: (estado == "A"
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward),
-                              color: estado == "A" ? Colors.redAccent : Colors.green,
-                              onPressed: () {
-                                if (idTela != 0) {
-                                  if (estado == "A") {
-                                    TelasService(scheduler: scheduler).baja({
-                                      "Telas": {"IdTela": idTela}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                TelasService().dameConfiguration(
-                                                    tela.idTela)));
-                                      }
-                                    });
-                                  } else {
-                                    TelasService().alta({
-                                      "Telas": {"IdTela": idTela}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                TelasService().dameConfiguration(
-                                                    tela.idTela)));
-                                      }
-                                    });
+                            ZMTooltip(
+                              message: "Ver precios",
+                              visible: idTela != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.show_chart,
+                                onPressed: idTela == 0 ? null : () {
+                                  if (idTela != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          content: ModelView(
+                                            service: TelasService(),
+                                            getMethodConfiguration: TelasService()
+                                                .dameConfiguration(idTela),
+                                            isList: false,
+                                            itemBuilder:
+                                                (mapModel, index, itemController) {
+                                              return Telas()
+                                                  .fromMap(mapModel)
+                                                  .viewModel(context);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
                                   }
                                 }
-                              },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.edit,
-                              onPressed: () {
-                                if (idTela != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelView(
-                                        service: TelasService(),
-                                        getMethodConfiguration: TelasService().dameConfiguration(idTela),
-                                        isList: false,
-                                        itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarTelasAlertDialog(
-                                          title: "Modificar tela",
-                                          tela: Telas().fromMap(updatedMapModel),
-                                          onSuccess: () {
-                                            Navigator.of(context).pop();
-                                            itemsController.add(ItemAction(
-                                                event: ItemEvents.Update,
-                                                index: index,
-                                                updateMethodConfiguration:
-                                                    TelasService().dameConfiguration(
-                                                        tela.idTela)));
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                            ZMTooltip(
+                              key: Key("EstadoTela"+estado),
+                              message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                              theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                              visible: idTela != 0,
+                              child: IconButtonTableAction(
+                                iconData: (estado == "A"
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward),
+                                color: estado == "A" ? Colors.redAccent : Colors.green,
+                                onPressed: idTela == 0 ? null : () {
+                                  if (idTela != 0) {
+                                    if (estado == "A") {
+                                      TelasService(scheduler: scheduler).baja({
+                                        "Telas": {"IdTela": idTela}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  TelasService().dameConfiguration(
+                                                      tela.idTela)));
+                                        }
+                                      });
+                                    } else {
+                                      TelasService().alta({
+                                        "Telas": {"IdTela": idTela}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  TelasService().dameConfiguration(
+                                                      tela.idTela)));
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idTela != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar tela",
-                                        message:
-                                            "¿Está seguro que desea eliminar la tela?",
-                                        onAccept: () async {
-                                          await TelasService().borra({
-                                            "Telas": {"IdTela": idTela}
-                                          }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
+                            ZMTooltip(
+                              message: "Editar",
+                              visible: idTela != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.edit,
+                                onPressed: idTela == 0 ? null : () {
+                                  if (idTela != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelView(
+                                          service: TelasService(),
+                                          getMethodConfiguration: TelasService().dameConfiguration(idTela),
+                                          isList: false,
+                                          itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarTelasAlertDialog(
+                                            title: "Modificar tela",
+                                            tela: Telas().fromMap(updatedMapModel),
+                                            onSuccess: () {
+                                              Navigator.of(context).pop();
                                               itemsController.add(ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index));
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                                                  event: ItemEvents.Update,
+                                                  index: index,
+                                                  updateMethodConfiguration:
+                                                      TelasService().dameConfiguration(
+                                                          tela.idTela)));
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              theme: ZMTooltipTheme.RED,
+                              visible: idTela != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.delete_outline,
+                                onPressed: idTela == 0 ? null : () {
+                                  if (idTela != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return DeleteAlertDialog(
+                                          title: "Borrar tela",
+                                          message:
+                                              "¿Está seguro que desea eliminar la tela?",
+                                          onAccept: () async {
+                                            await TelasService().borra({
+                                              "Telas": {"IdTela": idTela}
+                                            }).then((response) {
+                                              if (response.status ==
+                                                  RequestStatus.SUCCESS) {
+                                                itemsController.add(ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index));
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             )
                           ];
                         },
