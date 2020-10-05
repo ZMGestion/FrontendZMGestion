@@ -25,6 +25,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class ProductosFinalesIndex extends StatefulWidget {
   @override
@@ -504,92 +505,107 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                             }
                           }
                           return <Widget>[
-                            IconButtonTableAction(
-                              iconData: Icons.remove_red_eye,
-                              onPressed: () {
-                                if (idProductoFinal != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        content: ModelView(
-                                          service: ProductosFinalesService(),
-                                          getMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal),
-                                          isList: false,
-                                          itemBuilder: (mapModel, index, itemController) {
-                                            return ProductosFinales().fromMap(mapModel).viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              }
-                            ),
-                            IconButtonTableAction(
-                              iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
-                              color: estado == "A" ? Colors.redAccent : Colors.green,
-                              onPressed: () {
-                                if (idProductoFinal != 0) {
-                                  if (estado == "A") {
-                                    ProductosFinalesService().baja({
-                                      "ProductosFinales": {"IdProductoFinal": idProductoFinal}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
-                                      }
-                                    });
-                                  } else {
-                                    ProductosFinalesService().alta({
-                                      "ProductosFinales": {"IdProductoFinal": idProductoFinal}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
-                                      }
-                                    });
+                            ZMTooltip(
+                              message: "Ver mueble",
+                              visible: idProductoFinal != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.remove_red_eye,
+                                onPressed: idProductoFinal == 0 ? null : () {
+                                  if (idProductoFinal != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          content: ModelView(
+                                            service: ProductosFinalesService(),
+                                            getMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal),
+                                            isList: false,
+                                            itemBuilder: (mapModel, index, itemController) {
+                                              return ProductosFinales().fromMap(mapModel).viewModel(context);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
                                   }
                                 }
-                              },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idProductoFinal != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar producto",
-                                        message:
-                                            "¿Está seguro que desea eliminar la producto?",
-                                        onAccept: () async {
-                                          await ProductosFinalesService().borra({
-                                            "ProductosFinales": {"IdProductoFinal": idProductoFinal}
-                                          }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
-                                              itemsController.add(ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index));
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                            ZMTooltip(
+                              key: Key("EstadoMueble"+estado),
+                              message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                              theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                              visible: idProductoFinal != 0,
+                              child: IconButtonTableAction(
+                                iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
+                                color: estado == "A" ? Colors.redAccent : Colors.green,
+                                onPressed: idProductoFinal == 0 ? null : () {
+                                  if (idProductoFinal != 0) {
+                                    if (estado == "A") {
+                                      ProductosFinalesService().baja({
+                                        "ProductosFinales": {"IdProductoFinal": idProductoFinal}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
+                                        }
+                                      });
+                                    } else {
+                                      ProductosFinalesService().alta({
+                                        "ProductosFinales": {"IdProductoFinal": idProductoFinal}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration: ProductosFinalesService().dameConfiguration(idProductoFinal)));
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              visible: idProductoFinal != 0,
+                              theme: ZMTooltipTheme.RED,
+                              child: IconButtonTableAction(
+                                iconData: Icons.delete_outline,
+                                onPressed: idProductoFinal == 0 ? null : () {
+                                  if (idProductoFinal != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return DeleteAlertDialog(
+                                          title: "Borrar producto",
+                                          message:
+                                              "¿Está seguro que desea eliminar la producto?",
+                                          onAccept: () async {
+                                            await ProductosFinalesService().borra({
+                                              "ProductosFinales": {"IdProductoFinal": idProductoFinal}
+                                            }).then((response) {
+                                              if (response.status ==
+                                                  RequestStatus.SUCCESS) {
+                                                itemsController.add(ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index));
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             )
                           ];
                         },

@@ -1,50 +1,30 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
-import 'package:speech_bubble/speech_bubble.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
-import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
-import 'package:zmgestion/src/models/Lustres.dart';
-import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
-import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
-import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/providers/UsuariosProvider.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
-import 'package:zmgestion/src/services/GruposProductoService.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
-import 'package:zmgestion/src/services/ProductosFinalesService.dart';
-import 'package:zmgestion/src/services/ProductosService.dart';
-import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestoCreadoDialog.dart';
-import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/ConfirmationAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMLineaProducto.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMListLineasProducto.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class PresupuestosAlertDialog extends StatefulWidget{
   final String title;
@@ -150,29 +130,33 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                             child: AutoCompleteField(
                                               enabled: presupuesto == null,
                                               actions: [
-                                                InkWell(
-                                                  borderRadius: BorderRadius.circular(25),
-                                                  onTap: (){
-                                                    showDialog(
-                                                      context: context,
-                                                      barrierDismissible: false,
-                                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                                      builder: (BuildContext context) {
-                                                        return CrearClientesAlertDialog(
-                                                          title: "Nuevo cliente",
-                                                          onSuccess: () {
-                                                            Navigator.of(context).pop(true);
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(6),
-                                                    child: Icon(
-                                                      Icons.person_add_sharp,
-                                                      size: 20,
-                                                      color: Colors.tealAccent.withOpacity(0.8)
+                                                ZMTooltip(
+                                                  message: "Nuevo cliente",
+                                                  theme: ZMTooltipTheme.WHITE,
+                                                  child: InkWell(
+                                                    borderRadius: BorderRadius.circular(25),
+                                                    onTap: (){
+                                                      showDialog(
+                                                        context: context,
+                                                        barrierDismissible: false,
+                                                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                                        builder: (BuildContext context) {
+                                                          return CrearClientesAlertDialog(
+                                                            title: "Nuevo cliente",
+                                                            onSuccess: () {
+                                                              Navigator.of(context).pop(true);
+                                                            },
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(6),
+                                                      child: Icon(
+                                                        Icons.person_add_sharp,
+                                                        size: 20,
+                                                        color: Colors.tealAccent.withOpacity(0.8)
+                                                      ),
                                                     ),
                                                   ),
                                                 )

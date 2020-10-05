@@ -16,6 +16,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class UbicacionesIndex extends StatefulWidget {
   @override
@@ -314,99 +315,114 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                             }
                           }
                           return <Widget>[
-                            IconButtonTableAction(
-                              iconData: Icons.remove_red_eye,
-                              onPressed: () {
-                                if (idUbicacion != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        content: ModelView(
-                                          service: UbicacionesService(),
-                                          getMethodConfiguration: UbicacionesService().dameConfiguration(idUbicacion),
-                                          isList: false,
-                                          itemBuilder: (mapModel, index, itemController) {
-                                            return Ubicaciones().fromMap(mapModel).viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                            IconButtonTableAction(
-                              iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
-                              color: estado == "A" ? Colors.redAccent : Colors.green,
-                              onPressed: () {
-                                if (idUbicacion != 0) {
-                                  if (estado == "A") {
-                                    UbicacionesService(scheduler: scheduler).baja({
-                                      "Ubicaciones": {"IdUbicacion": idUbicacion}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(
-                                          ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
-                                          )
+                            ZMTooltip(
+                              message: "Ver ubicación",
+                              visible: idUbicacion != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.remove_red_eye,
+                                onPressed: idUbicacion == 0 ? null : () {
+                                  if (idUbicacion != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          content: ModelView(
+                                            service: UbicacionesService(),
+                                            getMethodConfiguration: UbicacionesService().dameConfiguration(idUbicacion),
+                                            isList: false,
+                                            itemBuilder: (mapModel, index, itemController) {
+                                              return Ubicaciones().fromMap(mapModel).viewModel(context);
+                                            },
+                                          ),
                                         );
-                                      }
-                                    });
-                                  } else {
-                                    UbicacionesService(scheduler: scheduler).alta({
-                                      "Ubicaciones": {"IdUbicacion": idUbicacion}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(
-                                          ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
-                                          )
-                                        );
-                                      }
-                                    });
+                                      },
+                                    );
                                   }
-                                }
-                              },
+                                },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idUbicacion != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar Ubicación",
-                                        message: "¿Está seguro que desea eliminar la ubicación?",
-                                        onAccept: () async {
-                                          await UbicacionesService().borra({
-                                            "Ubicaciones": {
-                                              "IdUbicacion": idUbicacion
-                                            }
-                                          }).then((response) {
-                                            if (response.status == RequestStatus.SUCCESS) {
-                                              itemsController.add(
-                                                ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index
-                                                )
-                                              );
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                            ZMTooltip(
+                              key: Key("EstadoUbicacion"+estado.toString()),
+                              message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                              theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                              visible: idUbicacion != 0,
+                              child: IconButtonTableAction(
+                                iconData: (estado == "A" ? Icons.arrow_downward : Icons.arrow_upward),
+                                color: estado == "A" ? Colors.redAccent : Colors.green,
+                                onPressed: idUbicacion == 0 ? null : () {
+                                  if (idUbicacion != 0) {
+                                    if (estado == "A") {
+                                      UbicacionesService(scheduler: scheduler).baja({
+                                        "Ubicaciones": {"IdUbicacion": idUbicacion}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(
+                                            ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
+                                            )
+                                          );
+                                        }
+                                      });
+                                    } else {
+                                      UbicacionesService(scheduler: scheduler).alta({
+                                        "Ubicaciones": {"IdUbicacion": idUbicacion}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(
+                                            ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration: UbicacionesService().dameConfiguration(ubicacion.idUbicacion)
+                                            )
+                                          );
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              theme: ZMTooltipTheme.RED,
+                              visible: idUbicacion != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.delete_outline,
+                                onPressed: idUbicacion == 0 ? null : () {
+                                  if (idUbicacion != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return DeleteAlertDialog(
+                                          title: "Borrar Ubicación",
+                                          message: "¿Está seguro que desea eliminar la ubicación?",
+                                          onAccept: () async {
+                                            await UbicacionesService().borra({
+                                              "Ubicaciones": {
+                                                "IdUbicacion": idUbicacion
+                                              }
+                                            }).then((response) {
+                                              if (response.status == RequestStatus.SUCCESS) {
+                                                itemsController.add(
+                                                  ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index
+                                                  )
+                                                );
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             )
                           ];
                         },

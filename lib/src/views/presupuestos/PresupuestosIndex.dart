@@ -39,6 +39,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class PresupuestosIndex extends StatefulWidget {
   final Map<String, String> args;
@@ -760,97 +761,110 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                           return <Widget>[
                             Opacity(
                               opacity: idPresupuesto == 0 ? 0.2 : (estado  != "E" ? 1 : 0.2),
-                              child: IconButtonTableAction(
-                                iconData: Icons.remove_red_eye,
-                                onPressed: idPresupuesto == 0 ? null : estado  == "E" ? null : () async{
-                                  Response<Models<dynamic>> response;
-                                  Presupuestos _presupuesto;
-                                  
-                                  if(presupuesto?.idPresupuesto != null){
-                                    response = await PresupuestosService().damePor(PresupuestosService().dameConfiguration(presupuesto.idPresupuesto));
+                              child: ZMTooltip(
+                                message: "Ver presupuesto",
+                                visible: idPresupuesto != 0,
+                                child: IconButtonTableAction(
+                                  iconData: Icons.remove_red_eye,
+                                  onPressed: idPresupuesto == 0 ? null : estado  == "E" ? null : () async{
+                                    Response<Models<dynamic>> response;
+                                    Presupuestos _presupuesto;
+                                    
+                                    if(presupuesto?.idPresupuesto != null){
+                                      response = await PresupuestosService().damePor(PresupuestosService().dameConfiguration(presupuesto.idPresupuesto));
+                                    }
+                                    if(response?.status == RequestStatus.SUCCESS){
+                                      _presupuesto = Presupuestos().fromMap(response.message.toMap());
+                                    }
+                                    await Printing.layoutPdf(onLayout: (format) => PDFManager.generarPresupuestoPDF(
+                                      format, 
+                                      _presupuesto
+                                    ));
                                   }
-                                  if(response?.status == RequestStatus.SUCCESS){
-                                    _presupuesto = Presupuestos().fromMap(response.message.toMap());
-                                  }
-                                  await Printing.layoutPdf(onLayout: (format) => PDFManager.generarPresupuestoPDF(
-                                    format, 
-                                    _presupuesto
-                                  ));
-                                }
+                                ),
                               ),
                             ),
                             Opacity(
                               opacity: idPresupuesto == 0 ? 0.2 : (estado  != "V" ? 1 : 0.2),
+                              child: ZMTooltip(
+                                message: "Editar",
+                                visible: idPresupuesto != 0,
+                                child: IconButtonTableAction(
+                                  iconData: Icons.edit,
+                                  onPressed: idPresupuesto == 0 ? null : estado  == "V" ? null : (){
+                                    if (idPresupuesto != 0) {
+                                      showDialog(
+                                        context: context,
+                                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                        builder: (BuildContext context) {
+                                          return ModelViewDialog(
+                                            content: ModelView(
+                                              service: PresupuestosService(),
+                                              getMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto),
+                                              isList: false,
+                                              itemBuilder: (mapModel, internalIndex, itemController) {
+                                                return PresupuestosAlertDialog(
+                                                  title: "Modificar presupuesto",
+                                                  presupuesto: Presupuestos().fromMap(mapModel),
+                                                  updateAllCallback: (){
+                                                    setState(() {
+                                                      refreshValue = Random().nextInt(99999);
+                                                    });
+                                                  },
+                                                  updateRowCallback: (){
+                                                    itemsController.add(
+                                                      ItemAction(
+                                                        event: ItemEvents.Update,
+                                                        index: index,
+                                                        updateMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto)
+                                                      )
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              visible: idPresupuesto != 0,
+                              theme: ZMTooltipTheme.RED,
                               child: IconButtonTableAction(
-                                iconData: Icons.edit,
-                                onPressed: idPresupuesto == 0 ? null : estado  == "V" ? null : (){
+                                iconData: Icons.delete_outline,
+                                onPressed: idPresupuesto == 0 ? null : (){
                                   if (idPresupuesto != 0) {
                                     showDialog(
                                       context: context,
                                       barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                       builder: (BuildContext context) {
-                                        return ModelViewDialog(
-                                          content: ModelView(
-                                            service: PresupuestosService(),
-                                            getMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto),
-                                            isList: false,
-                                            itemBuilder: (mapModel, internalIndex, itemController) {
-                                              return PresupuestosAlertDialog(
-                                                title: "Modificar presupuesto",
-                                                presupuesto: Presupuestos().fromMap(mapModel),
-                                                updateAllCallback: (){
-                                                  setState(() {
-                                                    refreshValue = Random().nextInt(99999);
-                                                  });
-                                                },
-                                                updateRowCallback: (){
-                                                  itemsController.add(
-                                                    ItemAction(
-                                                      event: ItemEvents.Update,
-                                                      index: index,
-                                                      updateMethodConfiguration: PresupuestosService().dameConfiguration(idPresupuesto)
-                                                    )
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
+                                        return DeleteAlertDialog(
+                                          title: "Borrar presupuesto",
+                                          message: "¿Está seguro que desea eliminar el presupuesto?",
+                                          onAccept: () async {
+                                            await PresupuestosService().borra({
+                                              "Presupuestos": {"IdPresupuesto": idPresupuesto}
+                                            }).then((response) {
+                                              if (response.status ==
+                                                  RequestStatus.SUCCESS) {
+                                                itemsController.add(ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index));
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
                                         );
                                       },
                                     );
                                   }
                                 },
                               ),
-                            ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idPresupuesto != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar presupuesto",
-                                        message: "¿Está seguro que desea eliminar el presupuesto?",
-                                        onAccept: () async {
-                                          await PresupuestosService().borra({
-                                            "Presupuestos": {"IdPresupuesto": idPresupuesto}
-                                          }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
-                                              itemsController.add(ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index));
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
                             )
                           ];
                         },

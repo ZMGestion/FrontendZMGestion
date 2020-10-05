@@ -1,28 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
-import 'package:zmgestion/src/models/Paginaciones.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/services/GruposProductoService.dart';
-import 'package:zmgestion/src/services/RolesService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/views/productos/CrearProductosAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/GruposProductoAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/ModificarProductosAlertDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
@@ -32,6 +24,7 @@ import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class ProductosIndex extends StatefulWidget {
   @override
@@ -543,137 +536,154 @@ class _ProductosIndexState extends State<ProductosIndex> {
                             }
                           }
                           return <Widget>[
-                            IconButtonTableAction(
-                              iconData: Icons.show_chart,
-                              onPressed: () {
-                                if (idProducto != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        content: ModelView(
-                                          service: ProductosService(),
-                                          getMethodConfiguration: ProductosService()
-                                              .dameConfiguration(idProducto),
-                                          isList: false,
-                                          itemBuilder:
-                                              (mapModel, index, itemController) {
-                                            return Productos()
-                                                .fromMap(mapModel)
-                                                .viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              }
-                            ),
-                            IconButtonTableAction(
-                              iconData: (estado == "A"
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward),
-                              color: estado == "A" ? Colors.redAccent : Colors.green,
-                              onPressed: () {
-                                if (idProducto != 0) {
-                                  if (estado == "A") {
-                                    ProductosService(scheduler: scheduler).baja({
-                                      "Productos": {"IdProducto": idProducto}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                ProductosService().dameConfiguration(
-                                                    producto.idProducto)));
-                                      }
-                                    });
-                                  } else {
-                                    ProductosService().alta({
-                                      "Productos": {"IdProducto": idProducto}
-                                    }).then((response) {
-                                      if (response.status == RequestStatus.SUCCESS) {
-                                        itemsController.add(ItemAction(
-                                            event: ItemEvents.Update,
-                                            index: index,
-                                            updateMethodConfiguration:
-                                                ProductosService().dameConfiguration(
-                                                    producto.idProducto)));
-                                      }
-                                    });
+                            ZMTooltip(
+                              message: "Ver precios",
+                              visible: idProducto != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.show_chart,
+                                onPressed: idProducto == 0 ? null : () {
+                                  if (idProducto != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          content: ModelView(
+                                            service: ProductosService(),
+                                            getMethodConfiguration: ProductosService()
+                                                .dameConfiguration(idProducto),
+                                            isList: false,
+                                            itemBuilder:
+                                                (mapModel, index, itemController) {
+                                              return Productos()
+                                                  .fromMap(mapModel)
+                                                  .viewModel(context);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
                                   }
                                 }
-                              },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.edit,
-                              onPressed: () {
-                                if (idProducto != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelView(
-                                        service: ProductosService(),
-                                        getMethodConfiguration: ProductosService().dameConfiguration(idProducto),
-                                        isList: false,
-                                        itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarProductosAlertDialog(
-                                          title: "Modificar producto",
-                                          producto: Productos().fromMap(updatedMapModel),
-                                          onSuccess: () {
-                                            Navigator.of(context).pop();
-                                            itemsController.add(ItemAction(
-                                                event: ItemEvents.Update,
-                                                index: index,
-                                                updateMethodConfiguration:
-                                                    ProductosService().dameConfiguration(
-                                                        producto.idProducto)));
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                            ZMTooltip(
+                              key: Key("EstadoProducto"+estado),
+                              message: estado == "A" ? "Dar de baja" : "Dar de alta",
+                              theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                              visible: idProducto != 0,
+                              child: IconButtonTableAction(
+                                iconData: (estado == "A"
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward),
+                                color: estado == "A" ? Colors.redAccent : Colors.green,
+                                onPressed: idProducto == 0 ? null : () {
+                                  if (idProducto != 0) {
+                                    if (estado == "A") {
+                                      ProductosService(scheduler: scheduler).baja({
+                                        "Productos": {"IdProducto": idProducto}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  ProductosService().dameConfiguration(
+                                                      producto.idProducto)));
+                                        }
+                                      });
+                                    } else {
+                                      ProductosService().alta({
+                                        "Productos": {"IdProducto": idProducto}
+                                      }).then((response) {
+                                        if (response.status == RequestStatus.SUCCESS) {
+                                          itemsController.add(ItemAction(
+                                              event: ItemEvents.Update,
+                                              index: index,
+                                              updateMethodConfiguration:
+                                                  ProductosService().dameConfiguration(
+                                                      producto.idProducto)));
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
                             ),
-                            IconButtonTableAction(
-                              iconData: Icons.delete_outline,
-                              onPressed: () {
-                                if (idProducto != 0) {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context)
-                                        .backgroundColor
-                                        .withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return DeleteAlertDialog(
-                                        title: "Borrar producto",
-                                        message:
-                                            "¿Está seguro que desea eliminar la producto?",
-                                        onAccept: () async {
-                                          await ProductosService().borra({
-                                            "Productos": {"IdProducto": idProducto}
-                                          }).then((response) {
-                                            if (response.status ==
-                                                RequestStatus.SUCCESS) {
+                            ZMTooltip(
+                              message: "Editar",
+                              visible: idProducto != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.edit,
+                                onPressed: idProducto == 0 ? null : () {
+                                  if (idProducto != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return ModelView(
+                                          service: ProductosService(),
+                                          getMethodConfiguration: ProductosService().dameConfiguration(idProducto),
+                                          isList: false,
+                                          itemBuilder: (updatedMapModel, internalIndex, itemController) => ModificarProductosAlertDialog(
+                                            title: "Modificar producto",
+                                            producto: Productos().fromMap(updatedMapModel),
+                                            onSuccess: () {
+                                              Navigator.of(context).pop();
                                               itemsController.add(ItemAction(
-                                                  event: ItemEvents.Hide,
-                                                  index: index));
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
+                                                  event: ItemEvents.Update,
+                                                  index: index,
+                                                  updateMethodConfiguration:
+                                                      ProductosService().dameConfiguration(
+                                                          producto.idProducto)));
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            ZMTooltip(
+                              message: "Borrar",
+                              theme: ZMTooltipTheme.RED,
+                              visible: idProducto != 0,
+                              child: IconButtonTableAction(
+                                iconData: Icons.delete_outline,
+                                onPressed: idProducto == 0 ? null : () {
+                                  if (idProducto != 0) {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return DeleteAlertDialog(
+                                          title: "Borrar producto",
+                                          message:
+                                              "¿Está seguro que desea eliminar la producto?",
+                                          onAccept: () async {
+                                            await ProductosService().borra({
+                                              "Productos": {"IdProducto": idProducto}
+                                            }).then((response) {
+                                              if (response.status ==
+                                                  RequestStatus.SUCCESS) {
+                                                itemsController.add(ItemAction(
+                                                    event: ItemEvents.Hide,
+                                                    index: index));
+                                              }
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
                             )
                           ];
                         },
