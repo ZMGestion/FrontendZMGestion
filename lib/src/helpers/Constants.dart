@@ -1,3 +1,4 @@
 abstract class Constants{
-  static const String URL = "https://zmgestion.uc.r.appspot.com";
+  //"https://zmgestion.uc.r.appspot.com";
+  static const String URL = "http://localhost:1323";
 }
