@@ -67,7 +67,7 @@ Map<int, Ventas> ventas = {};
   var dateFormat = DateFormat("yyyy-MM-dd");
   var dateFormatShow = DateFormat("dd/MM/yyyy");
   String fechaInicio = '';
-  String fechaFin = '';
+  String fechaHasta = '';
   Timer _debounce;
   RegExp dateRegEx;
 
@@ -75,8 +75,8 @@ Map<int, Ventas> ventas = {};
 
   @override
   void dispose() {
-    // TODO: implement dispose
     desdeController.dispose();
+    hastaController.dispose();
     super.dispose();
   }
 
@@ -86,24 +86,27 @@ Map<int, Ventas> ventas = {};
       "Inicio":"/inicio",
       "Ventas": null,
     });
-    dateRegEx = RegExp(r'^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$');
-    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
-    hastaController.text = dateFormatShow.format(DateTime.now());
+    dateRegEx = RegExp(Utils.regExDate);
     desdeController.addListener(() {
       _debounce = Timer(Duration(milliseconds: 500), (){
-        if(dateRegEx.hasMatch(desdeController.text))
-        setState(() {
-          fechaInicio = dateFormat.format(DateFormat('dd/MM/yyyy').parse(desdeController.text));
-        });
+        if(dateRegEx.hasMatch(desdeController.text) && fechaInicio != dateFormat.format(DateFormat('dd/MM/yyyy').parse(desdeController.text))){
+          setState(() {
+            fechaInicio = dateFormat.format(DateFormat('dd/MM/yyyy').parse(desdeController.text));
+          });
+        }
       });
     });
     hastaController.addListener(() {
       _debounce = Timer(Duration(milliseconds: 500), (){
-        setState(() {
-          fechaFin = dateFormat.format(DateFormat('dd/MM/yyyy').parse(hastaController.text));
-        });
+        if(dateRegEx.hasMatch(hastaController.text) && fechaHasta != dateFormat.format(DateFormat('dd/MM/yyyy').parse(hastaController.text))){
+          setState(() {
+            fechaHasta = dateFormat.format(DateFormat('dd/MM/yyyy').parse(hastaController.text));
+          });
+        }
       });
     });
+    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
+    hastaController.text = dateFormatShow.format(DateTime.now());
     super.initState();
   }
 
@@ -482,7 +485,7 @@ Map<int, Ventas> ventas = {};
                   child: AppLoader(builder: (scheduler) {
                     return ZMTable(
                       key: Key(searchText + refreshValue.toString() + searchIdEstado.toString() + searchIdCliente.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
-                      searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString() + fechaInicio + fechaFin),
+                      searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString() + fechaInicio + fechaHasta),
                       model: Ventas(),
                       service: VentasService(),
                       listMethodConfiguration: VentasService().buscarVentas({
@@ -499,7 +502,7 @@ Map<int, Ventas> ventas = {};
                         },
                         "ParametrosBusqueda": {
                           "FechaInicio": fechaInicio,
-                          "FechaFin": fechaFin,
+                          "FechaFin": fechaHasta,
                         },
                       }),
                       pageLength: 12,
