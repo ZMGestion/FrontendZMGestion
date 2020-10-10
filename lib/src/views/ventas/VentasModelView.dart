@@ -15,9 +15,6 @@ import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
 import 'package:zmgestion/src/views/comprobantes/OperacionesComprobanteAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/VentaPendienteAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
@@ -43,9 +40,11 @@ class _VentasModelViewState extends State<VentasModelView> {
   String cliente;
   String domicilio;
   List<Widget> _lineasVenta = [];
+  bool _loading = false;
 
   @override
   void initState() {
+
     if(widget.venta != null){
       venta = widget.venta;
       if (venta.cliente.apellidos != null && venta.cliente.nombres != null){
@@ -73,6 +72,7 @@ class _VentasModelViewState extends State<VentasModelView> {
         _lineasVenta.add(detalleLineaVenta(element, context));
       });
     }
+    _loading = false;
     super.initState();
   }
   @override
@@ -347,7 +347,7 @@ class _VentasModelViewState extends State<VentasModelView> {
                           Divider(
                             thickness: 2,
                           ),
-                          Column(
+                          _loading ? CircularProgressIndicator():Column(
                             children: _lineasVenta,
                           ),
                           Divider(
@@ -547,22 +547,29 @@ class _VentasModelViewState extends State<VentasModelView> {
                             text: "Aceptar",
                             color: Theme.of(mainContext).primaryColor,
                             onPressed: () async{
-                              if(venta.facturado > lp.precioUnitario * lp.cantidad){
+                              if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
                                 await showDialog(
                                   context: context,
                                   barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                   builder: (BuildContext context) {
                                     return OperacionesComprobanteAlertDialog(
                                       title: "Crear Comprobante",
-                                      comprobante: Comprobantes(idVenta: venta.idVenta),
+                                      comprobante: Comprobantes(idVenta: venta.idVenta, monto: ),
                                       operacion: "Crear",
+                                      
                                     );
                                   },
                                 ).then((value) async{
                                   await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
                                     if (response.status == RequestStatus.SUCCESS){
                                       setState(() {
+                                        _loading = true;
                                         venta = response.message;
+                                        _lineasVenta = [];
+                                        venta.lineasProducto.forEach((element) {
+                                          _lineasVenta.add(detalleLineaVenta(element, context));
+                                        });
+                                        _loading = false;
                                       });
                                     }
                                   });
@@ -592,7 +599,13 @@ class _VentasModelViewState extends State<VentasModelView> {
                           await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
                             if (response.status == RequestStatus.SUCCESS){
                               setState(() {
+                                _loading = true;
                                 venta = response.message;
+                                _lineasVenta = [];
+                                venta.lineasProducto.forEach((element) {
+                                  _lineasVenta.add(detalleLineaVenta(element, context));
+                                });
+                                _loading = false;
                               });
                             }
                           });
