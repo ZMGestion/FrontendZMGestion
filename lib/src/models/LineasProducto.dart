@@ -39,6 +39,20 @@ class LineasProducto extends Equatable with Models{
 
    @override
   List<Object> get props => [idLineaProducto];
+  
+  Map<String, String> mapEstados(){
+    // P:Pendiente - C:Cancelada - R:Reservada - O:Produciendo - D:Pendiente de entrega - E:Entregada
+    return {
+      "P": "Pendiente",
+      "C": "Cancelada",
+      "R": "Reservada",
+      "D": "Pendiente de entrega",
+      "U": "Utilizada en venta",
+      "N": "No utilizada",
+      "E": "Entregada"
+    };
+  }
+
   @override
   LineasProducto fromMap(Map<String,dynamic> mapModel) {
       // TODO: implement fromMap

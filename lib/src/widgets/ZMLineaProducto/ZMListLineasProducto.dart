@@ -8,12 +8,14 @@ import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 class ZMListLineasProducto extends StatefulWidget {
   final List<LineasProducto> lineasProducto;
   final Function(LineasProducto lp) onEdit;
+  final bool withPrice;
   final Function(LineasProducto lp) onDelete;
 
   const ZMListLineasProducto({
     Key key, 
     this.lineasProducto,
     this.onEdit,
+    this.withPrice = true,
     this.onDelete
   }) : super(key: key);
 
@@ -82,28 +84,34 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
               ],
             ),
           ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Precio unitario",
-                  textAlign: TextAlign.center,
-                  style: _headerTextStyle,
-                )
-              ],
+          Visibility(
+            visible: widget.withPrice,
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Precio unitario",
+                    textAlign: TextAlign.center,
+                    style: _headerTextStyle,
+                  )
+                ],
+              ),
             ),
           ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Subtotal",
-                  textAlign: TextAlign.center,
-                  style: _headerTextStyle,
-                )
-              ],
+          Visibility(
+            visible: widget.withPrice,
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Subtotal",
+                    textAlign: TextAlign.center,
+                    style: _headerTextStyle,
+                  )
+                ],
+              ),
             ),
           ),
           Opacity(
@@ -163,34 +171,40 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
             ],
           ),
         ),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "\$"+lp.precioUnitario.toString(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontWeight: FontWeight.w600
-                ),
-              )
-            ],
+        Visibility(
+          visible: widget.withPrice,
+          child: Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "\$"+(lp.precioUnitario != null ? lp.precioUnitario.toString() : ""),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontWeight: FontWeight.w600
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "\$"+(lp.precioUnitario * lp.cantidad).toString(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontWeight: FontWeight.w600
-                ),
-              )
-            ],
+        Visibility(
+          visible: widget.withPrice,
+          child: Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "\$"+(lp.precioUnitario != null ? (lp.precioUnitario * lp.cantidad).toString() : ""),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontWeight: FontWeight.w600
+                  ),
+                )
+              ],
+            ),
           ),
         ),
         ZMTooltip(

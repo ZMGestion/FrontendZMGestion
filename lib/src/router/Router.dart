@@ -6,6 +6,7 @@ import 'package:zmgestion/src/views/clientes/ClientesIndex.dart';
 import 'package:zmgestion/src/views/comprobantes/ComprobantesIndex.dart';
 import 'package:zmgestion/src/views/domicilios/DomiciliosIndex.dart';
 import 'package:zmgestion/src/views/login/Login.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionIndex.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestosIndex.dart';
 import 'package:zmgestion/src/views/productos/ProductosIndex.dart';
 import 'package:zmgestion/src/views/productosFinales/ProductosFinalesIndex.dart';
@@ -24,6 +25,7 @@ const String ClientesRoute = '/clientes';
 const String TelasRoute = '/telas';
 const String ProductosRoute = '/productos';
 const String ProductosFinalesRoute = '/productos-finales';
+const String OrdenesProduccionRoute = '/ordenes-produccion';
 const String LoginRoute = '/login';
 const String RolesRoute = '/roles';
 const String PdfPreview = '/pdf'; //Eliminar despues
@@ -65,6 +67,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(ProductosIndex(), settings);
     case ProductosFinalesRoute:
       return _getPageRoute(ProductosFinalesIndex(), settings);
+    case OrdenesProduccionRoute:
+      return _getPageRoute(OrdenesProduccionIndex(), settings);
     case UbicacionesRoute:
       return _getPageRoute(UbicacionesIndex(), settings);
     case RolesRoute:

@@ -11,11 +11,13 @@ import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
+import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/CrearLineaVenta.dart';
+import 'package:zmgestion/src/views/presupuestos/PresupuestoTransformadoDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AnimatedLoadingWidget.dart';
@@ -335,9 +337,19 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
                         setState(() {
                           creatingVenta = true;
                         });
-                        await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response){
+                        await PresupuestosService(scheduler: scheduler).doMethod(PresupuestosService().transformarPresupuestoEnVentaConfiguration(_payload)).then((response) async{
                           if(response.status == RequestStatus.SUCCESS){
                             Navigator.pop(context, true);
+                            await showDialog(
+                              context: context,
+                              barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return PresupuestoTransformadoDialog(
+                                  venta: Ventas().fromMap(response.message),
+                                );
+                              },
+                            );
                             widget.onSuccess();
                           }
                         });
