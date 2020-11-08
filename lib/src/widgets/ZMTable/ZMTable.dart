@@ -373,6 +373,7 @@ class _ZMTableState extends State<ZMTable> {
                           ),
                           Flexible(
                             flex: 1,
+                            fit: FlexFit.tight,
                             child: ModelView(
                               key: Key(pageInfo.pagina.toString()+widget.modelViewKey),
                               isList: true,
@@ -382,7 +383,20 @@ class _ZMTableState extends State<ZMTable> {
                                 if(widget.onEmpty != null){
                                   return widget.onEmpty;
                                 }
-                                return DefaultResultEmpty();
+                                return Column(
+                                  children: [
+                                    Flexible(
+                                      child: Center(
+                                        child: Container(
+                                          constraints: BoxConstraints(
+                                            maxHeight: 300
+                                          ),
+                                          child: DefaultResultEmpty()
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
                               },
                               onPageInfo: (newPageInfo) {
                                 if (newPageInfo != null) {
@@ -493,31 +507,31 @@ class _ZMTableState extends State<ZMTable> {
                             ),
                           ),
                           Visibility(
-                              visible: widget.paginate,
-                              child: PageInfoHandler(
-                                key: Key(
-                                  pageInfo.pagina.toString() +
-                                      pageInfo.cantidadTotal.toString(),
-                                ),
-                                initialPageInfo: Paginaciones(
-                                    longitudPagina: widget.pageLength,
-                                    pagina: pageInfo.pagina,
-                                    cantidadTotal: pageInfo.cantidadTotal),
-                                onChange: (newPageInfo) {
-                                  setState(() {
-                                    pageInfo = newPageInfo;
-                                    _updatePage(pageInfo);
-                                  });
-                                },
-                              )
-                            ),
-                            Visibility(
-                              visible: widget.bottomAction != null,
-                              child: widget.bottomAction != null ? Padding(
-                                padding: const EdgeInsets.only(top:4),
-                                child: widget.bottomAction(models),
-                              ) : Container(),
+                            visible: widget.paginate,
+                            child: PageInfoHandler(
+                              key: Key(
+                                pageInfo.pagina.toString() +
+                                    pageInfo.cantidadTotal.toString(),
+                              ),
+                              initialPageInfo: Paginaciones(
+                                  longitudPagina: widget.pageLength,
+                                  pagina: pageInfo.pagina,
+                                  cantidadTotal: pageInfo.cantidadTotal),
+                              onChange: (newPageInfo) {
+                                setState(() {
+                                  pageInfo = newPageInfo;
+                                  _updatePage(pageInfo);
+                                });
+                              },
                             )
+                          ),
+                          Visibility(
+                            visible: widget.bottomAction != null,
+                            child: widget.bottomAction != null ? Padding(
+                              padding: const EdgeInsets.only(top:4),
+                              child: widget.bottomAction(models),
+                            ) : Container(),
+                          )
                         ],
                       ),
                     ),

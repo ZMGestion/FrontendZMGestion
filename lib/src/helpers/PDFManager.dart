@@ -11,6 +11,7 @@ import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Lustres.dart';
+import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
@@ -86,6 +87,52 @@ abstract class PDFManager{
             child: pw.Center(
               child: pw.Text(
                 (lp.cantidad * lp.precioUnitario).toString(),
+                style: pw.TextStyle(
+                  fontSize: 10
+                ),
+              )
+            )
+          )
+        ),
+      ]
+    );
+  }
+
+  static pw.Widget _lineaOrdenProduccion(LineasProducto lp, int index){
+    String _color = "ffffff";
+    if(index%2==1){
+      _color = "f9f9f9";
+    }
+    return pw.Row(
+      children: [
+        pw.Expanded(
+          child: pw.Container(
+            padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            decoration: pw.BoxDecoration(
+              color: PdfColor.fromHex(_color),
+            ),
+            child: pw.Center(
+              child: pw.Text(
+                lp.cantidad.toString(),
+                style: pw.TextStyle(
+                  fontSize: 10
+                ),
+              )
+            )
+          )
+        ),
+        pw.Expanded(
+          flex: 3,
+          child: pw.Container(
+            padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            decoration: pw.BoxDecoration(
+              color: PdfColor.fromHex(_color),
+            ),
+            child: pw.Center(
+              child: pw.Text(
+                lp.productoFinal.producto.producto + 
+                (lp.productoFinal.tela != null? " - "+lp.productoFinal.tela.tela : "") +
+                (lp.productoFinal.lustre != null? " - "+lp.productoFinal.lustre.lustre : ""),
                 style: pw.TextStyle(
                   fontSize: 10
                 ),
@@ -680,6 +727,318 @@ abstract class PDFManager{
                   )
                 ),
               ]
+            ),
+          ]
+        );
+      }));
+
+    return pdf.save();
+  } 
+
+  static Future<Uint8List> generarOrdenProduccionPDF(PdfPageFormat format, OrdenesProduccion ordenProduccion) async {
+    String title = "";
+    String clientName = "";
+
+    title = "OrdenProduccion-"+ordenProduccion.idOrdenProduccion.toString();
+
+    List<pw.Widget> _lineasOrdenProduccion = List<pw.Widget>();
+    int index = 0;
+    ordenProduccion.lineasProducto.forEach((lp) {
+      _lineasOrdenProduccion.add(
+        _lineaOrdenProduccion(lp, index)
+      );
+      index++;
+    });
+
+    final pdf = pw.Document(
+      title: title
+    );
+
+    /*
+    var myTheme = pw.ThemeData.withFont(
+      base: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Regular.ttf")),
+      bold: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Bold.ttf")),
+      italic: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-Italic.ttf")),
+      boldItalic: pw.Font.ttf(await rootBundle.load("fonts/OpenSans-BoldItalic.ttf")),
+    );
+    */
+
+    pdf.addPage(pw.Page(
+      pageFormat: PdfPageFormat.a4,
+      margin: pw.EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+      //theme: myTheme,
+      build: (pw.Context context) {
+        return pw.Column(
+          children: [
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  flex: 1,
+                  child: pw.Center(
+                    child: pw.Text(
+                      "ZM",
+                      style: pw.TextStyle(
+                        fontSize: 40,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColor.fromHex("cc1616")
+                      )
+                    )
+                  )
+                ),
+                pw.SizedBox(
+                  width: 7
+                ),
+                pw.Expanded(
+                  flex: 3,
+                  child: pw.Container(
+                    padding: pw.EdgeInsets.all(8),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: 4,
+                      //color: PdfColor.fromHex("fff2f2"),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          "Zimmerman Muebles S.R.L",
+                          textAlign: pw.TextAlign.left,
+                          style: pw.TextStyle(
+                            fontSize: 16,
+                            fontWeight: pw.FontWeight.bold
+                          )
+                        ),
+                        pw.SizedBox(
+                          height: 7
+                        ),
+                        /*
+                        pw.Text(
+                          DateFormat('dd/MM/yyyy - HH:mm').format(new DateTime.now()),
+                          style: pw.TextStyle(
+                            fontSize: 9,
+                            fontWeight: pw.FontWeight.bold
+                          )
+                        )*/
+                      ]
+                    )
+                  )
+                ),
+              ]
+            ),
+            pw.SizedBox(
+              height: 16
+            ),
+            //Tabla de datos orden de producción:
+            pw.Row(
+              children: [
+                pw.Center(
+                  child: pw.Container(
+                    padding: pw.EdgeInsets.all(12),
+                    child: pw.Text(
+                      "ORDEN PRODUCCIÓN",
+                      style: pw.TextStyle(
+                        fontSize: 16,
+                        fontWeight: pw.FontWeight.bold
+                      )
+                    ),
+                  )
+                ),
+                pw.Expanded(
+                  child: pw.Column(
+                    children: [
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: pw.BoxDecoration(
+                                color: PdfColor.fromHex("f2f2f2"),
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Center(
+                                child: pw.Text(
+                                  "Nº Orden producción",
+                                  style: pw.TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: pw.FontWeight.bold
+                                  ),
+                                )
+                              )
+                            )
+                          )
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: pw.BoxDecoration(
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                                children: [
+                                  pw.Text(
+                                    ordenProduccion.idOrdenProduccion.toString(),
+                                    style: pw.TextStyle(
+                                      fontSize: 11
+                                    ),
+                                  )
+                                ],
+                              )
+                            )
+                          ),
+                        ]
+                      )
+                    ],
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Column(
+                    children: [
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: pw.BoxDecoration(
+                                color: PdfColor.fromHex("f2f2f2"),
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Center(
+                                child: pw.Text(
+                                  "Fecha",
+                                  style: pw.TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: pw.FontWeight.bold
+                                  ),
+                                )
+                              )
+                            )
+                          )
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: pw.BoxDecoration(
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                                children: [
+                                  pw.Text(
+                                    DateFormat('dd-MM-yyyy HH:mm').format(ordenProduccion.fechaAlta),
+                                    style: pw.TextStyle(
+                                      fontSize: 11
+                                    )
+                                  )
+                                ],
+                              )
+                            )
+                          ),
+                        ]
+                      )
+                    ],
+                  ),
+                ),
+              ]
+            ),
+            pw.SizedBox(
+              height: 16
+            ),
+            //Lineas de presupuesto
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                    decoration: pw.BoxDecoration(
+                      color: PdfColor.fromHex("f2f2f2"),
+                      border: pw.BoxBorder(
+                        bottom: true,
+                        left: true,
+                        right: true,
+                        top: true,
+                        width: 0.5,
+                        color: PdfColor.fromHex("555555"),
+                      )
+                    ),
+                    child: pw.Center(
+                      child: pw.Text(
+                        "Cantidad",
+                        style: pw.TextStyle(
+                          fontSize: 10,
+                          fontWeight: pw.FontWeight.bold
+                        ),
+                      )
+                    )
+                  )
+                ),
+                pw.Expanded(
+                  flex: 3,
+                  child: pw.Container(
+                    padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                    decoration: pw.BoxDecoration(
+                      color: PdfColor.fromHex("f2f2f2"),
+                      border: pw.BoxBorder(
+                        bottom: true,
+                        left: true,
+                        right: true,
+                        top: true,
+                        width: 0.5,
+                        color: PdfColor.fromHex("555555"),
+                      )
+                    ),
+                    child: pw.Center(
+                      child: pw.Text(
+                        "Detalle",
+                        style: pw.TextStyle(
+                          fontSize: 10,
+                          fontWeight: pw.FontWeight.bold
+                        ),
+                      )
+                    )
+                  )
+                ),
+              ]
+            ),
+            pw.SizedBox(
+              height: 2
+            ),
+            pw.Column(
+              mainAxisSize: pw.MainAxisSize.max,
+              children: _lineasOrdenProduccion
             ),
           ]
         );

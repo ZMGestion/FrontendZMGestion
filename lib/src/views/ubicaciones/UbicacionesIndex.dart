@@ -316,33 +316,6 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                           }
                           return <Widget>[
                             ZMTooltip(
-                              message: "Ver ubicación",
-                              visible: idUbicacion != 0,
-                              child: IconButtonTableAction(
-                                iconData: Icons.remove_red_eye,
-                                onPressed: idUbicacion == 0 ? null : () {
-                                  if (idUbicacion != 0) {
-                                    showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return ModelViewDialog(
-                                          content: ModelView(
-                                            service: UbicacionesService(),
-                                            getMethodConfiguration: UbicacionesService().dameConfiguration(idUbicacion),
-                                            isList: false,
-                                            itemBuilder: (mapModel, index, itemController) {
-                                              return Ubicaciones().fromMap(mapModel).viewModel(context);
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                            ZMTooltip(
                               key: Key("EstadoUbicacion"+estado.toString()),
                               message: estado == "A" ? "Dar de baja" : "Dar de alta",
                               theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,

@@ -14,6 +14,7 @@ class TextFormFieldDialog extends StatelessWidget {
   final TextStyle labelStyle;
   final TextStyle textStyle;
   final Widget icon;
+  final int maxLines;
 
   const TextFormFieldDialog({
     Key key, 
@@ -29,6 +30,7 @@ class TextFormFieldDialog extends StatelessWidget {
     this.labelStyle,
     this.textStyle,
     this.icon,
+    this.maxLines
   }) : super(key: key);
 
   @override
@@ -40,6 +42,7 @@ class TextFormFieldDialog extends StatelessWidget {
         inputFormatters: inputFormatters,
         initialValue: initialValue,
         enabled: !disabled,
+        maxLines: maxLines,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
