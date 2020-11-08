@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Roles.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
+import 'package:zmgestion/src/views/usuarios/UsuariosModelView.dart';
+import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class Usuarios extends Equatable with Models{
@@ -150,24 +152,13 @@ class Usuarios extends Equatable with Models{
 
   @override
   Widget viewModel(BuildContext context) {
-    // TODO: implement viewModel
     SizeConfig().init(context);
-    return Column(
-      children: [
-        Container(
-          width: SizeConfig.blockSizeHorizontal * 50,
-          child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Text(
-                  this.nombres != null ? this.nombres : "..."
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return AppLoader(
+      builder: (scheduler){
+        return UsuariosModelView(
+          usuario: this,
+        );
+      },
     );
   }
 }

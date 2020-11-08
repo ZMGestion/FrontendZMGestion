@@ -4,6 +4,7 @@ import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/Telas.dart';
+import 'package:zmgestion/src/views/productosFinales/ProductosFinalesModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class ProductosFinales extends Equatable with Models{
@@ -21,6 +22,7 @@ class ProductosFinales extends Equatable with Models{
   final Productos producto;
   final Telas tela;
   final Lustres lustre;
+  final int cantidad;
 
   ProductosFinales({
     this.idProducto,
@@ -33,7 +35,8 @@ class ProductosFinales extends Equatable with Models{
     this.precioTotal,
     this.tela,
     this.lustre,
-    this.producto
+    this.producto,
+    this.cantidad
   });
 
   @override
@@ -57,6 +60,7 @@ class ProductosFinales extends Equatable with Models{
         fechaAlta:        mapModel["ProductosFinales"]["FechaAlta"] != null ? DateTime.parse(mapModel["ProductosFinales"]["FechaAlta"]) : null,
         fechaBaja:        mapModel["ProductosFinales"]["FechaBaja"] != null ? DateTime.parse(mapModel["ProductosFinales"]["FechaBaja"]) : null,
         precioTotal:      mapModel["ProductosFinales"]["_PrecioTotal"],
+        cantidad:         mapModel["ProductosFinales"]["_Cantidad"],
         tela:             mapModel["Telas"] != null ? Telas().fromMap({"Telas": mapModel["Telas"]}) : null,
         lustre:           mapModel["Lustres"] != null ? Lustres().fromMap({"Lustres": mapModel["Lustres"]}) : null,
         producto:         mapModel["Productos"] != null ? Productos().fromMap({"Productos": mapModel["Productos"]}) : null
@@ -65,7 +69,6 @@ class ProductosFinales extends Equatable with Models{
 
   @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
     Map<String, dynamic> productosFinales = {
       "ProductosFinales": {
         "IdProducto":       this.idProducto,
@@ -75,7 +78,8 @@ class ProductosFinales extends Equatable with Models{
         "FechaAlta":        this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
         "FechaBaja":        this.fechaBaja != null ? this.fechaBaja.toIso8601String() : null,
         "Estado":           this.estado,
-        "_PrecioTotal":      this.precioTotal
+        "_PrecioTotal":     this.precioTotal,
+        "_Cantidad":        this.cantidad
       }
     };
 
@@ -94,8 +98,9 @@ class ProductosFinales extends Equatable with Models{
 
   @override
   Widget viewModel(BuildContext context) {
-    // TODO: implement viewModel
     SizeConfig().init(context);
-    return Text("Nothing yet");
+    return ProductosFinalesModelView(
+      productoFinal: this,
+    );
   }
 }

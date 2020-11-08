@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,26 +6,21 @@ import 'package:intl/intl.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Productos.dart';
+import 'package:zmgestion/src/models/Remitos.dart';
 import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/router/Locator.dart';
-import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
+import 'package:zmgestion/src/services/RemitosService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
-import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/views/ordenesProduccion/GenerarOrdenProduccionVentas.dart';
-import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionAlertDialog.dart';
-import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionVenta.dart';
-import 'package:zmgestion/src/views/ventas/GenerarRemitoAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/OperacionesVentaAlertDialog.dart';
+import 'package:zmgestion/src/views/remitos/OperacionesRemitosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
@@ -44,21 +38,24 @@ import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
 import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
-class VentasIndex extends StatefulWidget {
+class RemitosIndex extends StatefulWidget {
+  final Map<String, dynamic> args;
+
+  const RemitosIndex({Key key, this.args}) : super(key: key);
   @override
-  _VentasIndexState createState() => _VentasIndexState();
+  _RemitosIndexState createState() => _RemitosIndexState();
 }
 
-class _VentasIndexState extends State<VentasIndex> {
-Map<int, Ventas> ventas = {};
+class _RemitosIndexState extends State<RemitosIndex> {
+Map<int, Remitos> remitos = {};
 
   /*ZMTable key*/
   int refreshValue = 0;
 
   /*Search*/
   String searchText = "";
-  String searchIdEstado = "T";
-  int searchIdCliente = 0;
+  String searchEstado = "T";
+  String searchTipo = "T";
   int searchIdUsuario = 0;
   int searchIdUbicacion = 0;
   int searchIdProducto = 0;
@@ -88,7 +85,7 @@ Map<int, Ventas> ventas = {};
   void initState() {
     breadcrumb.addAll({
       "Inicio":"/inicio",
-      "Ventas": null,
+      "Remitos": null,
     });
     dateRegEx = RegExp(Utils.regExDate);
     desdeController.addListener(() {
@@ -109,7 +106,7 @@ Map<int, Ventas> ventas = {};
         }
       });
     });
-    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 30)));
+    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
     hastaController.text = dateFormatShow.format(DateTime.now());
     super.initState();
   }
@@ -151,62 +148,11 @@ Map<int, Ventas> ventas = {};
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       TopLabel(
-                                        labelText: "Cliente",
+                                        labelText: "Usuario",
                                       ),
                                       AutoCompleteField(
                                         labelText: "",
-                                        hintText: "Ingrese un cliente",
-                                        parentName: "Clientes",
-                                        keyNameFunc: (mapModel){
-                                          String displayedName = "";
-                                          if(mapModel["Clientes"]["Nombres"] != null){
-                                            displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                                          }else{
-                                            displayedName = mapModel["Clientes"]["RazonSocial"];
-                                          }
-                                          return displayedName;
-                                        },
-                                        service: ClientesService(),
-                                        paginate: true,
-                                        pageLength: 4,
-                                        onClear: (){
-                                          setState(() {
-                                            searchIdCliente = 0;
-                                          });
-                                        },
-                                        listMethodConfiguration: (searchText){
-                                          return ClientesService().buscarClientes({
-                                            "Clientes": {
-                                              "Nombres": searchText
-                                            }
-                                          });
-                                        },
-                                        onSelect: (mapModel){
-                                          if(mapModel != null){
-                                            Clientes cliente = Clientes().fromMap(mapModel);
-                                            setState(() {
-                                              searchIdCliente = cliente.idCliente;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      TopLabel(
-                                        labelText: "Empleado",
-                                      ),
-                                      AutoCompleteField(
-                                        labelText: "",
-                                        hintText: "Ingrese un empleado",
+                                        hintText: "Ingrese un usuario",
                                         parentName: "Usuarios",
                                         keyName: "Usuario",
                                         service: UsuariosService(),
@@ -247,7 +193,7 @@ Map<int, Ventas> ventas = {};
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         TopLabel(
-                                          labelText: "Ubicación",
+                                          labelText: "Ubicación de Entrada",
                                         ),
                                         DropDownModelView(
                                           service: UbicacionesService(),
@@ -287,19 +233,51 @@ Map<int, Ventas> ventas = {};
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         TopLabel(
-                                          labelText: "Estado",
+                                          labelText: "Tipo",
                                         ),
                                         Container(
                                           width: 250,
                                           child: DropDownMap(
-                                            map: Ventas().mapEstados(),
+                                            map: Remitos().mapTipos(),
                                             addAllOption: true,
                                             addAllText: "Todos",
                                             addAllValue: "T",
                                             initialValue: "T",
                                             onChanged: (value) {
                                               setState(() {
-                                                searchIdEstado = value;
+                                                searchTipo = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    constraints: BoxConstraints(minWidth: 200),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          labelText: "Estado",
+                                        ),
+                                        Container(
+                                          width: 250,
+                                          child: DropDownMap(
+                                            map: Remitos().mapEstados(),
+                                            addAllOption: true,
+                                            addAllText: "Todos",
+                                            addAllValue: "T",
+                                            initialValue: "T",
+                                            onChanged: (value) {
+                                              setState(() {
+                                                searchEstado = value;
                                               });
                                             },
                                           ),
@@ -484,18 +462,18 @@ Map<int, Ventas> ventas = {};
                     ),
                   ),
                 ),
-                Flexible(
+                Flexible( 
                   fit: FlexFit.tight,
                   child: AppLoader(builder: (scheduler) {
                     return ZMTable(
-                      key: Key(searchText + refreshValue.toString() + searchIdEstado.toString() + searchIdCliente.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
+                      key: Key(searchText + refreshValue.toString() + searchEstado.toString() + searchTipo.toString() + searchIdUsuario.toString() + searchIdUbicacion.toString() + 
                       searchIdProducto.toString() + searchIdTela.toString() + searchIdLustre.toString() + fechaInicio + fechaHasta),
-                      model: Ventas(),
-                      service: VentasService(),
-                      listMethodConfiguration: VentasService().buscarVentas({
-                        "Ventas": {
-                          "Estado": searchIdEstado,
-                          "IdCliente": searchIdCliente,
+                      model: Remitos(),
+                      service: RemitosService(),
+                      listMethodConfiguration: RemitosService().buscarRemitos({
+                        "Remitos": {
+                          "Estado": searchEstado,
+                          "Tipo": searchTipo,
                           "IdUsuario": searchIdUsuario,
                           "IdUbicacion": searchIdUbicacion,
                         },
@@ -505,44 +483,27 @@ Map<int, Ventas> ventas = {};
                           "IdLustre": searchIdLustre
                         },
                         "ParametrosBusqueda": {
-                          "FechaInicio": fechaInicio,
-                          "FechaFin": fechaHasta,
+                          "FechaEntregaDesde": fechaInicio,
+                          "FechaEntregaHasta": fechaHasta,
                         },
                       }),
                       pageLength: 12,
                       paginate: true,
                       idName: "Cod.",
                       idValue: (mapModel){
-                        return mapModel["Ventas"]["IdVenta"].toString();
+                        return mapModel["Remitos"]["IdRemito"].toString();
                       },
                       cellBuilder: {
-                        "Clientes": {
-                          "*": (mapModel){
-                            String displayedName = "";
-                            if(mapModel["Clientes"]["Nombres"] != null){
-                              displayedName = mapModel["Clientes"]["Nombres"]+" "+mapModel["Clientes"]["Apellidos"];
-                            }else{
-                              displayedName = mapModel["Clientes"]["RazonSocial"];
-                            }
-                            return Text(
-                              displayedName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600
-                              ),
-                            );
-                          }
-                        },
-                        "LineasVenta": {
+                        "LineasRemito": {
                           "*": (mapModel){
                             if(mapModel != null){
-                              List<Widget> _lineasVenta = List<Widget>();
+                              List<Widget> _lineasRemito = List<Widget>();
                               int index = 0;
-                              mapModel["LineasVenta"].forEach(
-                                (lineaVenta){
+                              mapModel["LineasRemito"].forEach(
+                                (lineaRemito){
                                   if(index < 3){
-                                    LineasProducto _lineaProducto = LineasProducto().fromMap(lineaVenta);
-                                    _lineasVenta.add(
+                                    LineasProducto _lineaProducto = LineasProducto().fromMap(lineaRemito);
+                                    _lineasRemito.add(
                                       Padding(
                                         padding: const EdgeInsets.only(bottom: 5),
                                         child: Row(
@@ -587,13 +548,13 @@ Map<int, Ventas> ventas = {};
                                 }
                               );
                               return Column(
-                                children: _lineasVenta,
+                                children: _lineasRemito,
                               );
                             }
                             return Container();
                           }
                         },
-                        "Ventas": {
+                        "Remitos": {
                           "FechaAlta": (value){
                               if(value != null){
                                 return Text(
@@ -609,15 +570,32 @@ Map<int, Ventas> ventas = {};
                                   textAlign: TextAlign.center);
                               }
                             },
-                          "_PrecioTotal": (value) {
+                          "FechaEntrega": (value){
+                              if(value != null){
+                                return Text(
+                                  Utils.cuteDateTimeText(DateTime.parse(value)),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600
+                                  ),
+                                );
+                              }else{
+                                return Text(
+                                  "-",
+                                  textAlign: TextAlign.center);
+                              }
+                          },
+                          "Tipo": (value) {
                             return Text(
-                              value != null ? "\$"+value.toString() : "-",
+                              Remitos().mapTipos()[value.toString()],
                               textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             );
                           },
                           "Estado": (value) {
                             return Text(
-                              Ventas().mapEstados()[value.toString()],
+                              Remitos().mapEstados()[value.toString()],
                               textAlign: TextAlign.center,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -627,31 +605,20 @@ Map<int, Ventas> ventas = {};
                         "Ubicaciones": {
                           "Ubicacion": (value) {
                             return Text(
-                              value.toString(),
+                              value != null ? value.toString() : "-",
                               textAlign: TextAlign.center,
                             );
                           },
                         }
                       },
                       tableLabels: {
-                        "Clientes": {
-                          "*": "Cliente"
-                        },
-                        "Ventas": {
-                          "_PrecioTotal": "Total",
-                          "FechaAlta": "Fecha"
-                        },
-                        "LineasVenta": {
+                        "LineasRemito": {
                           "*": "Detalle"
                         }
                       },
                       defaultWeight: 2,
                       tableWeights: {
-                        "Ventas": {
-                          "Estado": 2,
-                          "_PrecioTotal": 2
-                        },
-                        "LineasVenta": {
+                        "LineasRemito": {
                           "*": 5
                         }
                       },
@@ -659,7 +626,7 @@ Map<int, Ventas> ventas = {};
                         ZMStdButton(
                           color: Colors.green,
                           text: Text(
-                            "Nueva venta",
+                            "Nuevo remito",
                             style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold
                             ),
@@ -675,9 +642,8 @@ Map<int, Ventas> ventas = {};
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               barrierDismissible: false,
                               builder: (BuildContext context) {
-                                return OperacionesVentasAlertDialog(
-                                  title: "Nueva venta",
-                                  operacion: 'Crear',
+                                return OperacionesRemitosAlertDialog(
+                                  title: "Nuevo Remito",
                                   onSuccess: () {
                                     Navigator.of(context).pop();
                                     setState(() {
@@ -690,335 +656,112 @@ Map<int, Ventas> ventas = {};
                           },
                         ),
                       ],
-                      onSelectActions: (ventas) {
-                        bool estadosIguales = true;
-                        bool clientesIguales = true;
-                        bool todosBorrables = true;
-                        bool generableRemito = true;
-                        String estado;
-                        Ventas venta;
-                        if (ventas.length >= 1) {
-                          Map<String, dynamic> anterior;
-                          for (Ventas ventas in ventas) {
-                            Map<String, dynamic> mapVentas = ventas.toMap();
-                            if(mapVentas["Ventas"]["Estado"] != 'E'){
-                              todosBorrables = false;
-                            }
-                            if(mapVentas["Ventas"]["Estado"] != 'C'){
-                              generableRemito = false;
-                            }
-                            if (anterior != null) {
-                              generableRemito = false;
-                              if (anterior["Ventas"]["Estado"] != mapVentas["Ventas"]["Estado"]) {
-                                estadosIguales = false;
-                              }
-                              if (anterior["Ventas"]["IdCliente"] != mapVentas["Ventas"]["IdCliente"]) {
-                                clientesIguales = false;
-                              }
-                            }
-                            if (!estadosIguales && !clientesIguales) break;
-                            anterior = mapVentas;
-                            venta = ventas;
-                          }
-                          if (estadosIguales) {
-                            estado = ventas[0].toMap()["Ventas"]["Estado"];
-                          }
-                        }
-                        return <Widget>[
-                          // Visibility(
-                          //   visible: clientesIguales && estadosIguales && estado == "C",
-                          //   child: ZMStdButton(
-                          //     color: Colors.blue,
-                          //     text: Text(
-                          //       "Transformar en venta (" + presupuestos.length.toString() + ")",
-                          //       style: TextStyle(
-                          //           color: Colors.white, 
-                          //           fontWeight: FontWeight.bold
-                          //       ),
-                          //     ),                        
-                          //     icon: Icon(
-                          //       Icons.compare_arrows,
-                          //       color: Colors.white,
-                          //       size: 20,
-                          //     ),
-                          //     onPressed: () {
-                          //       if(presupuestos != null){
-                          //         showDialog(
-                          //         context: context,
-                          //         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                          //         builder: (BuildContext context) {
-                          //           return TransformarPresupuestosVentaAlertDialog(
-                          //             presupuestos: presupuestos,
-                          //             onSuccess: (){
-                          //               setState(() {
-                          //                 refreshValue =
-                          //                     Random().nextInt(99999);
-                          //               });
-                          //             },
-                          //           );
-                          //         },
-                          //       );
-                          //       }
-                          //     },
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   width: 15,
-                          // ),
-                          Visibility(
-                            visible: (!todosBorrables && !generableRemito),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(
-                                "Sin acciones",
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: true,
-                            child: ZMStdButton(
-                              color: Colors.blue,
-                              text: Text(
-                                "Producir (" + ventas.length.toString() + ")",
-                                style: TextStyle(
-                                    color: Colors.white, 
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),           
-                              padding: EdgeInsets.only(left: 6),             
-                              icon: Icon(
-                                FontAwesomeIcons.hammer,
-                                color: Colors.white,
-                                size: 17,
-                              ),
-                              onPressed: () {
-                                if(ventas != null){
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) {
-                                      return GenerarOrdenProduccionVentas(
-                                        ventas: ventas,
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          Visibility(
-                            visible: todosBorrables,
-                            child: ZMStdButton(
-                              color: Colors.red,
-                              text: Text(
-                                "Borrar (" + ventas.length.toString() + ")",
-                                style: TextStyle(
-                                    color: Colors.white, 
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),                        
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                if(ventas != null){
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return MultipleRequestView(
-                                        models: ventas,
-                                        title: "Borrar "+ventas.length.toString()+" ventas",
-                                        service: VentasService(),
-                                        doMethodConfiguration: VentasService().borraConfiguration(),
-                                        payload: (mapModel) {
-                                          return {
-                                            "Ventas": {
-                                              "IdVenta": mapModel["Ventas"]["IdVenta"]
-                                            }
-                                          };
-                                        },
-                                        itemBuilder: (mapModel) {
-                                          return Text(mapModel["Ventas"]["IdVenta"].toString());
-                                        },
-                                        onFinished: () {
-                                          setState(() {
-                                            refreshValue = Random().nextInt(99999);
-                                          });
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          Visibility(
-                            visible: generableRemito,
-                            child: ZMStdButton(
-                              color: Colors.blue,
-                              text: Text(
-                                "Generar Remito",
-                                style: TextStyle(
-                                    color: Colors.white, 
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),                        
-                              icon: Icon(
-                                Icons.local_shipping,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              onPressed: () async{
-                                if(ventas != null){
-                                  Ventas _venta;
-                                  await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                                    if(response.status == RequestStatus.SUCCESS){
-                                      setState(() {
-                                        _venta = response.message;
-                                      });
-                                    }
-                                  });
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return GenerarRemitoAlertDialog(
-                                        venta: _venta,
-                                        onSuccess: (){
-                                          setState(() {
-                                            refreshValue = Random().nextInt(99999);
-                                          });
-                                        },
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              
-                            ),
-                          ),
-                        ];
-                      },
                       rowActions: (mapModel, index, itemsController) {
-                        Ventas venta;
+                        Remitos remito;
                         String estado = "C";
-                        int idVenta = 0;
+                        int idRemito = 0;
                         if (mapModel != null) {
-                          venta = Ventas().fromMap(mapModel);
-                          if (mapModel["Ventas"] != null) {
-                            if (mapModel["Ventas"]["Estado"] != null) {
-                              estado = mapModel["Ventas"]["Estado"];
+                          remito = Remitos().fromMap(mapModel);
+                          if (mapModel["Remitos"] != null) {
+                            if (mapModel["Remitos"]["Estado"] != null) {
+                              estado = mapModel["Remitos"]["Estado"];
                             }
-                            if (mapModel["Ventas"]["IdVenta"] != null) {
-                              idVenta = mapModel["Ventas"]["IdVenta"];
+                            if (mapModel["Remitos"]["IdRemito"] != null) {
+                              idRemito = mapModel["Remitos"]["IdRemito"];
                             }
                           }
                         }
                         return <Widget>[
                           ZMTooltip(
-                            message: "Ver venta",
-                            visible: idVenta != 0,
+                            message: estado != "E" ? "Ver Remito" : "Editar Remito",
+                            visible: idRemito != 0,
                             child: IconButtonTableAction(
-                              iconData: Icons.remove_red_eye,
-                              onPressed: idVenta == 0 ? null : () async{
-                                if (idVenta != 0) {
-                                  await showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        title: "Venta",
-                                        content: ModelView(
-                                          service: VentasService(),
-                                          getMethodConfiguration: VentasService().dameConfiguration(idVenta),
-                                          isList: false,
-                                          itemBuilder: (mapModel, index, itemController) {
-                                            return Ventas().fromMap(mapModel).viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  ).then((value){
-                                    if(value != null){
-                                      if (value){
+                              iconData: estado != "E" ? Icons.remove_red_eye : Icons.edit,
+                              onPressed: idRemito == 0 ? null : () async{
+                                if (idRemito != 0) {
+                                  if(remito.estado != "E"){
+                                    await showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return ModelViewDialog(
+                                          title: "Remito",
+                                          content: ModelView(
+                                            service: RemitosService(),
+                                            getMethodConfiguration: RemitosService().dameConfiguration(idRemito),
+                                            isList: false,
+                                            itemBuilder: (mapModel, index, itemController) {
+                                              return Remitos().fromMap(mapModel).viewModel(context);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ).then((value){
+                                      if(value != null){
+                                        if (value){
+                                          setState(() {
+                                            refreshValue = Random().nextInt(99999);
+                                          });
+                                        }
+                                      }   
+                                    });
+                                  }else{
+                                    await RemitosService(scheduler: scheduler).damePor(RemitosService().dameConfiguration(idRemito)).then((response) async{
+                                      if(response.status == RequestStatus.SUCCESS){
                                         setState(() {
-                                          refreshValue = Random().nextInt(99999);
+                                          remito = response.message;
+                                        });
+                                        await showDialog(
+                                          context: context,
+                                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) {
+                                            return OperacionesRemitosAlertDialog(
+                                              title: "Nuevo Remito",
+                                              remito: remito,
+                                              onSuccess: () {
+                                                Navigator.of(context).pop();
+                                                setState(() {
+                                                  refreshValue = Random().nextInt(99999);
+                                                });
+                                              },
+                                            );
+                                          },
+                                        ).then((value){
+                                          if(value != null){
+                                            if (value){
+                                              setState(() {
+                                                refreshValue = Random().nextInt(99999);
+                                              });
+                                            }
+                                          }
                                         });
                                       }
-                                    }   
-                                  });
+                                    });
+                                  }
                                 }
                               }
-                            ),
-                          ),
-                          ZMTooltip(
-                            message: "Editar",
-                            visible: idVenta != 0,
-                            child: Opacity(
-                              opacity: idVenta == 0 ? 0.2 : (estado  == "E" ? 1 : 0.2),
-                              child: IconButtonTableAction(
-                                iconData: Icons.edit,
-                                onPressed: idVenta == 0 ? null : estado  != "E" ? null : ()async{
-                                  Ventas venta;
-                                  await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(idVenta)).then((response){
-                                    if (response.status == RequestStatus.SUCCESS){
-                                      setState(() {
-                                        venta = response.message;
-                                      });
-                                    }
-                                  });
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) {
-                                      return OperacionesVentasAlertDialog(
-                                        title: "Modificar venta",
-                                        operacion: 'Modificar',
-                                        venta: venta,
-                                        onSuccess: () {
-                                          Navigator.of(context).pop();
-                                          itemsController.add(
-                                            ItemAction(
-                                              event: ItemEvents.Update,
-                                              index: index,
-                                              updateMethodConfiguration: VentasService().dameConfiguration(venta.idVenta)
-                                            )
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
                             ),
                           ),
                           ZMTooltip(
                             message: "Borrar",
                             theme: ZMTooltipTheme.RED,
-                            visible: idVenta != 0,
+                            visible: idRemito != 0,
                             child: IconButtonTableAction(
                               iconData: Icons.delete_outline,
-                              onPressed: idVenta == 0 ? null : () {
-                                if (idVenta != 0) {
+                              onPressed: idRemito == 0 ? null : () {
+                                if (idRemito != 0) {
                                   showDialog(
                                     context: context,
                                     barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                     builder: (BuildContext context) {
                                       return DeleteAlertDialog(
-                                        title: "Borrar venta",
-                                        message: "¿Está seguro que desea eliminar la venta?",
+                                        title: "Borrar remito",
+                                        message: "¿Está seguro que desea eliminar el remito?",
                                         onAccept: () async {
-                                          await VentasService().borra({
-                                            "Ventas": {"IdVenta": idVenta}
+                                          await RemitosService().borra({
+                                            "Remitos": {"IdRemito": idRemito}
                                           }).then((response) {
                                             if (response.status == RequestStatus.SUCCESS) {
                                               itemsController.add(
@@ -1037,23 +780,58 @@ Map<int, Ventas> ventas = {};
                               },
                             ),
                           ),
-                          ZMTooltip(
-                            message: "Ver comprobantes",
-                            visible: idVenta != 0,
+                          (estado == "C" || estado == "B" ) ? ZMTooltip(
+                            key: Key("Estadoremito"+estado),
+                            message: estado == "C" ? "Cancelar" : "Descancelar",
+                            theme: estado == "C" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
+                            visible: idRemito != 0,
                             child: IconButtonTableAction(
-                              iconData: Icons.description,
-                              onPressed: idVenta == 0 ? null : () {
-                                if (idVenta != 0) {
-                                  final NavigationService _navigationService = locator<NavigationService>();
-                                  _navigationService.navigateTo("/comprobantes?IdVenta="+idVenta.toString());
+                              iconData: (estado == "C"
+                                  ? Icons.arrow_downward
+                                  : Icons.arrow_upward),
+                              color: estado == "C" ? Colors.redAccent : Colors.green,
+                              onPressed: idRemito == 0 ? null : () {
+                                if (idRemito != 0) {
+                                  if (estado == "C") {
+                                    RemitosService(context: context, scheduler: scheduler).doMethod(RemitosService().cancelar({"Remitos":{"IdRemito": idRemito}})).then((response){
+                                      if(response.status == RequestStatus.SUCCESS){
+                                        itemsController.add(
+                                          ItemAction(
+                                            event: ItemEvents.Update,
+                                            index: index,
+                                            updateMethodConfiguration: RemitosService().dameConfiguration(idRemito)
+                                          )
+                                        );
+                                      }
+                                    });
+                                  } else {
+                                    RemitosService(context: context, scheduler: scheduler).doMethod(RemitosService().descancelar({"Remitos":{"IdRemito": idRemito}})).then((response){
+                                      if(response.status == RequestStatus.SUCCESS){
+                                        itemsController.add(
+                                          ItemAction(
+                                            event: ItemEvents.Update,
+                                            index: index,
+                                            updateMethodConfiguration: RemitosService().dameConfiguration(idRemito)
+                                          )
+                                        );
+                                      }
+                                    });
+                                  }
                                 }
-                              }
+                              },
+                            ),
+                          ) : Opacity(
+                            opacity: 0,
+                            child: IconButtonTableAction(
+                              iconData: Icons.message,
+                              color: Theme.of(context).backgroundColor,
+                              onPressed: null
                             ),
                           ),
                         ];
                       },
                       searchArea: TableTitle(
-                        title: "Ventas"
+                        title: "Remitos"
                       )
                     );
                   }),

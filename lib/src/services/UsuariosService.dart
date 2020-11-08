@@ -178,6 +178,22 @@ class UsuariosService extends Services{
     );
   }
 
+  DoMethodConfiguration modificarPassConfiguration(Map<String, dynamic> payload) {
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/usuarios/modificarPassword",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        showError: true,
+        successMessage: "La contraseña ha sido modificada con éxito"
+      )
+    );
+  }
+
   cerrarSesion(){
     var localStorage = window.localStorage;
     localStorage.remove("token");

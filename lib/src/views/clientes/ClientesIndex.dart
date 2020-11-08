@@ -677,39 +677,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                             }
                           }
                           return <Widget>[
-                            ZMTooltip(
-                              message: "Ver cliente",
-                              visible: idCliente != 0,
-                              child: IconButtonTableAction(
-                                iconData: Icons.remove_red_eye,
-                                onPressed: idCliente == 0 ? null : () {
-                                  if (idCliente != 0) {
-                                    showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context)
-                                          .backgroundColor
-                                          .withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return ModelViewDialog(
-                                          content: ModelView(
-                                            service: ClientesService(),
-                                            getMethodConfiguration: ClientesService()
-                                                .dameConfiguration(idCliente),
-                                            isList: false,
-                                            itemBuilder:
-                                                (mapModel, index, itemController) {
-                                              return Clientes()
-                                                  .fromMap(mapModel)
-                                                  .viewModel(context);
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+                            
                             ZMTooltip(
                               message: "Ver domicilios",
                               visible: idCliente != 0,

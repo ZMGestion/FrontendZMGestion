@@ -15,9 +15,6 @@ import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
 import 'package:zmgestion/src/views/comprobantes/OperacionesComprobanteAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/VentaPendienteAlertDialog.dart';
-import 'package:zmgestion/src/views/ventas/VentaRevisionAlertDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
@@ -43,9 +40,11 @@ class _VentasModelViewState extends State<VentasModelView> {
   String cliente;
   String domicilio;
   List<Widget> _lineasVenta = [];
+  bool _loading = false;
 
   @override
   void initState() {
+
     if(widget.venta != null){
       venta = widget.venta;
       if (venta.cliente.apellidos != null && venta.cliente.nombres != null){
@@ -73,6 +72,7 @@ class _VentasModelViewState extends State<VentasModelView> {
         _lineasVenta.add(detalleLineaVenta(element, context));
       });
     }
+    _loading = false;
     super.initState();
   }
   @override
@@ -347,7 +347,7 @@ class _VentasModelViewState extends State<VentasModelView> {
                           Divider(
                             thickness: 2,
                           ),
-                          Column(
+                          _loading ? CircularProgressIndicator():Column(
                             children: _lineasVenta,
                           ),
                           Divider(
@@ -455,157 +455,170 @@ class _VentasModelViewState extends State<VentasModelView> {
       );
     }
     Widget detalleLineaVenta(LineasProducto lp, BuildContext context){
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              lp.cantidad.toString(),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                lp.cantidad.toString(),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Text(
-              lp.productoFinal.producto.producto + 
-              " " + (lp.productoFinal.tela?.tela??"") +
-              " " + (lp.productoFinal.lustre?.lustre??""),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black87
+            Expanded(
+              flex: 5,
+              child: Text(
+                lp.productoFinal.producto.producto + 
+                " " + (lp.productoFinal.tela?.tela??"") +
+                " " + (lp.productoFinal.lustre?.lustre??""),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black87
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex:2,
-            child: Text(
-              "\$"+lp.precioUnitario.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+            Expanded(
+              flex:2,
+              child: Text(
+                "\$"+lp.precioUnitario.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex:2,
-            child: Text(
-              "\$"+(lp.precioUnitario * lp.cantidad).toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+            Expanded(
+              flex:2,
+              child: Text(
+                "\$"+(lp.precioUnitario * lp.cantidad).toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex:1,
-            child: Text(
-              lp.estado,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+            Expanded(
+              flex:1,
+              child: Text(
+                lp.estado,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex:1,
-            child: Visibility(
-              visible: lp.estado != 'C' && venta.estado == 'C',
-              child: IconButtonTableAction(
-                iconData: Icons.arrow_downward,
-                color: Colors.red,
-                onPressed: () async{
-                  await showDialog(
-                    context: context,
-                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                    barrierDismissible: false,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text(
-                          "Cancelar Linea de Venta Venta",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600
+            Expanded(
+              flex:1,
+              child: Visibility(
+                visible: lp.estado != 'C' && venta.estado == 'C',
+                child: IconButtonTableAction(
+                  iconData: Icons.arrow_downward,
+                  color: Colors.red,
+                  onPressed: () async{
+                    await showDialog(
+                      context: context,
+                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(
+                            "Cancelar Linea de Venta Venta",
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600
+                            ),
                           ),
-                        ),
-                        content: Text(
-                          "¿Está seguro que desea cancelar la línea?",                     
-                        ),
-                        actions: [
-                          ZMTextButton(
-                            text: "Aceptar",
-                            color: Theme.of(mainContext).primaryColor,
-                            onPressed: () async{
-                              if(venta.facturado > lp.precioUnitario * lp.cantidad){
-                                await showDialog(
-                                  context: context,
-                                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                  builder: (BuildContext context) {
-                                    return OperacionesComprobanteAlertDialog(
-                                      title: "Crear Comprobante",
-                                      comprobante: Comprobantes(idVenta: venta.idVenta),
-                                      operacion: "Crear",
-                                    );
-                                  },
-                                ).then((value) async{
-                                  await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                                    if (response.status == RequestStatus.SUCCESS){
-                                      setState(() {
-                                        venta = response.message;
-                                      });
-                                    }
+                          content: Text(
+                            "¿Está seguro que desea cancelar la línea?",                     
+                          ),
+                          actions: [
+                            ZMTextButton(
+                              text: "Aceptar",
+                              color: Theme.of(mainContext).primaryColor,
+                              onPressed: () async{
+                                if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
+                                  await showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    builder: (BuildContext context) {
+                                      return OperacionesComprobanteAlertDialog(
+                                        title: "Crear Comprobante",
+                                        comprobante: Comprobantes(idVenta: venta.idVenta,),
+                                        operacion: "Crear",
+                                        
+                                      );
+                                    },
+                                  ).then((value) async{
+                                    await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                      if (response.status == RequestStatus.SUCCESS){
+                                        setState(() {
+                                          _loading = true;
+                                          venta = response.message;
+                                          _lineasVenta = [];
+                                          venta.lineasProducto.forEach((element) {
+                                            _lineasVenta.add(detalleLineaVenta(element, context));
+                                          });
+                                          _loading = false;
+                                        });
+                                      }
+                                    });
                                   });
+                                }
+                                Navigator.pop(context, true);
+                              },
+                            ),
+                            ZMTextButton(
+                              text: "Cancelar",
+                              color: Theme.of(mainContext).primaryColor,
+                              onPressed: (){
+                                Navigator.pop(context, false);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    ).then((value) async{
+                      if(value){
+                        await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
+                          "LineasProducto":{
+                            "IdLineaProducto":lp.idLineaProducto
+                          }
+                        })).then((response) async{
+                          if (response.status == RequestStatus.SUCCESS){
+                            await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                              if (response.status == RequestStatus.SUCCESS){
+                                setState(() {
+                                  _loading = true;
+                                  venta = response.message;
+                                  _lineasVenta = [];
+                                  venta.lineasProducto.forEach((element) {
+                                    _lineasVenta.add(detalleLineaVenta(element, context));
+                                  });
+                                  _loading = false;
                                 });
                               }
-                              Navigator.pop(context, true);
-                            },
-                          ),
-                          ZMTextButton(
-                            text: "Cancelar",
-                            color: Theme.of(mainContext).primaryColor,
-                            onPressed: (){
-                              Navigator.pop(context, false);
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ).then((value) async{
-                    if(value){
-                      await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
-                        "LineasProducto":{
-                          "IdLineaProducto":lp.idLineaProducto
-                        }
-                      })).then((response) async{
-                        if (response.status == RequestStatus.SUCCESS){
-                          await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                            if (response.status == RequestStatus.SUCCESS){
-                              setState(() {
-                                venta = response.message;
-                              });
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                },
+                            });
+                          }
+                        });
+                      }
+                    });
+                  },
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
   }
 }

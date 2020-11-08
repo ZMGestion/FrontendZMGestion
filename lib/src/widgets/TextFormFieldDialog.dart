@@ -15,6 +15,7 @@ class TextFormFieldDialog extends StatelessWidget {
   final TextStyle textStyle;
   final Widget icon;
   final int maxLines;
+  final Widget suffixIcon;
 
   const TextFormFieldDialog({
     Key key, 
@@ -30,7 +31,8 @@ class TextFormFieldDialog extends StatelessWidget {
     this.labelStyle,
     this.textStyle,
     this.icon,
-    this.maxLines
+    this.maxLines,
+    this.suffixIcon
   }) : super(key: key);
 
   @override
@@ -49,9 +51,11 @@ class TextFormFieldDialog extends StatelessWidget {
           hintStyle: hintStyle,
           labelStyle: labelStyle,
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-          icon: icon != null ? icon : null
+          icon: icon != null ? icon : null,
+          suffixIcon: suffixIcon != null ? suffixIcon : null
         ),
         style: textStyle,
+
     );
   }
 }

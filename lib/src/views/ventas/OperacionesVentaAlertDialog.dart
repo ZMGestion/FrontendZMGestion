@@ -645,6 +645,8 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                           );
                                         },
                                       );
+                                    }else{
+                                      Navigator.of(context).pop();
                                     }
                                   },
                                   outlineBorder: false,

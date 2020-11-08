@@ -69,19 +69,6 @@ class _PresupuestoCreadoDialogState extends State<PresupuestoCreadoDialog> {
         ),
         ZMStdButton(
           color: Theme.of(context).primaryColor,
-          icon: Icon(Icons.edit_outlined),
-          text: Text(
-            "Modificar",
-            style: TextStyle(
-              color: Theme.of(context).primaryTextTheme.headline6.color
-            ),
-          ),
-          onPressed: (){
-
-          }
-        ),
-        ZMStdButton(
-          color: Theme.of(context).primaryColor,
           text: Text(
             "Cerrar",
             style: TextStyle(

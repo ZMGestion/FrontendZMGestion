@@ -62,7 +62,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
     // TODO: implement initState
     breadcrumb.addAll({
       "Inicio":"/inicio",
-      "Usuarios": null,
+      "Empleados": null,
     });
     super.initState();
   }
@@ -476,7 +476,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo usuario",
+                              "Nuevo empleado",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -493,7 +493,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                     .withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return CrearUsuariosAlertDialog(
-                                    title: "Crear Usuarios",
+                                    title: "Crear Empleado",
                                     onSuccess: () {
                                       Navigator.of(context).pop();
                                     },
@@ -664,21 +664,15 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                   if (idUsuario != 0) {
                                     showDialog(
                                       context: context,
-                                      barrierColor: Theme.of(context)
-                                          .backgroundColor
-                                          .withOpacity(0.5),
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                       builder: (BuildContext context) {
                                         return ModelViewDialog(
                                           content: ModelView(
                                             service: UsuariosService(),
-                                            getMethodConfiguration: UsuariosService()
-                                                .dameConfiguration(idUsuario),
+                                            getMethodConfiguration: UsuariosService().dameConfiguration(idUsuario),
                                             isList: false,
-                                            itemBuilder:
-                                                (mapModel, index, itemController) {
-                                              return Usuarios()
-                                                  .fromMap(mapModel)
-                                                  .viewModel(context);
+                                            itemBuilder:(mapModel, index, itemController) {
+                                              return Usuarios().fromMap(mapModel).viewModel(context);
                                             },
                                           ),
                                         );
@@ -749,7 +743,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                           getMethodConfiguration: UsuariosService().dameConfiguration(idUsuario),
                                           isList: false,
                                           itemBuilder: (updatedMapModel, index, itemController) => ModificarUsuariosAlertDialog(
-                                            title: "Modificar usuario",
+                                            title: "Modificar empleado",
                                             usuario: Usuarios().fromMap(updatedMapModel),
                                             onSuccess: () {
                                               Navigator.of(context).pop();
@@ -809,7 +803,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                           ];
                         },
                         searchArea: TableTitle(
-                          title: "Usuarios"
+                          title: "Empleados"
                         )
                       );
                     }),

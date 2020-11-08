@@ -20,8 +20,9 @@ class OperacionesComprobanteAlertDialog extends StatefulWidget {
   final String title;
   final Comprobantes comprobante;
   final String operacion;
+  final Function onSuccess;
 
-  const OperacionesComprobanteAlertDialog({Key key, this.title, this.comprobante, this.operacion}) : super(key: key);
+  const OperacionesComprobanteAlertDialog({Key key, this.title, this.comprobante, this.operacion, this.onSuccess}) : super(key: key);
   @override
   _OperacionesComprobanteAlertDialogState createState() => _OperacionesComprobanteAlertDialogState();
 }
@@ -184,6 +185,9 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                                   await VentasService(scheduler: scheduler).doMethod(VentasService().crearComprobanteConfiguration(payload)).then((response){
                                     if (response.status == RequestStatus.SUCCESS){
                                       Navigator.of(context).pop(true);
+                                      if(widget.onSuccess != null){
+                                        widget.onSuccess();
+                                      }
                                     }
                                   });
                                 }

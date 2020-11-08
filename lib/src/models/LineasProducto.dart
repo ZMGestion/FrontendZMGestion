@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
+import 'package:zmgestion/src/models/Ubicaciones.dart';
 
 class LineasProducto extends Equatable with Models{
   /* -Mysql Model-*/
@@ -21,6 +22,7 @@ class LineasProducto extends Equatable with Models{
   /* -Other-*/
   final double precioUnitarioActual;
   final ProductosFinales productoFinal;
+  final Ubicaciones ubicacion;
 
   LineasProducto({
     this.idLineaProducto,
@@ -36,7 +38,8 @@ class LineasProducto extends Equatable with Models{
     this.estado,
     this.precioUnitarioActual,
     this.productoFinal,
-    this.idLineasPadres
+    this.idLineasPadres,
+    this.ubicacion,
   });
 
    @override
@@ -60,7 +63,6 @@ class LineasProducto extends Equatable with Models{
 
   @override
   LineasProducto fromMap(Map<String,dynamic> mapModel) {
-      // TODO: implement fromMap
       return LineasProducto(
         idLineaProducto: mapModel["LineasProducto"]["IdLineaProducto"],
         idLineaProductoPadre: mapModel["LineasProducto"]["IdLineaProductoPadre"],
@@ -76,6 +78,7 @@ class LineasProducto extends Equatable with Models{
         productoFinal: mapModel["ProductosFinales"] != null ? ProductosFinales().fromMap(mapModel) : null,
         precioUnitarioActual: mapModel["LineasProducto"]["_PrecioUnitarioActual"],
         idLineasPadres: mapModel["LineasProducto"]["_IdLineasPadres"],
+        ubicacion: mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
       );
     }
   
@@ -101,10 +104,12 @@ class LineasProducto extends Equatable with Models{
       };
       
       Map<String, dynamic> productosFinales = this.productoFinal?.toMap();
+      Map<String, dynamic> ubicaciones = this.ubicacion?.toMap();
       Map<String, dynamic> result = {};
 
       result.addAll(lineasProducto);
       result.addAll(productosFinales != null ? productosFinales : {});
+      result.addAll(ubicaciones != null ? ubicaciones : {});
 
       return result;
     }

@@ -28,7 +28,6 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
 
   @override
   void initState() {
-    // TODO: implement initState
     widget.lineasProducto.forEach((lp) {
       _lineasProducto.add(_lineaProducto(lp));
     });

@@ -353,9 +353,8 @@ class VentasService extends Services{
       ),
     );
   }
-  @override
+
   DoMethodConfiguration modificarLineaVenta(LineasProducto lineaProducto) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/lineasVenta/modificar",
@@ -392,6 +391,37 @@ class VentasService extends Services{
       )
     );
   }
+
+  DoMethodConfiguration generarRemito(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/generarRemito",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "El remito se ha creado con éxito"
+      ),
+      payload: payload
+    );
+  }
+
+  DoMethodConfiguration modificarDomicilio(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ventas/modificarDomicilio",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "Se ha modificar el domicilio con éxito"
+      ),
+      payload: payload
+    );
+  }
+
 
   @override
   DoMethodConfiguration altaConfiguration() {
