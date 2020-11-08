@@ -214,7 +214,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                               child: ZMListLineasProducto(
                                                 key: Key(_lineasProducto.length.toString()),
                                                 lineasProducto: _lineasProducto,
-                                                showPrice: false,
+                                                withPrice: false,
                                                 onEdit: (LineasProducto lp){
                                                   setState(() {
                                                     _lineaProductoEditando = lp;
