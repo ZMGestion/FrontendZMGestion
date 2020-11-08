@@ -60,17 +60,14 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
     if(widget.ordenProduccion != null){
       ordenProduccion = widget.ordenProduccion;
       switch (ordenProduccion.estado) {
-        case 'A':{
+        case 'C':
           color = Colors.red;
-        }
-        break;
-        case 'N':{
+          break;
+        case 'V':
           color = Colors.green;
-        }
-        break;
-        default:{
+          break;
+        default:
           color = Theme.of(mainContext).primaryColor;
-        }
       }
       ordenProduccion.lineasProducto.forEach((element) {
         _lineasVenta.add(detalleLineaVenta(element, context));
@@ -236,6 +233,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                   textAlign: TextAlign.center,
                                 )
                               ),
+                              SizedBox(
+                                width: 6,
+                              ),
                               Expanded(
                                 flex:1,
                                 child: Text(
@@ -342,7 +342,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
               children: [
                 Expanded(
                   child: Text(
-                    lp.estado??"",
+                    LineasProducto().mapEstados()[lp.estado??""]??"",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
@@ -352,6 +352,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                 ),
               ],
             ),
+          ),
+          SizedBox(
+            width: 6,
           ),
           Expanded(
             flex:1,

@@ -110,6 +110,21 @@ class VentasService extends Services{
     );
   }
 
+  ListMethodConfiguration dameMultipleConfiguration(Map<String, dynamic> payload){
+    return ListMethodConfiguration(
+      method: Methods.POST,
+      authorizationHeader: true,
+      model: Ventas(),
+      path: "/ventas/dameMultiple",
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se obtenian las ventas"
+      )
+    );
+  }
+
   @override
   DoMethodConfiguration crearLineaVentaConfiguration(LineasProducto lineaProducto) {
     // TODO: implement altaConfiguration
@@ -360,6 +375,21 @@ class VentasService extends Services{
           "IdProducto", "IdTela", "IdLustre"
         ],
       }
+    );
+  }
+
+  DoMethodConfiguration generarOrdenProduccion(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      authorizationHeader: true,
+      path: "/ventas/generarOrdenProduccion",
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showError: true,
+        errorMessage: "Ha ocurrido un error mientras se generaba la orden de producción",
+        successMessage: "La orden de producción se ha creado con éxito"
+      )
     );
   }
 

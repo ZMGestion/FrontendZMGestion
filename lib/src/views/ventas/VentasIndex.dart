@@ -22,6 +22,9 @@ import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/GenerarOrdenProduccionVentas.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionAlertDialog.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionVenta.dart';
 import 'package:zmgestion/src/views/ventas/OperacionesVentaAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
@@ -765,6 +768,39 @@ Map<int, Ventas> ventas = {};
                                   fontWeight: FontWeight.bold
                                 ),
                               ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: true,
+                            child: ZMStdButton(
+                              color: Colors.blue,
+                              text: Text(
+                                "Producir (" + ventas.length.toString() + ")",
+                                style: TextStyle(
+                                    color: Colors.white, 
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),           
+                              padding: EdgeInsets.only(left: 6),             
+                              icon: Icon(
+                                FontAwesomeIcons.hammer,
+                                color: Colors.white,
+                                size: 17,
+                              ),
+                              onPressed: () {
+                                if(ventas != null){
+                                  showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return GenerarOrdenProduccionVentas(
+                                        ventas: ventas,
+                                      );
+                                    },
+                                  );
+                                }
+                              },
                             ),
                           ),
                           Visibility(

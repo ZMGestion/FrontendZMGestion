@@ -77,7 +77,7 @@ class AlertDialogTitle extends StatelessWidget {
                           color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.7),
                         ),
                         shape: GFIconButtonShape.circle,
-                        color: Theme.of(context).cardColor,
+                        color: backgroundColor ?? Theme.of(context).cardColor,
                         onPressed: (){
                           Navigator.of(context).pop();
                         },

@@ -583,15 +583,6 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                   textAlign: TextAlign.center);
                               }
                             },
-                            "_PrecioTotal": (value) {
-                              return Text(
-                                value != null ? "\$"+value.toString() : "-",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600
-                                ),
-                              );
-                            },
                             "Estado": (value) {
                               return Text(
                                 OrdenesProduccion().mapEstados()[value.toString()],
@@ -602,7 +593,6 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                         },
                         tableLabels: {
                           "OrdenesProduccion": {
-                            "_PrecioTotal": "Total",
                             "FechaAlta": "Fecha"
                           },
                           "LineasOrdenProduccion": {
@@ -612,8 +602,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                         defaultWeight: 2,
                         tableWeights: {
                           "OrdenesProduccion": {
-                            "Estado": 1,
-                            "_PrecioTotal": 1
+                            "Estado": 1
                           },
                           "LineasOrdenProduccion": {
                             "*": 5
@@ -640,7 +629,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return OrdenesProduccionAlertDialog(
-                                    idVenta: 50,
+                                    title: "Nueva orden de producción",
                                   );
                                 },
                               );
@@ -821,7 +810,11 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                               getMethodConfiguration: OrdenesProduccionService().dameConfiguration(idOrdenProduccion),
                                               isList: false,
                                               itemBuilder: (mapModel, internalIndex, itemController) {
-                                                return Container();
+                                                OrdenesProduccion _ordenProduccion = OrdenesProduccion().fromMap(mapModel);
+                                                return OrdenesProduccionAlertDialog(
+                                                  title: "Modificar orden de producción",
+                                                  ordenProduccion: _ordenProduccion,
+                                                );
                                               },
                                             ),
                                           );

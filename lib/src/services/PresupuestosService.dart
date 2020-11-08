@@ -249,7 +249,7 @@ class PresupuestosService extends Services{
       payload: payload,
       requestConfiguration: RequestConfiguration(
         showError: true,
-        errorMessage: "Ha ocurrido un error mientras se buscaba el presupuesto",
+        errorMessage: "Ha ocurrido un error mientras se transformaban los presupuestos",
         successMessage: "La venta se ha creado con éxito"
       )
     );

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionNew.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionVenta.dart';
+import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class OrdenesProduccionAlertDialog extends StatefulWidget{
-  final int idVenta;
+  final String title;
+  final OrdenesProduccion ordenProduccion;
 
   const OrdenesProduccionAlertDialog({
     Key key,
-    this.idVenta,
+    this.title = "Orden de producción",
+    this.ordenProduccion
   }) : super(key: key);
 
   @override
@@ -22,9 +27,6 @@ class _OrdenesProduccionAlertDialogState extends State<OrdenesProduccionAlertDia
   @override
   void initState() {
     // TODO: implement initState
-    if(widget.idVenta != null){
-      _desdeCero = false;
-    }
     super.initState();
   }
 
@@ -41,8 +43,31 @@ class _OrdenesProduccionAlertDialogState extends State<OrdenesProduccionAlertDia
             buttonPadding: EdgeInsets.all(0),
             elevation: 1.5,
             scrollable: true,
-            backgroundColor: Color(0xffefebdc),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            title: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    child: Text(
+                      widget.title,
+                      style: GoogleFonts.nunito(
+                        fontSize: 24,
+                        color: Colors.black.withOpacity(0.6),
+                        fontWeight: FontWeight.w800,
+                        shadows: <Shadow>[
+                          Shadow(
+                            color: Colors.white.withOpacity(0.3),
+                            offset: Offset(1, 1),
+                          )
+                        ]
+                      )
+                    ),
+                  )
+                ],
+              ),
+            ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
               width: SizeConfig.blockSizeHorizontal * 40,
@@ -51,108 +76,17 @@ class _OrdenesProduccionAlertDialogState extends State<OrdenesProduccionAlertDia
                 minWidth: 400
               ),
               decoration: BoxDecoration(
-                color: Color(0xffefebdc),
                 borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
               ),
               child: Column(
                 children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  width: 2,
-                                  color: _desdeCero ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
-                                )
-                              )
-                            ),
-                            child: MaterialButton(
-                              onPressed: (){
-                                setState(() {
-                                  _desdeCero = true;
-                                });
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _desdeCero ? Icons.fiber_new_rounded : Icons.fiber_new_outlined,
-                                    color: _desdeCero ? Theme.of(context).primaryColorLight : null,
-                                  ),
-                                  SizedBox(
-                                    width: 6
-                                  ),
-                                  Text(
-                                    "Desde cero",
-                                    style: TextStyle(
-                                      color: _desdeCero ? Theme.of(context).primaryColorLight : null,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15
-                                    )
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  width: 2,
-                                  color: !_desdeCero ? Theme.of(context).primaryColor : Colors.black.withOpacity(0.05)
-                                )
-                              )
-                            ),
-                            child: MaterialButton(
-                              onPressed: (){
-                                setState(() {
-                                  _desdeCero = false;
-                                });
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    !_desdeCero ? Icons.account_circle : Icons.person,
-                                    color: !_desdeCero ? Theme.of(context).primaryColorLight : null,
-                                  ),
-                                  SizedBox(
-                                    width: 6
-                                  ),
-                                  Text(
-                                    "Para venta",
-                                    style: TextStyle(
-                                      color: !_desdeCero ? Theme.of(context).primaryColorLight : null,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15
-                                    )
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   Column(
                     children: [
                       Visibility(
                         visible: _desdeCero,
                         child: OrdenesProduccionNew(
-                          title: "Orden",
-                        )
-                      ),
-                      Visibility(
-                        visible: !_desdeCero,
-                        child: OrdenesProduccionVenta(
-                          idVenta: widget.idVenta,
-                          title: "Orden",
+                          title: "Orden de producción",
+                          ordenProduccion: widget.ordenProduccion,
                         )
                       ),
                     ],

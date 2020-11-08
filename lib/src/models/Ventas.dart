@@ -71,6 +71,7 @@ class Ventas extends Equatable with Models{
         _lineasProducto.add(_lineaProducto);
       });
     }
+    
     return Ventas(
         idVenta:        mapModel["Ventas"]["IdVenta"],
         idCliente:      mapModel["Ventas"]["IdCliente"],

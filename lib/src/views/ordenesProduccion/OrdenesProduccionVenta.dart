@@ -333,8 +333,8 @@ class _OrdenesProduccionVentaState extends State<OrdenesProduccionVenta> {
                                       barrierDismissible: false,
                                       builder: (BuildContext context) {
                                         return ConfirmationAlertDialog(
-                                          title: "OrdenProduccion",
-                                          message: "¿Qué desea hacer con el ordenProduccion?",
+                                          title: "Orden de producción",
+                                          message: "¿Qué desea hacer con la orden de producción?",
                                           acceptText: "Conservar",
                                           cancelText: "Borrar",
                                           acceptColor: Theme.of(context).primaryColorLight,
