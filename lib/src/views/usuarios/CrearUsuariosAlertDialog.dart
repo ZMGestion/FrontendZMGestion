@@ -362,7 +362,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                             iconedButtons: {
                               ButtonState.idle:
                                 IconedButton(
-                                    text: "Crear usuario",
+                                    text: "Crear Empleado",
                                     icon: Icon(Icons.person_add, color: Colors.white),
                                     color: Colors.blueAccent),
                               ButtonState.loading:

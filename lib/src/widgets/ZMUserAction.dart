@@ -3,6 +3,7 @@ import 'package:zmgestion/main.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
+import 'package:zmgestion/src/views/usuarios/CambiarPassAlertDialog.dart';
 
 class ZMUserAction extends StatefulWidget {
   final Usuarios usuario;
@@ -177,21 +178,24 @@ class _ZMUserActionState extends State<ZMUserAction> {
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   children: <Widget>[
-                    _item(
-                      text: "Modificar perfil",
-                      backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
-                      iconData: Icons.settings,
-                      iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
-                      textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
-                      onTap: (){}
-                    ),
+                    
                     _item(
                       text: "Cambiar contraseña",
                       backgroundColor: Theme.of(context).primaryColorDark.withOpacity(0.05),
                       iconData: Icons.lock_outline,
                       iconColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.5),
                       textColor: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.8),
-                      onTap: (){}
+                      onTap: (){
+                        showDialog(
+                          context: context,
+                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                          builder: (context) {
+                            return CambiarPassAlertDialog(
+                              usuario: widget.usuario,
+                            );
+                          },
+                        );
+                      }
                     )
                   ],
                 ),

@@ -295,6 +295,12 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                             }
                           },
                           "ProductosFinales": {
+                            "_Cantidad": (value){
+                              return Text(
+                                value.toString(),
+                                textAlign: TextAlign.center,
+                              );
+                            },
                             "_PrecioTotal": (value) {
                               return Text(
                                 value != null ? "\$"+value.toString() : "-",
@@ -305,7 +311,8 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                         },
                         tableLabels: {
                           "ProductosFinales": {
-                            "_PrecioTotal": "Precio total"
+                            "_PrecioTotal": "Precio total",
+                            "_Cantidad": "Stock Disponible"
                           }
                         },
                         fixedActions: [

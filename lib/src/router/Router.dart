@@ -10,6 +10,7 @@ import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionIndex.dar
 import 'package:zmgestion/src/views/presupuestos/PresupuestosIndex.dart';
 import 'package:zmgestion/src/views/productos/ProductosIndex.dart';
 import 'package:zmgestion/src/views/productosFinales/ProductosFinalesIndex.dart';
+import 'package:zmgestion/src/views/remitos/RemitosIndex.dart';
 import 'package:zmgestion/src/views/roles/RolesIndex.dart';
 import 'package:zmgestion/src/views/telas/TelasIndex.dart';
 import 'package:zmgestion/src/views/ubicaciones/UbicacionesIndex.dart';
@@ -33,6 +34,7 @@ const String LoaderRoute = '/';
 const String VentasRoute = '/ventas';
 const String ComprobantesRoute = '/comprobantes';
 const String DomiciliosRoute = '/domicilios';
+const String RemitosRoute = '/remitos';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   print(settings.name);
@@ -81,6 +83,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(ComprobantesIndex(args: queryParameters,), settings);
     case DomiciliosRoute:
       return _getPageRoute(DomiciliosIndex(args: queryParameters,), settings);
+    case RemitosRoute:
+      return _getPageRoute(RemitosIndex(args: queryParameters,), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

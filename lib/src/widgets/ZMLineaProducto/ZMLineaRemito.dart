@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Response.dart';
-import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/Models.dart';
@@ -15,53 +12,64 @@ import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
+import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/LoadingWidget.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
-import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
-class ZMLineaProducto extends StatefulWidget {
+class ZMLineaRemito extends StatefulWidget {
   final int idReferencia;
   final LineasProducto lineaProducto;
+  final String tipo;
   final Function(LineasProducto lp) onAccept; 
   final Function() onCancel; 
 
-  const ZMLineaProducto({
+  const ZMLineaRemito({
     Key key,
     this.idReferencia,
     this.lineaProducto,
     this.onAccept,
-    this.onCancel
+    this.onCancel, 
+    this.tipo
   }): super(key: key);
   @override
-  _ZMLineaProductoState createState() => _ZMLineaProductoState();
+  _ZMLineaRemitoState createState() => _ZMLineaRemitoState();
 }
 
-class _ZMLineaProductoState extends State<ZMLineaProducto> {
+class _ZMLineaRemitoState extends State<ZMLineaRemito> {
 
-  final TextEditingController _precioUnitarioController = TextEditingController();
-  int _cantidad = 1;
+  int _cantidad = 0;
   int _idLineaProducto;
-  double _precioTotal = 0;
-  double _precioTotalModificado = 0;
-  double _precioUnitario = 0;
   Productos _productoSeleccionado;
   Telas _telaSeleccionada;
   Lustres _lustreSeleccionado;
   int _idLustre;
-  bool _priceChanged = false;
   bool _loading = true;
+  int _idUbicacion;
+  String _tipo;
+  ProductosFinales _productoFinal;
+  int _cantidadDisponible;
+  bool _disponible;
 
   @override
   void initState() {
-    // TODO: implement initState
-    
+    if(widget.tipo != null){
+      _tipo = widget.tipo;
+      if (_tipo == "E" || _tipo == "X"){
+        _disponible = true;
+      }else{
+        _disponible = false;
+      }
+    }
     if(widget.lineaProducto != null){
       _cantidad = widget.lineaProducto.cantidad;
+      if(widget.lineaProducto.idUbicacion != null){
+        _idUbicacion = widget.lineaProducto.idUbicacion;
+      }
       if(widget.lineaProducto.idLineaProducto != 0){
         _idLineaProducto = widget.lineaProducto.idLineaProducto;
       }
@@ -70,6 +78,29 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
       SchedulerBinding.instance.addPostFrameCallback((_) async{
         Response<Models<dynamic>> responseProducto;
         Response<Models<dynamic>> responseTela;
+        if(widget.lineaProducto != null && (_tipo == "S" || _tipo == "Y")){
+          await ProductosFinalesService().doMethod(ProductosFinalesService().dameStock({
+            "Ubicaciones":{
+              "IdUbicacion": _idUbicacion
+            },
+            "ProductosFinales":{
+              "IdProducto": widget.lineaProducto.productoFinal.idProducto,
+              "IdLustre": widget.lineaProducto.productoFinal.idLustre,
+              "IdTela": widget.lineaProducto.productoFinal.idTela,
+            }
+          })).then((response){
+            if(response.status == RequestStatus.SUCCESS){
+              setState(() {
+                _productoFinal = ProductosFinales().fromMap(response.message);
+                _cantidadDisponible = _productoFinal.cantidad;
+              });
+            }else{
+              setState(() {
+                _disponible = false;
+              });
+            }
+          });
+        }
         if(widget.lineaProducto.productoFinal.producto?.idProducto != null){
           responseProducto = await ProductosService().damePor(ProductosService().dameConfiguration(widget.lineaProducto.productoFinal.idProducto));
         }
@@ -85,36 +116,13 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
           }
           _loading = false;
         });
-        _setPrecios();
       });
     }else{
       _loading = false;
+      _idUbicacion = 0;
     }
+    _cantidadDisponible = 0;
     super.initState();
-  }
-
-  void _setPrecios(){
-    double precioOriginal = 0;
-    double precioModificado = 0;
-    if(_productoSeleccionado != null){
-      precioOriginal += _productoSeleccionado.precio.precio;
-      if(_telaSeleccionada != null && _productoSeleccionado.longitudTela > 0){
-        precioOriginal += _productoSeleccionado.longitudTela * _telaSeleccionada.precio.precio;
-      }
-    }
-    if(!_priceChanged){
-      precioModificado = precioOriginal;
-    }else{
-      if(_precioUnitarioController.text != ""){
-        precioModificado = double.parse(_precioUnitarioController.text);
-      }
-    }
-    _precioUnitarioController.text = precioOriginal.toStringAsFixed(2).toString();
-    setState(() {
-      _precioUnitario = _priceChanged ? precioModificado : precioOriginal;
-      _precioTotal = precioOriginal * _cantidad;
-      _precioTotalModificado = precioModificado * _cantidad;
-    });
   }
 
   @override
@@ -132,7 +140,51 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
             ),
           ),
           Visibility(
-            visible: !_loading,
+            visible: _tipo == "S" || _tipo == "Y",
+            child: Card(
+              color: Color(0xff042949).withOpacity(0.55),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  constraints: BoxConstraints(minWidth: 200),
+                  child: DropDownModelView(
+                    service: UbicacionesService(),
+                    listMethodConfiguration: UbicacionesService().listar(),
+                    parentName: "Ubicaciones",
+                    labelName: "Seleccione una ubicación",
+                    displayedName: "Ubicacion",
+                    valueName: "IdUbicacion",
+                    allOption: false,
+                    errorMessage: "Debe seleccionar una ubicación",
+                    textStyle: TextStyle(
+                      color: Color(0xff97D2FF).withOpacity(1),
+                    ),
+                    iconEnabledColor: Color(0xff97D2FF).withOpacity(1),
+                    dropdownColor: Theme.of(context).primaryColor,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.location_city,
+                        color: Color(0xff87C2F5).withOpacity(0.8),  
+                      ),
+                      hintStyle: TextStyle(
+                        color: Color(0xffBADDFB).withOpacity(0.8)
+                      ),
+                      labelStyle: TextStyle(
+                        color: Color(0xffBADDFB).withOpacity(0.8)
+                      ),
+                    ),
+                    onChanged: (idSelected) {
+                      setState(() {
+                        _idUbicacion = idSelected;
+                      });
+                    },
+                  )
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: !_loading && ((_tipo == "E" || _tipo == "X") || _idUbicacion != 0),
             child: Card(
               color: Color(0xff042949).withOpacity(0.55),
               child: Padding(
@@ -150,7 +202,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                             color: Theme.of(context).primaryTextTheme.headline6.color.withOpacity(0.8)
                           ),
                           Container(
-                            //constraints: BoxConstraints(maxWidth: _productoSeleccionado == null ? 300 : double.infinity),
                             child: AutoCompleteField(
                               labelText: "",
                               hintText: "Ingrese un producto",
@@ -172,10 +223,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                               ),
                               onClear: (){
                                 setState(() {
-                                  //searchIdProducto = 0;
                                     _productoSeleccionado = null;
-                                    _precioUnitarioController.clear();
-                                    _setPrecios();
                                 });
                               },
                               listMethodConfiguration: (searchText){
@@ -196,9 +244,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                                     }else if(_productoSeleccionado.longitudTela <= 0){
                                       _telaSeleccionada = null;
                                     }
-                                    _priceChanged = false;
-                                    _setPrecios();
-                                    //searchIdProducto = producto.idProducto;
                                   });
                                 }
                               },
@@ -251,8 +296,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                                             validTextColor: Color(0xffaaffaa),
                                             onClear: (){
                                               setState(() {
-                                                _telaSeleccionada = null;
-                                                _setPrecios();
                                               });
                                             },
                                             listMethodConfiguration: (searchText){
@@ -267,9 +310,6 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                                                 Telas tela = Telas().fromMap(mapModel);
                                                 setState(() {
                                                   _telaSeleccionada = tela;
-                                                  _priceChanged = false;
-                                                  _setPrecios();
-                                                  //searchIdTela = tela.idTela;
                                                 });
                                               }
                                             },
@@ -287,6 +327,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                             Expanded(
                               flex: 1,
                               child: Container(
+                                key: Key(_telaSeleccionada?.tela.toString()),
                                 constraints: BoxConstraints(minWidth: 200),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,10 +368,35 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                                           color: Colors.white
                                         ),
                                       ),
-                                      onChanged: (idSelected) {
+                                      onChanged: (idSelected) async{
                                         setState(() {
                                           _idLustre = idSelected;
                                         });
+                                        if(_tipo == "S" || _tipo == "Y"){
+                                          await ProductosFinalesService().doMethod(ProductosFinalesService().dameStock({
+                                            "Ubicaciones":{
+                                              "IdUbicacion": _idUbicacion
+                                            },
+                                            "ProductosFinales":{
+                                              "IdProducto": _productoSeleccionado.idProducto,
+                                              "IdTela": _telaSeleccionada?.idTela,
+                                              "IdLustre": _idLustre
+                                            }
+                                          })).then((response){
+                                            if(response.status == RequestStatus.SUCCESS){
+                                              setState(() {
+                                                _productoFinal = ProductosFinales().fromMap(response.message);
+                                                _cantidadDisponible = _productoFinal.cantidad;
+                                                _disponible = true;
+                                              });
+                                            }else{
+                                              setState(() {
+                                                _disponible = false;
+                                                _productoFinal = ProductosFinales();
+                                              });
+                                            }
+                                          });
+                                        }
                                       },
                                     ),
                                   ],
@@ -347,7 +413,7 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
             ),
           ),
           Visibility(
-            visible: !_loading,
+            visible: !_loading && _disponible,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -371,33 +437,15 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                               labelStyle: TextStyle(
                                 color: Color(0xffBADDFB).withOpacity(0.8)
                               ),
-                              onChanged: (value){
+                              onChanged:  _disponible ? (value){
                                 setState(() {
                                   _cantidad = value;
                                 });
-                                _setPrecios();
-                              },
+                              } : null,
                             )
                           ),
                           SizedBox(
                             width: 12,
-                          ),
-                          Expanded(
-                              child: TextFormFieldDialog(
-                                controller: _precioUnitarioController,
-                                validator: Validator.notEmptyValidator,
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
-                                labelText: "Precio unitario",
-                                textStyle: TextStyle(
-                                  color: Color(0xffBADDFB)
-                                ),
-                                hintStyle: TextStyle(
-                                  color: Color(0xffBADDFB).withOpacity(0.8)
-                                ),
-                                labelStyle: TextStyle(
-                                  color: Color(0xffBADDFB).withOpacity(0.8)
-                                ),
-                            ),
                           ),
                         ],
                       ),
@@ -406,76 +454,69 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                   SizedBox(
                     width: 12,
                   ),
-                  Expanded(
-                    flex: 1,
-                      child: Card(
-                        color: Color(0xff042949).withOpacity(0.55),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Text(
-                                "Total",
-                                style: TextStyle(
-                                  color: Color(0xffBADDFB).withOpacity(0.9),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600
+                  Visibility(
+                    visible: _tipo == "S" || _tipo == "Y",
+                    child: Expanded(
+                      flex: 1,
+                        child: Card(
+                          color: Color(0xff042949).withOpacity(0.55),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Total Disponible",
+                                  style: TextStyle(
+                                    color: Color(0xffBADDFB).withOpacity(0.9),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600
+                                  ),
                                 ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Visibility(
-                                    visible: _precioTotal != _precioTotalModificado,
-                                    child: Row(
-                                      children: [
-                                        Text.rich(TextSpan(
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: "\$"+(_precioTotal.toStringAsFixed(2).toString()),
-                                              style: TextStyle(
-                                                color: Colors.white.withOpacity(0.7),
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500,
-                                                decoration: TextDecoration.lineThrough,
-                                              ),
-                                            ),
-                                          ],
-                                          ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Text(
+                                        _disponible  ? (_cantidadDisponible - _cantidad).toString() : "-",
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                                          child: Icon(
-                                            Icons.keyboard_arrow_right,
-                                            color: Colors.white.withOpacity(0.75),
-                                            size: 24,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Text(
-                                      "\$"+(_precioTotalModificado.toStringAsFixed(2).toString()),
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w600
+                                        textAlign: TextAlign.center
                                       ),
-                                      textAlign: TextAlign.center
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      )
+                        )
+                    ),
                   ),
                 ],
               ),
             ),
+          ),
+          Visibility(
+            visible: !_loading && !_disponible && _productoFinal != null,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Producto no disponible",
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800
+                    ),
+                  ),
+                ),
+              ],
+            )
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -499,8 +540,8 @@ class _ZMLineaProductoState extends State<ZMLineaProducto> {
                     LineasProducto(
                       idLineaProducto: _idLineaProducto,
                       idReferencia: widget.idReferencia,
+                      idUbicacion: _idUbicacion,
                       cantidad: _cantidad,
-                      precioUnitario: _precioUnitario,
                       productoFinal: ProductosFinales(
                         idLustre: _lustreSeleccionado?.idLustre,
                         idProducto: _productoSeleccionado?.idProducto,

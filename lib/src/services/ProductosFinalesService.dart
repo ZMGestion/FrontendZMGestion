@@ -24,7 +24,6 @@ class ProductosFinalesService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productosFinales/crear",
@@ -156,6 +155,19 @@ class ProductosFinalesService extends Services{
         }
       },
       scheduler: scheduler
+    );
+  }
+
+  DoMethodConfiguration dameStock(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+          method: Methods.POST,
+          path: "/productosFinales/stock",
+          authorizationHeader: true,
+          scheduler: scheduler,
+          payload: payload,
+          requestConfiguration: RequestConfiguration(
+            showLoading: true,
+          )
     );
   }
 }
