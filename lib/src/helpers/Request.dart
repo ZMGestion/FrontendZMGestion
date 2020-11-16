@@ -62,7 +62,6 @@ class Request{
       
       return response;
     }catch(e){
-      print(e);
       this.status = RequestStatus.ERROR;
       return null;
     }

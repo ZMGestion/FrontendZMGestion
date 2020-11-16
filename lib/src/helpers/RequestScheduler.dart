@@ -72,7 +72,6 @@ class RequestScheduler{
           }
         }else{
           request.status = RequestStatus.ERROR;
-          print("ERROR POR CLOSE");
           if (request.actionsConfiguration.onError != null){
             return request.actionsConfiguration.onError({"mensaje": "Ha ocurrido un error mientras se procesaba su peticion", "codigo": "SEND_ERROR"});
           }
@@ -80,7 +79,6 @@ class RequestScheduler{
         }
       });
     }catch(e){
-      print(e);
       if(!closed) {
         request.status = RequestStatus.ERROR;
         this._sendState();

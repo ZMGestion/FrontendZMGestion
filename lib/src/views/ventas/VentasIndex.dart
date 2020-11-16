@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
@@ -45,6 +46,9 @@ import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class VentasIndex extends StatefulWidget {
+  final Map<String, dynamic> args;
+
+  const VentasIndex({Key key, this.args}) : super(key: key);
   @override
   _VentasIndexState createState() => _VentasIndexState();
 }
@@ -74,8 +78,10 @@ Map<int, Ventas> ventas = {};
   String fechaHasta = '';
   Timer _debounce;
   RegExp dateRegEx;
+  int idVenta;
 
   Map<String, String> breadcrumb = new Map<String, String>();
+  Map<String, dynamic> args = new Map<String, String>();
 
   @override
   void dispose() {
@@ -111,7 +117,44 @@ Map<int, Ventas> ventas = {};
     });
     desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 30)));
     hastaController.text = dateFormatShow.format(DateTime.now());
+    if (widget.args != null){
+      args.addAll(widget.args);
+      if (args["IdVenta"] != null){
+        idVenta = int.parse(args["IdVenta"]);
+        SchedulerBinding.instance.addPostFrameCallback((_) { 
+            verVenta(idVenta);
+        });
+      }
+    }
     super.initState();
+  }
+
+  void verVenta(int idVenta) async{
+    await showDialog(
+      context: context,
+      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      builder: (BuildContext context) {
+        return ModelViewDialog(
+          title: "Venta",
+          content: ModelView(
+            service: VentasService(),
+            getMethodConfiguration: VentasService().dameConfiguration(idVenta),
+            isList: false,
+            itemBuilder: (mapModel, index, itemController) {
+              return Ventas().fromMap(mapModel).viewModel(context);
+            },
+          ),
+        );
+      },
+    ).then((value){
+      if(value != null){
+        if (value){
+          setState(() {
+            refreshValue = Random().nextInt(99999);
+          });
+        }
+      }   
+    });
   }
 
   @override
@@ -930,31 +973,7 @@ Map<int, Ventas> ventas = {};
                               iconData: Icons.remove_red_eye,
                               onPressed: idVenta == 0 ? null : () async{
                                 if (idVenta != 0) {
-                                  await showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return ModelViewDialog(
-                                        title: "Venta",
-                                        content: ModelView(
-                                          service: VentasService(),
-                                          getMethodConfiguration: VentasService().dameConfiguration(idVenta),
-                                          isList: false,
-                                          itemBuilder: (mapModel, index, itemController) {
-                                            return Ventas().fromMap(mapModel).viewModel(context);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  ).then((value){
-                                    if(value != null){
-                                      if (value){
-                                        setState(() {
-                                          refreshValue = Random().nextInt(99999);
-                                        });
-                                      }
-                                    }   
-                                  });
+                                  verVenta(idVenta);
                                 }
                               }
                             ),

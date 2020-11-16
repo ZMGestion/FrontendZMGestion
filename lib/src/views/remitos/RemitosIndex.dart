@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
@@ -71,7 +72,8 @@ Map<int, Remitos> remitos = {};
   String fechaHasta = '';
   Timer _debounce;
   RegExp dateRegEx;
-
+  int idRemito;
+  Map<String, String> args = new Map<String, String>();
   Map<String, String> breadcrumb = new Map<String, String>();
 
   @override
@@ -108,7 +110,45 @@ Map<int, Remitos> remitos = {};
     });
     desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
     hastaController.text = dateFormatShow.format(DateTime.now());
+    if (widget.args != null){
+      args.addAll(widget.args);
+      if (args["IdRemito"] != null){
+        idRemito = int.parse(args["IdRemito"]);
+        SchedulerBinding.instance.addPostFrameCallback((_) { 
+            verRemito(idRemito);
+        });
+      }
+    }
     super.initState();
+  }
+
+  verRemito(int idRemito) async{
+    await showDialog(
+      context: context,
+      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return ModelViewDialog(
+          title: "Remito",
+          content: ModelView(
+            service: RemitosService(),
+            getMethodConfiguration: RemitosService().dameConfiguration(idRemito),
+            isList: false,
+            itemBuilder: (mapModel, index, itemController) {
+              return Remitos().fromMap(mapModel).viewModel(context);
+            },
+          ),
+        );
+      },
+    ).then((value){
+      if(value != null){
+        if (value){
+          setState(() {
+            refreshValue = Random().nextInt(99999);
+          });
+        }
+      }   
+    });
   }
 
   @override
@@ -614,6 +654,10 @@ Map<int, Remitos> remitos = {};
                       tableLabels: {
                         "LineasRemito": {
                           "*": "Detalle"
+                        },
+                        "Remitos":{
+                          "FechaAlta": "Fecha Alta",
+                          "FechaEntrega": "Fecha de Entrega"
                         }
                       },
                       defaultWeight: 2,
@@ -680,32 +724,7 @@ Map<int, Remitos> remitos = {};
                               onPressed: idRemito == 0 ? null : () async{
                                 if (idRemito != 0) {
                                   if(remito.estado != "E"){
-                                    await showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                      barrierDismissible: false,
-                                      builder: (BuildContext context) {
-                                        return ModelViewDialog(
-                                          title: "Remito",
-                                          content: ModelView(
-                                            service: RemitosService(),
-                                            getMethodConfiguration: RemitosService().dameConfiguration(idRemito),
-                                            isList: false,
-                                            itemBuilder: (mapModel, index, itemController) {
-                                              return Remitos().fromMap(mapModel).viewModel(context);
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ).then((value){
-                                      if(value != null){
-                                        if (value){
-                                          setState(() {
-                                            refreshValue = Random().nextInt(99999);
-                                          });
-                                        }
-                                      }   
-                                    });
+                                    verRemito(idRemito);
                                   }else{
                                     await RemitosService(scheduler: scheduler).damePor(RemitosService().dameConfiguration(idRemito)).then((response) async{
                                       if(response.status == RequestStatus.SUCCESS){

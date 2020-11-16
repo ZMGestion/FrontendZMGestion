@@ -35,7 +35,6 @@ class _AppLoaderState extends State<AppLoader> {
     //requestScheduler.close();
     requestScheduler.requests.forEach((request) async{
       if(request.requestConfiguration.alertOnExit != null && request.status == RequestStatus.PENDING) {
-        print("UNA REQUEST PRETENDIA ALERTAR AQUI ANTES DE SALIR");
       }
     });
     super.dispose();

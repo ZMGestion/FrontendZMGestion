@@ -1,4 +1,3 @@
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -6,17 +5,14 @@ import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Permisos.dart';
 import 'package:zmgestion/src/models/Roles.dart';
 import 'package:zmgestion/src/services/RolesService.dart';
-import 'package:zmgestion/src/views/roles/CrearRolesAlertDialog.dart';
-import 'package:zmgestion/src/views/roles/ModificarRolesAlertDialog.dart';
+import 'package:zmgestion/src/views/roles/OperacionesRolesAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
-import 'package:zmgestion/src/widgets/ZMAnimatedLoader/ZMAnimatedLoader.dart';
 import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class RolesIndex extends StatefulWidget {
@@ -33,6 +29,7 @@ class _RolesIndexState extends State<RolesIndex> {
   Map<int, dynamic> permisosRol = new Map<int, dynamic>();
   FlareController animationController;
   Map<String, String> breadcrumb = new Map<String, String>();
+  int keyPermisos;
 
   @override
   void initState() {
@@ -97,43 +94,41 @@ class _RolesIndexState extends State<RolesIndex> {
                     title: "Roles y Permisos",
                   ),
                   ZMStdButton(
-                        color: Colors.green,
-                        text: Text(
-                          "Nuevo Rol",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        icon: Icon(
-                          Icons.add,
+                    color: Colors.green,
+                    text: Text(
+                      "Nuevo Rol",
+                      style: TextStyle(
                           color: Colors.white,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                            builder: (BuildContext context) {
-                              return CrearRolesAlertDialog(
-                                title: "Crear Rol",
-                                onSuccess: () async{
-                                  Navigator.of(context).pop();
-                                  await refreshRoles();
-                                  // setState(() {
-                                  //   key ++;
-                                  // });
-                                },
-                              );
-                            },
+                          fontWeight: FontWeight.bold),
+                    ),
+                    icon: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return OperacionesRolesAlertDialog(
+                            operacion: 'Crear',
                           );
                         },
-                      )
+                      ).then((value) async{
+                        if(value != null){
+                          if(value){
+                            await refreshRoles();
+                          }
+                        }
+                      });
+                    },
+                  )
                 ],
               ),
             ),
-            _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : !_hasError ? _roleWidget() : _errorWidget(),
+            _isLoading  ? Center(child: CircularProgressIndicator()) : !_hasError ? _roleWidget() : _errorWidget(),
           ],
         ),
       ),
@@ -203,19 +198,20 @@ class _RolesIndexState extends State<RolesIndex> {
                                       showDialog(
                                         context: context,
                                         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                        barrierDismissible: false,
                                         builder: (BuildContext context) {
-                                          return ModificarRolesAlertDialog(
-                                            title: "Modificar Rol",
+                                          return OperacionesRolesAlertDialog(
                                             rol: _rol,
-                                            onSuccess: () async{
-                                              Navigator.of(context).pop(); 
-                                              setState(() {
-                                                key ++;
-                                              });
-                                            },
+                                            operacion: 'Modificar',
                                           );
                                         },
-                                      );
+                                      ).then((value) async{
+                                        if(value != null){
+                                          if(value){
+                                            await refreshRoles();
+                                          }
+                                        }
+                                      });
                                     }
                                   ),
                                 ),
@@ -240,7 +236,7 @@ class _RolesIndexState extends State<RolesIndex> {
                                               await RolesService().borra({
                                                 "Roles": {"IdRol": _rol.idRol}
                                               }).then((response) {
-                                                if (response.status ==RequestStatus.SUCCESS) {
+                                                if (response.status == RequestStatus.SUCCESS) {
                                                   setState(() {
                                                     roles.remove(_rol);
                                                   });
@@ -261,6 +257,7 @@ class _RolesIndexState extends State<RolesIndex> {
                       ),
                       //Cuerpo de la card
                       Container(
+                        key: Key(keyPermisos.toString()),
                         width: SizeConfig.blockSizeHorizontal*23.5,
                         height: SizeConfig.blockSizeVertical*30,
                         decoration: BoxDecoration(
@@ -273,7 +270,7 @@ class _RolesIndexState extends State<RolesIndex> {
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: ModelView(
-                            key: Key(key.toString()),
+                            key: Key(keyPermisos.toString()),
                             isList: true,
                             service: RolesService(),
                             listMethodConfiguration: RolesService().listarPermisosConfiguration({
@@ -308,7 +305,10 @@ class _RolesIndexState extends State<RolesIndex> {
   }
 
   refreshRoles() async{
-    roles = [];
+    setState(() {
+      roles = new List<Roles>();
+    });
+
     await RolesService().listMethod(RolesService().listar()).then((response) async {
       if (response.status == RequestStatus.SUCCESS) {
         response.message.forEach((rol) {

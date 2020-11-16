@@ -20,6 +20,7 @@ import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 import 'package:zmgestion/src/widgets/ZMTable/IconButtonTableAction.dart';
+import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class VentasModelView extends StatefulWidget {
   final Ventas venta;
@@ -87,8 +88,33 @@ class _VentasModelViewState extends State<VentasModelView> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: 'Venta: ',
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.8),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: Ventas().mapEstados()[venta.estado],
+                            style: TextStyle(
+                              color: Colors.blue
+                            )
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GFIconButton(
@@ -113,45 +139,35 @@ class _VentasModelViewState extends State<VentasModelView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 2.5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: Text(
-                                  dateFormat.format(venta.fechaAlta),
-                                  style: TextStyle(
-                                    fontSize: 12
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 1.5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                TopLabel(
+                                  padding: const EdgeInsets.all(0),
+                                  labelText:"Fecha de alta",
+                                  fontSize: 12,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  child: Text(
+                                    dateFormat.format(venta.fechaAlta),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13.5
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       SizedBox(width: SizeConfig.blockSizeHorizontal*2.5,),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 2.5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: Text(
-                                  Ventas().mapEstados()[venta.estado],
-                                  style: TextStyle(
-                                    color: color,
-                                    fontWeight: FontWeight.w500
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   Card(
@@ -333,7 +349,8 @@ class _VentasModelViewState extends State<VentasModelView> {
                               Expanded(
                                 flex:1,
                                 child: Text(
-                                  "Estado"
+                                  "Estado",
+                                  textAlign: TextAlign.center,
                                 )
                               ),
                               Expanded(
@@ -509,7 +526,7 @@ class _VentasModelViewState extends State<VentasModelView> {
             Expanded(
               flex:1,
               child: Text(
-                lp.estado,
+                LineasProducto().mapEstados()[lp.estado],
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
@@ -521,99 +538,103 @@ class _VentasModelViewState extends State<VentasModelView> {
               flex:1,
               child: Visibility(
                 visible: lp.estado != 'C' && venta.estado == 'C',
-                child: IconButtonTableAction(
-                  iconData: Icons.arrow_downward,
-                  color: Colors.red,
-                  onPressed: () async{
-                    await showDialog(
-                      context: context,
-                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text(
-                            "Cancelar Linea de Venta Venta",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600
+                child: ZMTooltip(
+                  message: "Cancelar linea",
+                  theme: ZMTooltipTheme.RED,
+                  child: IconButtonTableAction(
+                    iconData: Icons.cancel_outlined,
+                    color: Colors.orange,
+                    onPressed: () async{
+                      await showDialog(
+                        context: context,
+                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              "Cancelar Linea de Venta Venta",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600
+                              ),
                             ),
-                          ),
-                          content: Text(
-                            "¿Está seguro que desea cancelar la línea?",                     
-                          ),
-                          actions: [
-                            ZMTextButton(
-                              text: "Aceptar",
-                              color: Theme.of(mainContext).primaryColor,
-                              onPressed: () async{
-                                if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
-                                  await showDialog(
-                                    context: context,
-                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                    builder: (BuildContext context) {
-                                      return OperacionesComprobanteAlertDialog(
-                                        title: "Crear Comprobante",
-                                        comprobante: Comprobantes(idVenta: venta.idVenta,),
-                                        operacion: "Crear",
-                                        
-                                      );
-                                    },
-                                  ).then((value) async{
-                                    await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                                      if (response.status == RequestStatus.SUCCESS){
-                                        setState(() {
-                                          _loading = true;
-                                          venta = response.message;
-                                          _lineasVenta = [];
-                                          venta.lineasProducto.forEach((element) {
-                                            _lineasVenta.add(detalleLineaVenta(element, context));
+                            content: Text(
+                              "¿Está seguro que desea cancelar la línea?",                     
+                            ),
+                            actions: [
+                              ZMTextButton(
+                                text: "Aceptar",
+                                color: Theme.of(mainContext).primaryColor,
+                                onPressed: () async{
+                                  if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
+                                    await showDialog(
+                                      context: context,
+                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                      builder: (BuildContext context) {
+                                        return OperacionesComprobanteAlertDialog(
+                                          title: "Crear Comprobante",
+                                          comprobante: Comprobantes(idVenta: venta.idVenta,),
+                                          operacion: "Crear",
+                                          
+                                        );
+                                      },
+                                    ).then((value) async{
+                                      await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                        if (response.status == RequestStatus.SUCCESS){
+                                          setState(() {
+                                            _loading = true;
+                                            venta = response.message;
+                                            _lineasVenta = [];
+                                            venta.lineasProducto.forEach((element) {
+                                              _lineasVenta.add(detalleLineaVenta(element, context));
+                                            });
+                                            _loading = false;
                                           });
-                                          _loading = false;
-                                        });
-                                      }
+                                        }
+                                      });
                                     });
+                                  }
+                                  Navigator.pop(context, true);
+                                },
+                              ),
+                              ZMTextButton(
+                                text: "Cancelar",
+                                color: Theme.of(mainContext).primaryColor,
+                                onPressed: (){
+                                  Navigator.pop(context, false);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ).then((value) async{
+                        if(value){
+                          await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
+                            "LineasProducto":{
+                              "IdLineaProducto":lp.idLineaProducto
+                            }
+                          })).then((response) async{
+                            if (response.status == RequestStatus.SUCCESS){
+                              await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                if (response.status == RequestStatus.SUCCESS){
+                                  setState(() {
+                                    _loading = true;
+                                    venta = response.message;
+                                    _lineasVenta = [];
+                                    venta.lineasProducto.forEach((element) {
+                                      _lineasVenta.add(detalleLineaVenta(element, context));
+                                    });
+                                    _loading = false;
                                   });
                                 }
-                                Navigator.pop(context, true);
-                              },
-                            ),
-                            ZMTextButton(
-                              text: "Cancelar",
-                              color: Theme.of(mainContext).primaryColor,
-                              onPressed: (){
-                                Navigator.pop(context, false);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ).then((value) async{
-                      if(value){
-                        await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
-                          "LineasProducto":{
-                            "IdLineaProducto":lp.idLineaProducto
-                          }
-                        })).then((response) async{
-                          if (response.status == RequestStatus.SUCCESS){
-                            await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                              if (response.status == RequestStatus.SUCCESS){
-                                setState(() {
-                                  _loading = true;
-                                  venta = response.message;
-                                  _lineasVenta = [];
-                                  venta.lineasProducto.forEach((element) {
-                                    _lineasVenta.add(detalleLineaVenta(element, context));
-                                  });
-                                  _loading = false;
-                                });
-                              }
-                            });
-                          }
-                        });
-                      }
-                    });
-                  },
+                              });
+                            }
+                          });
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
             ),

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
@@ -800,9 +801,11 @@ abstract class PDFManager{
   static Future<Uint8List> generarRemitoPDF(PdfPageFormat format, Remitos remito) async {
     String title = "";
     String clientName = "";
+    String direccionEntrega = "-";
     String ubicacion = "-";
 
     title = "Remito" + remito.idRemito.toString();
+    
 
     List<pw.Widget> _lineasRemito = List<pw.Widget>();
     int index = 0;
@@ -814,7 +817,14 @@ abstract class PDFManager{
     });
 
     if(remito.tipo == "E" || remito.tipo == "X"){
-      ubicacion = remito.ubicacion.ubicacion;
+      if(remito.ubicacion.ubicacion != null){
+        direccionEntrega = remito.ubicacion.ubicacion;
+      }
+    }
+
+    if(remito.venta?.idVenta != null){
+      clientName = Utils.clientName(remito.venta.cliente);
+      direccionEntrega = remito.venta.domicilio.domicilio;
     }
 
     final pdf = pw.Document(
@@ -1185,6 +1195,7 @@ abstract class PDFManager{
                     ],
                   ),
                 ),
+                clientName == "" ? 
                 pw.Expanded(
                   child: pw.Column(
                     children: [
@@ -1206,7 +1217,7 @@ abstract class PDFManager{
                               ),
                               child: pw.Center(
                                 child: pw.Text(
-                                  "Dirección de Entrega",
+                                  "Dirección de entrega",
                                   style: pw.TextStyle(
                                     fontSize: 11,
                                     fontWeight: pw.FontWeight.bold
@@ -1236,7 +1247,144 @@ abstract class PDFManager{
                                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                                 children: [
                                   pw.Text(
-                                    ubicacion,
+                                    direccionEntrega,
+                                    textAlign: pw.TextAlign.center,
+                                    style: pw.TextStyle(
+                                      fontSize: 11
+                                    ),
+                                  )
+                                ],
+                              )
+                            )
+                          ),
+                        ]
+                      )
+                    ],
+                  ),
+                ) : pw.Container(),
+              ]
+            ),
+            clientName != "" ? 
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Column(
+                    children: [
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: pw.BoxDecoration(
+                                color: PdfColor.fromHex("f2f2f2"),
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Center(
+                                child: pw.Text(
+                                  "Cliente",
+                                  style: pw.TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: pw.FontWeight.bold
+                                  ),
+                                )
+                              )
+                            )
+                          )
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: pw.BoxDecoration(
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                                children: [
+                                  pw.Text(
+                                    clientName,
+                                    style: pw.TextStyle(
+                                      fontSize: 11
+                                    ),
+                                  )
+                                ],
+                              )
+                            )
+                          ),
+                        ]
+                      ),
+                      
+                    ],
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Column(
+                    children: [
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: pw.BoxDecoration(
+                                color: PdfColor.fromHex("f2f2f2"),
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Center(
+                                child: pw.Text(
+                                  "Dirección de entrega",
+                                  style: pw.TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: pw.FontWeight.bold
+                                  ),
+                                )
+                              )
+                            )
+                          )
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Expanded(
+                            child: pw.Container(
+                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: pw.BoxDecoration(
+                                border: pw.BoxBorder(
+                                  bottom: true,
+                                  left: true,
+                                  right: true,
+                                  top: true,
+                                  width: 0.5,
+                                  color: PdfColor.fromHex("555555"),
+                                )
+                              ),
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                                children: [
+                                  pw.Text(
+                                    direccionEntrega,
                                     textAlign: pw.TextAlign.center,
                                     style: pw.TextStyle(
                                       fontSize: 11
@@ -1252,7 +1400,7 @@ abstract class PDFManager{
                   ),
                 ),
               ]
-            ),
+            ): pw.Container(),
             pw.SizedBox(
               height: 16
             ),

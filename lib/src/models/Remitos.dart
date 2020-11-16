@@ -6,6 +6,7 @@ import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
+import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/views/remitos/RemitosModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
@@ -25,6 +26,7 @@ class Remitos extends Equatable with Models{
   final Domicilios domicilio;
   final Usuarios usuario;
   final Ubicaciones ubicacion;
+  final Ventas venta;
 
   Remitos({
     this.idRemito,
@@ -38,7 +40,8 @@ class Remitos extends Equatable with Models{
     this.lineasProducto, 
     this.domicilio,
     this.usuario, 
-    this.ubicacion
+    this.ubicacion,
+    this.venta,
     });
 
   @override
@@ -82,13 +85,13 @@ class Remitos extends Equatable with Models{
         domicilio:        mapModel["Domicilios"] != null ? Domicilios().fromMap(mapModel) : null,
         usuario:          mapModel["Usuarios"] != null ? Usuarios().fromMap(mapModel) : null,
         ubicacion:        mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
+        venta:            mapModel["Remitos"]["_Extra"] != null ? Ventas().fromMap(mapModel["Remitos"]["_Extra"]) : null,
         lineasProducto:   _lineasProducto,
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
     Map<String, dynamic> remitos = {
       "Remitos": {
         "IdRemito":         this.idRemito,
@@ -99,6 +102,7 @@ class Remitos extends Equatable with Models{
         "FechaAlta":        this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
         "Observaciones":    this.observaciones,
         "Estado":           this.estado,
+        "_Extra":           this.venta != null ? this.venta.toMap() : null
       }
     };
 
@@ -126,7 +130,6 @@ class Remitos extends Equatable with Models{
 
   @override
   Widget viewModel(BuildContext context) {
-    // TODO: implement viewModel
     SizeConfig().init(context);
     return RemitosModelView(
       remito: this,

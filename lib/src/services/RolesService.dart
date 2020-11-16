@@ -92,14 +92,14 @@ class RolesService extends Services {
     );
   }
 
-  ListMethodConfiguration listarPermisosConfiguration(
-      Map<String, dynamic> payload) {
+  ListMethodConfiguration listarPermisosConfiguration(Map<String, dynamic> payload) {
     return ListMethodConfiguration(
         method: Methods.POST,
         model: Permisos(),
         path: "/roles/permisos",
         scheduler: scheduler,
-        payload: payload);
+        payload: payload
+    );
   }
 
   DoMethodConfiguration asignarPermisosConfiguration(Map<String, dynamic> payload){
