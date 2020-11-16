@@ -6,6 +6,7 @@ import 'package:printing/printing.dart';
 import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
+import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Remitos.dart';
 import 'package:zmgestion/src/services/RemitosService.dart';
@@ -35,6 +36,7 @@ class _RemitosModelViewState extends State<RemitosModelView> {
   List<Widget> _lineasRemito;
   Color stateColor;
   bool change = false;
+  String direccionEntrega = "";
 
   @override
   void initState() {
@@ -42,12 +44,15 @@ class _RemitosModelViewState extends State<RemitosModelView> {
     if(widget.remito != null){
       remito = widget.remito;
       if(remito.tipo == 'E' || remito.tipo == 'X'){
-        ubicacion = remito.ubicacion.ubicacion; 
+        if(remito.ubicacion.ubicacion != null){
+          direccionEntrega = remito.ubicacion.ubicacion; 
+        }
       }else{
-        ubicacion = "-";
+        if(remito.venta?.idVenta != null){
+          direccionEntrega = remito.venta.domicilio.domicilio;
+        }
       }
       remito.lineasProducto.forEach((lr) {
-        print(lr);
         _lineasRemito.add(_detalleLineaRemito(lr));
       });
       switch (remito.estado){
@@ -60,16 +65,15 @@ class _RemitosModelViewState extends State<RemitosModelView> {
           break;
         }
         default :{
-          stateColor = Colors.black;
+          stateColor = Colors.blue;
           break;
         }
       }
 
     }else{
-      ubicacion = "-";
+      direccionEntrega = "-";
     }
     dateFormat = DateFormat("dd/MM/yyyy HH:mm");
-
     super.initState();
   }
 
@@ -85,8 +89,33 @@ class _RemitosModelViewState extends State<RemitosModelView> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: 'Remito: ',
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.8),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: Remitos().mapEstados()[remito.estado],
+                            style: TextStyle(
+                              color: stateColor
+                            )
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GFIconButton(
@@ -97,7 +126,7 @@ class _RemitosModelViewState extends State<RemitosModelView> {
                   shape: GFIconButtonShape.circle,
                   color: Theme.of(context).cardColor,
                   onPressed: (){
-                    Navigator.of(context).pop(change);
+                    Navigator.of(context).pop();
                   },
                 ),
               ),
@@ -217,33 +246,6 @@ class _RemitosModelViewState extends State<RemitosModelView> {
                           ),
                         ),
                       ),
-                      SizedBox(width: SizeConfig.blockSizeHorizontal*1.5,),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 2.5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              TopLabel(
-                                padding: const EdgeInsets.all(0),
-                                labelText:"Estado",
-                                fontSize: 12,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: Text(
-                                  Remitos().mapEstados()[remito.estado],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13.5,
-                                    color: stateColor
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   Container(
@@ -290,14 +292,14 @@ class _RemitosModelViewState extends State<RemitosModelView> {
                                       children: [
                                         TopLabel(
                                           padding: EdgeInsets.zero,
-                                          labelText: "Ubicación de Entrada",
+                                          labelText: "Direccón de entrega",
                                           fontSize: 14,
                                           color: Color(0xff97D2FF).withOpacity(1),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(vertical: 4),
                                           child: Text(
-                                            ubicacion,
+                                            direccionEntrega,
                                             style: TextStyle(
                                               color: Color(0xff97D2FF).withOpacity(1),
                                               fontWeight: FontWeight.w600
@@ -307,6 +309,78 @@ class _RemitosModelViewState extends State<RemitosModelView> {
                                       ],
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 6
+                            ),
+                            remito.venta?.idVenta != null ? 
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 2.5),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          padding: EdgeInsets.zero,
+                                          labelText: "Cliente",
+                                          fontSize: 14,
+                                          color: Color(0xff97D2FF).withOpacity(1),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4),
+                                          child: Text(
+                                            Utils.clientName(remito.venta.cliente),
+                                            style: TextStyle(
+                                              color: Color(0xff97D2FF).withOpacity(1),
+                                              fontWeight: FontWeight.w600
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: SizeConfig.blockSizeHorizontal*2.5,),
+                                Expanded(
+                                  child: Container(),
+                                ),
+                              ],
+                            ): Container(),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 2.5),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        TopLabel(
+                                          padding: EdgeInsets.zero,
+                                          labelText: "Observaciones",
+                                          fontSize: 14,
+                                          color: Color(0xff97D2FF).withOpacity(1),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4),
+                                          child: Text(
+                                            remito.observaciones != null ? remito.observaciones : '',
+                                            style: TextStyle(
+                                              color: Color(0xff97D2FF).withOpacity(1),
+                                              fontWeight: FontWeight.w600
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: SizeConfig.blockSizeHorizontal*2.5,),
+                                Expanded(
+                                  child: Container(),
                                 ),
                               ],
                             ),
@@ -451,7 +525,6 @@ class _RemitosModelViewState extends State<RemitosModelView> {
   }
 
   Widget _detalleLineaRemito(LineasProducto lp){
-    print(lp.toMap());
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),
       child: Row(
@@ -495,7 +568,7 @@ class _RemitosModelViewState extends State<RemitosModelView> {
           Expanded(
             flex:1,
             child: Text(
-              lp.estado,
+              LineasProducto().mapEstados()[lp.estado],
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w500,

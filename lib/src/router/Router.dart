@@ -37,7 +37,6 @@ const String DomiciliosRoute = '/domicilios';
 const String RemitosRoute = '/remitos';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  print(settings.name);
   var query = settings.name.split('?');
   Map<String, String> queryParameters = {};
   if(query.length > 1){
@@ -76,7 +75,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case RolesRoute:
       return _getPageRoute(RolesIndex(), settings);
     case VentasRoute:
-      return _getPageRoute(VentasIndex(), settings);
+      return _getPageRoute(VentasIndex(args: queryParameters,), settings);
     case PdfPreview:
       return _getPageRoute(PdfIndex(), settings);
     case ComprobantesRoute:

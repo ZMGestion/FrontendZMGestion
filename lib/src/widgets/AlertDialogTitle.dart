@@ -24,6 +24,7 @@ class AlertDialogTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Material(
+        color: backgroundColor != null ? backgroundColor : Theme.of(context).cardColor,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(

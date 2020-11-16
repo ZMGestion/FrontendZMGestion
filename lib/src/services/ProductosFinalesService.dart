@@ -170,4 +170,19 @@ class ProductosFinalesService extends Services{
           )
     );
   }
+
+  DoMethodConfiguration moverProductoFinal(Map<String, dynamic> payload){
+    return DoMethodConfiguration(
+          method: Methods.POST,
+          path: "/productosFinales/mover",
+          authorizationHeader: true,
+          scheduler: scheduler,
+          payload: payload,
+          requestConfiguration: RequestConfiguration(
+            showLoading: true,
+            showSuccess: true,
+            successMessage: "El mueble fue movido con éxito"
+          )
+    );
+  }
 }

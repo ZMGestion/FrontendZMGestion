@@ -9,7 +9,9 @@ import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Remitos.dart';
 import 'package:zmgestion/src/models/Ubicaciones.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
+import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
@@ -123,7 +125,9 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                     "LineasVenta": _lineasVenta,
                   })).then((response){
                     if(response.status == RequestStatus.SUCCESS){
-                      Navigator.of(context).pop();
+                      Remitos _remito = Remitos().fromMap(response.message);
+                      final NavigationService _navigationService = locator<NavigationService>();
+                      _navigationService.navigateToWithReplacement('/remitos?IdRemito='+ _remito.idRemito.toString());
                     }
                   });
                 }

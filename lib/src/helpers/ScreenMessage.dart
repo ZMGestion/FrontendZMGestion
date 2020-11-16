@@ -74,7 +74,6 @@ class ScreenMessage extends StatefulWidget{
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: (){
-              print("Tap");
             },
             child: Container(
               decoration: BoxDecoration(

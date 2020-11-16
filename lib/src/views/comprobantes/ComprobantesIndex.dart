@@ -284,7 +284,6 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                     int idComprobante = 0;
                     if (mapModel != null) {
                       comprobante = Comprobantes().fromMap(mapModel);
-                      print(mapModel);
                       if (mapModel["Comprobantes"] != null) {
                         if (mapModel["Comprobantes"]["Estado"] != null) {
                           estado = mapModel["Comprobantes"]["Estado"];

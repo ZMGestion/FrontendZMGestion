@@ -6,9 +6,12 @@ import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
+import 'package:zmgestion/src/views/productosFinales/MoverProductoAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
+import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
+import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class ProductosFinalesModelView extends StatefulWidget {
   final ProductosFinales productoFinal;
@@ -47,8 +50,26 @@ class _ProductosFinalesModelViewState extends State<ProductosFinalesModelView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: 'Mueble',
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(0.8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20
+                          ),
+                          children: <TextSpan>[],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GFIconButton(
@@ -189,7 +210,35 @@ class _ProductosFinalesModelViewState extends State<ProductosFinalesModelView> {
                   ),
                 )
               ],
-            )
+            ),
+            productoFinal.cantidad > 0 ?
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ZMTextButton(
+                  text: "Mover producto",
+                  color: Colors.blue,
+                  onPressed: (){
+                    showDialog(
+                      context: context,
+                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return MoverProductoAlertDialog(
+                          productoFinal: productoFinal,
+                        );
+                      },
+                    ).then((value) async{
+                      if(value){
+                        setState(() {
+                          _idUbicacion = null;
+                        });
+                      }
+                    });
+                  },
+                ),
+              ],
+            ): Container()
           ],
         ),
       ),

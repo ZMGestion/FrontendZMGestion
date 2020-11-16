@@ -1,10 +1,6 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
-import 'package:speech_bubble/speech_bubble.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
@@ -18,16 +14,12 @@ import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
 import 'package:zmgestion/src/views/presupuestos/CrearLineaVenta.dart';
 import 'package:zmgestion/src/views/presupuestos/PresupuestoTransformadoDialog.dart';
-import 'package:zmgestion/src/views/presupuestos/PresupuestosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
-import 'package:zmgestion/src/widgets/AnimatedLoadingWidget.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
-import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 class TransformarPresupuestosVentaAlertDialog extends StatefulWidget {
   final List<Models> presupuestos;
@@ -58,7 +50,6 @@ class _TransformarPresupuestosVentaAlertDialogState extends State<TransformarPre
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     List<int> _idPresupuestos = [];
     for(Presupuestos presupuesto in widget.presupuestos){
