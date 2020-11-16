@@ -21,8 +21,11 @@ import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/OrdenesProduccionService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
 import 'package:zmgestion/src/views/comprobantes/OperacionesComprobanteAlertDialog.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/TareasAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
+import 'package:zmgestion/src/widgets/ModelView.dart';
+import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
@@ -53,7 +56,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
   var dateFormat = DateFormat("dd/MM/yyyy HH:mm");
   Color color;
   String domicilio;
-  List<Widget> _lineasVenta = [];
+  List<Widget> _lineasOrdenProduccion = [];
 
   @override
   void initState() {
@@ -70,7 +73,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
           color = Theme.of(mainContext).primaryColor;
       }
       ordenProduccion.lineasProducto.forEach((element) {
-        _lineasVenta.add(detalleLineaVenta(element, context));
+        _lineasOrdenProduccion.add(detalleLineaOrdenProduccion(element, context));
       });
     }
     super.initState();
@@ -248,7 +251,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                             thickness: 1,
                           ),
                           Column(
-                            children: _lineasVenta,
+                            children: _lineasOrdenProduccion,
                           )
                         ],
                       ),
@@ -305,7 +308,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
         ),
       );
     }
-    Widget detalleLineaVenta(LineasProducto lp, BuildContext context){
+    Widget detalleLineaOrdenProduccion(LineasProducto lp, BuildContext context){
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),
       child: Row(
@@ -365,74 +368,105 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                   child: IconButtonTableAction(
                     iconData: Icons.alt_route,
                     color: Colors.blue,
-                    onPressed: (){},
+                    onPressed: () async{
+                      await showDialog(
+                        context: context,
+                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                        builder: (BuildContext context) {
+                          return TareasAlertDialog(
+                            lineaOrdenProduccion: lp,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
-                Visibility(
-                  visible: lp.estado != 'C' && ordenProduccion.estado == 'P',
-                  child: ZMTooltip(
-                    message: "Cancelar linea",
-                    theme: ZMTooltipTheme.RED,
-                    child: IconButtonTableAction(
-                      iconData: Icons.cancel_outlined,
-                      color: Colors.orange,
-                      onPressed: () async{
-                        await showDialog(
-                          context: context,
-                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text(
-                                "Cancelar linea de orden de producción",
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600
-                                ),
+                ZMTooltip(
+                  message: lp.estado == 'C' ? "Reanudar producción" : "Cancelar producción",
+                  theme: lp.estado == 'C' ? ZMTooltipTheme.BLUE : ZMTooltipTheme.RED,
+                  child: IconButtonTableAction(
+                    iconData: lp.estado == 'C' ? Icons.play_circle_fill : Icons.cancel_outlined,
+                    color: lp.estado == 'C' ? Colors.blue : Colors.orange,
+                    onPressed: () async{
+                      await showDialog(
+                        context: context,
+                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              lp.estado == 'C' ? "Reanudar linea de orden de producción" : "Cancelar linea de orden de producción",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600
                               ),
-                              content: Text(
-                                "¿Está seguro que desea cancelar la línea?",                     
-                              ),
-                              actions: [
-                                ZMTextButton(
-                                  text: "Aceptar",
-                                  color: Theme.of(mainContext).primaryColor,
-                                  onPressed: () async{
-                                    Navigator.pop(context, true);
-                                  },
-                                ),
-                                ZMTextButton(
-                                  text: "Cancelar",
-                                  color: Theme.of(mainContext).primaryColor,
-                                  onPressed: (){
-                                    Navigator.pop(context, false);
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ).then((value) async{
-                          if(value){
-                            await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
-                              "LineasProducto":{
-                                "IdLineaProducto":lp.idLineaProducto
-                              }
-                            })).then((response) async{
-                              if (response.status == RequestStatus.SUCCESS){
-                                await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(ordenProduccion.idVenta)).then((response){
-                                  if (response.status == RequestStatus.SUCCESS){
-                                    setState(() {
-                                      ordenProduccion = response.message;
+                            ),
+                            content: Text(
+                              lp.estado == 'C' ? "¿Está seguro que desea reanudar la línea?" : "¿Está seguro que desea cancelar la línea?",                 
+                            ),
+                            actions: [
+                              ZMTextButton(
+                                text: "Aceptar",
+                                color: Theme.of(mainContext).primaryColor,
+                                onPressed: () async{
+                                  if(lp.estado == 'C'){
+                                    await OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().reanudarLineaOrdenProduccion({
+                                      "LineasProducto":{
+                                        "IdLineaProducto":lp.idLineaProducto
+                                      }
+                                    })).then((response) async{
+                                      if (response.status == RequestStatus.SUCCESS){
+                                        await OrdenesProduccionService(scheduler: scheduler).damePor(OrdenesProduccionService().dameConfiguration(ordenProduccion.idOrdenProduccion)).then((response){
+                                          if (response.status == RequestStatus.SUCCESS){
+                                            setState(() {
+                                              ordenProduccion = response.message;
+                                              _lineasOrdenProduccion = [];
+                                              ordenProduccion.lineasProducto.forEach((element) {
+                                                _lineasOrdenProduccion.add(detalleLineaOrdenProduccion(element, context));
+                                              });
+                                            });
+                                          }
+                                        });
+                                      }
+                                    });
+                                  }else{
+                                    await OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().cancelarLineaOrdenProduccio({
+                                      "LineasProducto":{
+                                        "IdLineaProducto":lp.idLineaProducto
+                                      }
+                                    })).then((response) async{
+                                      if (response.status == RequestStatus.SUCCESS){
+                                        await OrdenesProduccionService(scheduler: scheduler).damePor(OrdenesProduccionService().dameConfiguration(ordenProduccion.idOrdenProduccion)).then((response){
+                                          if (response.status == RequestStatus.SUCCESS){
+                                            ordenProduccion = response.message;
+                                            List<Widget> _nuevasLineas = [];
+                                            ordenProduccion.lineasProducto.forEach((element) {
+                                              _nuevasLineas.add(detalleLineaOrdenProduccion(element, context));
+                                            });
+                                            setState(() {
+                                              _lineasOrdenProduccion = _nuevasLineas;
+                                            });
+                                          }
+                                        });
+                                      }
                                     });
                                   }
-                                });
-                              }
-                            });
-                          }
-                        });
-                      },
-                    ),
+                                  Navigator.pop(context, false);
+                                },
+                              ),
+                              ZMTextButton(
+                                text: "Cancelar",
+                                color: Theme.of(mainContext).primaryColor,
+                                onPressed: (){
+                                  Navigator.pop(context, false);
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    },
                   ),
                 ),
               ],

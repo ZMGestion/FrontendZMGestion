@@ -777,15 +777,14 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                             ),
                                           );
                                         },
-                                      ).then((value){
-                                        if(value != null){
-                                          if (value){
-                                            setState(() {
-                                              refreshValue = Random().nextInt(99999);
-                                            });
-                                          }
-                                        }   
-                                      });
+                                      );
+                                      itemsController.add(
+                                        ItemAction(
+                                          event: ItemEvents.Update,
+                                          index: index,
+                                          updateMethodConfiguration: OrdenesProduccionService().dameConfiguration(idOrdenProduccion)
+                                        )
+                                      );
                                     }
                                   }
                                 ),
@@ -838,8 +837,8 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                       barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                       builder: (BuildContext context) {
                                         return DeleteAlertDialog(
-                                          title: "Borrar ordenProduccion",
-                                          message: "¿Está seguro que desea eliminar el ordenProduccion?",
+                                          title: "Borrar orden de producción",
+                                          message: "¿Está seguro que desea eliminar la orden de producción?",
                                           onAccept: () async {
                                             await OrdenesProduccionService().borra({
                                               "OrdenesProduccion": {"IdOrdenProduccion": idOrdenProduccion}

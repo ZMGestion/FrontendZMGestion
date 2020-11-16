@@ -6,6 +6,7 @@ import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
+import 'package:zmgestion/src/models/Tareas.dart';
 import 'package:zmgestion/src/services/Services.dart';
 
 class OrdenesProduccionService extends Services{
@@ -146,6 +147,40 @@ class OrdenesProduccionService extends Services{
   }
 
   @override
+  DoMethodConfiguration cancelarLineaOrdenProduccio(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/cancelar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de orden de producción se ha cancelado con éxito"
+      )
+    );
+  }
+
+  @override
+  DoMethodConfiguration reanudarLineaOrdenProduccion(Map<String, dynamic> payload) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/reanudar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de orden de producción se ha reanudado con éxito"
+      )
+    );
+  }
+
+  @override
   DoMethodConfiguration modificarLineaOrdenProduccion(LineasProducto lineaProducto) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
@@ -157,7 +192,7 @@ class OrdenesProduccionService extends Services{
       requestConfiguration: RequestConfiguration(
         showSuccess: true,
         showLoading: true,
-        successMessage: "La linea de ordenProduccion se ha modificado con éxito"
+        errorMessage: "La linea de ordenProduccion se ha modificado con éxito"
       ),
       attributes: {
         "LineasProducto": [
@@ -201,6 +236,163 @@ class OrdenesProduccionService extends Services{
         showLoading: true,
         successMessage: "La linea de ordenProduccion se ha eliminado con éxito"
       )
+    );
+  }
+
+  ListMethodConfiguration listarTareas(int idLineaOrdenProduccion) {
+    // TODO: implement altaConfiguration
+    return ListMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se listaban las tareas"
+      ),
+      payload:{
+        "LineasProducto": {
+          "IdLineaProducto": idLineaOrdenProduccion
+        }
+      },
+    );
+  }
+
+  DoMethodConfiguration crearTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/crear",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se creaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration eliminarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/borrar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se eliminaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration ejecutarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/ejecutar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se iniciaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration pausarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/pausar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se pausaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration reanudarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/reanudar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se reanudaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration cancelarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/cancelar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se cancelaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration finalizarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/finalizar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se finalizaba la tarea"
+      ),
+      payload: tarea.toMap(),
+    );
+  }
+
+  DoMethodConfiguration verificarTarea(Tareas tarea) {
+    // TODO: implement altaConfiguration
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/tareas/verificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      model: Tareas(),
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        errorMessage: "Ha ocurrido un error mientras se verificaba la tarea"
+      ),
+      payload: tarea.toMap(),
     );
   }
 }

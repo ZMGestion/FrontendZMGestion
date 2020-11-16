@@ -7,13 +7,17 @@ class IconButtonTableAction extends StatelessWidget {
   final Function onPressed;
   final double iconSize;
   final Color color;
+  final Color disabledColor;
+  final Color disabledBackgroundColor;
 
   const IconButtonTableAction({
     Key key, 
     this.iconData,
     this.onPressed,
     this.iconSize = 18,
-    this.color
+    this.color,
+    this.disabledColor,
+    this.disabledBackgroundColor
   }) : super(key: key);
 
   @override
@@ -23,12 +27,12 @@ class IconButtonTableAction extends StatelessWidget {
       icon: Icon(
         iconData != null ? iconData : Icons.image,
         size: iconSize,
-        color: color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.6),
+        color: onPressed == null ? (disabledColor != null ? disabledColor : Colors.black.withOpacity(0.5)) : color != null ? color : Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(0.6),
       ),
       shape: GFIconButtonShape.circle,
       color: Colors.transparent,
       hoverColor: Colors.black.withOpacity(0.1),
-      disabledColor: Colors.black.withOpacity(0.16),
+      disabledColor: disabledBackgroundColor != null ? disabledBackgroundColor : Colors.black.withOpacity(0.16),
       onPressed: onPressed
     );
   }
