@@ -526,7 +526,7 @@ class _VentasModelViewState extends State<VentasModelView> {
             Expanded(
               flex:1,
               child: Text(
-                LineasProducto().mapEstados()[lp.estado],
+                LineasProducto().mapEstados()[lp.estado??""]??"",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,

@@ -54,7 +54,7 @@ abstract class Utils{
         withoutHour = "Hoy"; //today
       } else if (difference.compareTo(twoDay) < 1) {
         withoutHour = "Ayer"; //yesterday
-      } else if (difference.compareTo(oneWeek) < 1) {
+      /*} else if (difference.compareTo(oneWeek) < 1) {
         switch (tm.weekday) {
           case 1:
             withoutHour = "Lunes"; //Monday
@@ -77,7 +77,7 @@ abstract class Utils{
           case 7:
             withoutHour = "Domingo"; //Sunday
             break;
-        }
+        }*/
       } else if (tm.year == today.year) {
         withoutHour = '${tm.day} de $month';
       } else {
