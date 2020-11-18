@@ -12,7 +12,6 @@ import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
-import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMBreadCrumb/ZMBreadCrumbItem.dart';
@@ -263,7 +262,7 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                       child: ZMStdButton(
                         color: Colors.green,
                         text: Text(
-                          "Nuevo comprobante",
+                          "Crear comprobante",
                           style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold
                           ),
@@ -294,39 +293,13 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                       }
                     }
                     return <Widget>[
-                      // IconButtonTableAction(
-                      //   iconData: Icons.remove_red_eye,
-                      //   onPressed: () {
-                      //     if (idComprobante != 0) {
-                      //       showDialog(
-                      //         context: context,
-                      //         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                      //         builder: (BuildContext context) {
-                      //           return ModelViewDialog(
-                      //             content: ModelView(
-                      //               service: UsuariosService(),
-                      //               getMethodConfiguration: UsuariosService()
-                      //                   .dameConfiguration(idUsuario),
-                      //               isList: false,
-                      //               itemBuilder: (mapModel, index, itemController) {
-                      //                 return Usuarios().fromMap(mapModel).viewModel(context);
-                      //               },
-                      //             ),
-                      //           );
-                      //         },
-                      //       );
-                      //     }
-                      //   },
-                      // ),
                       ZMTooltip(
-                        key: Key("EstadoComprobante"+estado),
+                        key: Key("EstadoComprobante" + estado),
                         message: estado == "A" ? "Dar de baja" : "Dar de alta",
                         theme: estado == "A" ? ZMTooltipTheme.RED : ZMTooltipTheme.GREEN,
                         visible: idComprobante != 0,
                         child: IconButtonTableAction(
-                          iconData: (estado == "A"
-                              ? Icons.arrow_downward
-                              : Icons.arrow_upward),
+                          iconData: (estado == "A"? Icons.arrow_downward : Icons.arrow_upward),
                           color: estado == "A" ? Colors.redAccent : Colors.green,
                           onPressed: idComprobante == 0 ? null : () {
                             if (idComprobante != 0) {
@@ -342,7 +315,8 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                                     );
                                   }
                                 });
-                              } else {
+                              } 
+                              if( estado == "B") {
                                 VentasService(scheduler: scheduler).doMethod(VentasService().darAltaComprobanteConfiguration({"Comprobantes":{"IdComprobante": idComprobante}})).then((response){
                                   if (response.status == RequestStatus.SUCCESS) {
                                     itemsController.add(
@@ -360,7 +334,7 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                         ),
                       ),
                       ZMTooltip(
-                        message: "Editar",
+                        message: "Modificar",
                         visible: idComprobante != 0,
                         child: IconButtonTableAction(
                           iconData: Icons.edit,
@@ -369,26 +343,26 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                               await showDialog(
                               context: context,
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                              barrierDismissible: false,
                               builder: (BuildContext context) {
                                 return OperacionesComprobanteAlertDialog(
-                                  title: "Modificar Comprobante",
+                                  title: "Modificar comprobante",
                                   comprobante: Comprobantes().fromMap(mapModel),
                                   operacion: "Modificar",
                                 );
-                              },
-                            ).then((value){
-                              if(value != null){
-                                if(value){
-                                  itemsController.add(
-                                    ItemAction(
-                                      event: ItemEvents.Update,
-                                      index: index,
-                                      updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
-                                    )
-                                  );
+                              }).then((value){
+                                if(value != null){
+                                  if(value){
+                                    itemsController.add(
+                                      ItemAction(
+                                        event: ItemEvents.Update,
+                                        index: index,
+                                        updateMethodConfiguration: VentasService().dameComprobanteConfiguration(comprobante.idComprobante)
+                                      )
+                                    );
+                                  }
                                 }
-                              }
-                            });
+                              });
                             }
                           },
                         ),
@@ -407,8 +381,7 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                                 builder: (BuildContext context) {
                                   return DeleteAlertDialog(
                                     title: "Borrar Comprobante",
-                                    message:
-                                        "¿Está seguro que desea eliminar el comprobante?",
+                                    message: "¿Está seguro que desea eliminar el comprobante?",
                                     onAccept: () async {
                                       await VentasService(scheduler: scheduler).doMethod(VentasService().borrarComprobanteConfiguration(idComprobante)).then((response) {
                                         if (response.status == RequestStatus.SUCCESS) {
@@ -431,84 +404,6 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
                       )
                     ];
                   },
-                  // onSelectActions: (comprobantes){
-                  //   bool estadosIguales = true;
-                  //   String estado;
-                  //   if (comprobantes.length >= 1) {
-                  //     Map<String, dynamic> anterior;
-                  //     for (Comprobantes comprobante in comprobantes) {
-                  //       Map<String, dynamic> mapComprobante = comprobante.toMap();
-                  //       if (anterior != null) {
-                  //         if (anterior["Comprobantes"]["Estado"] != mapComprobante["Comprobantes"]["Estado"]) {
-                  //           estadosIguales = false;
-                  //         }
-                  //       }
-                  //       if (!estadosIguales) break;
-                  //       anterior = mapComprobante;
-                  //     }
-                  //     if (estadosIguales) {
-                  //       estado = comprobantes[0].toMap()["Comprobantes"]["Estado"];
-                  //     }
-                  //   }
-                  //   return <Widget>[
-                  //     Visibility(
-                  //       visible: estadosIguales && estado != null,
-                  //       child: Row(
-                  //         children: [
-                  //           ZMStdButton(
-                  //             color: Colors.white,
-                  //             text: Text(
-                  //               (estado == "A"? "Dar de baja": "Dar de alta") +" (" + comprobantes.length.toString() +")",
-                  //               style: TextStyle(
-                  //                   color: Colors.black87,
-                  //                   fontWeight: FontWeight.bold),
-                  //             ),
-                  //             icon: Icon(
-                  //               estado == "A"? Icons.arrow_downward: Icons.arrow_upward,
-                  //               color: estado == "A" ? Colors.red : Colors.green,
-                  //               size: 20,
-                  //             ),
-                  //             onPressed: () {
-                  //               showDialog(
-                  //                 context: context,
-                  //                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                  //                 builder: (BuildContext context) {
-                  //                   return MultipleRequestView(
-                  //                     models: comprobantes,
-                  //                     title: (estado == "A"? "Dar de baja": "Dar de alta") +" " + comprobantes.length.toString() +" comprobantes",
-                  //                     service: VentasService(),
-                  //                     doMethodConfiguration: estado == "A"
-                  //                         ? VentasService().darBajaComprobanteConfiguration({"Comprobantes":{"IdComprobante": mapModel["Comprobantes"]["IdComprobante"]}})
-                  //                         : VentasService().darAltaComprobanteConfiguration({"Comprobantes":{"IdComprobante": mapModel["Comprobantes"]["IdComprobante"]}}),
-                  //                     payload: (mapModel) {
-                  //                       return {
-                  //                         "Productos": {
-                  //                           "IdProducto": mapModel["Productos"]["IdProducto"]
-                  //                         }
-                  //                       };
-                  //                     },
-                  //                     itemBuilder: (mapModel) {
-                  //                       return Text(mapModel["Productos"]["Producto"]);
-                  //                     },
-                  //                     onFinished: () {
-                  //                       setState(() {
-                  //                         refreshValue =
-                  //                             Random().nextInt(99999);
-                  //                       });
-                  //                     },
-                  //                   );
-                  //                 },
-                  //               );
-                  //             },
-                  //           ),
-                  //           SizedBox(
-                  //             width: 15,
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ]
-                  // },
                 );
               },
             ),
@@ -518,13 +413,14 @@ class _ComprobantesIndexState extends State<ComprobantesIndex> {
     );
   }
 
-  crearComprobante() async{
+  void crearComprobante() async{
     await showDialog(
       context: context,
       barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return OperacionesComprobanteAlertDialog(
-          title: "Crear Comprobante",
+          title: "Crear comprobante",
           comprobante: Comprobantes(idVenta: idVenta),
           operacion: "Crear",
         );

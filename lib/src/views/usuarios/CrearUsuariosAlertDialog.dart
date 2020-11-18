@@ -75,7 +75,6 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -85,7 +84,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
       return AppLoader(
         builder: (scheduler){
           return AlertDialog(
-            titlePadding: EdgeInsets.all(0),
+            titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
             contentPadding: EdgeInsets.all(0),
             insetPadding: EdgeInsets.all(0),
             actionsPadding: EdgeInsets.all(0),
@@ -95,7 +94,8 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: AlertDialogTitle(
-              title: widget.title
+              title: widget.title,
+              titleColor: Theme.of(context).primaryColor,
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
@@ -275,6 +275,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                           Expanded(
                             child: TextFormFieldDialog(
                               obscureText: true,
+                              maxLines: 1,
                               controller: passController,
                               labelText: "Contraseña",
                               validator: Validator.passStrengthValidator,
@@ -284,6 +285,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                           Expanded(
                             child: TextFormFieldDialog(
                               obscureText: true,
+                              maxLines: 1,
                               controller: pass2Controller,
                               labelText: "Repita contraseña",
                               validator: (pass2){
@@ -362,7 +364,7 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
                             iconedButtons: {
                               ButtonState.idle:
                                 IconedButton(
-                                    text: "Crear Empleado",
+                                    text: "Crear empleado",
                                     icon: Icon(Icons.person_add, color: Colors.white),
                                     color: Colors.blueAccent),
                               ButtonState.loading:

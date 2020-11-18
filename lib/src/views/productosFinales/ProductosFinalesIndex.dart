@@ -319,7 +319,7 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo mueble",
+                              "Crear mueble",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/main.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
@@ -14,7 +12,6 @@ import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class OperacionesComprobanteAlertDialog extends StatefulWidget {
   final String title;
@@ -30,23 +27,21 @@ class OperacionesComprobanteAlertDialog extends StatefulWidget {
 class _OperacionesComprobanteAlertDialogState extends State<OperacionesComprobanteAlertDialog> {
 
   final _formKey = GlobalKey<FormState>();
-  String tipo =  'R'; 
   final TextEditingController numeroComprobanteController = new TextEditingController();
   final TextEditingController montoController = new TextEditingController();
   final TextEditingController observacionesController = new TextEditingController();
+  
+  String tipo;
   Comprobantes comprobante;
-  bool enable = false;
 
   @override
   void initState() {
     comprobante = widget.comprobante;
-    // TODO: implement initState
     if (widget.operacion == 'Modificar'){
       numeroComprobanteController.text = comprobante.numeroComprobante.toString();
       tipo = comprobante.tipo;
       montoController.text = comprobante.monto.toString();
       observacionesController.text = comprobante.observaciones;
-      enable = true;
     }
     super.initState();
   }
@@ -57,7 +52,7 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
     return AppLoader(
       builder: (scheduler){
         return AlertDialog(
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
           contentPadding: EdgeInsets.all(0),
           insetPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.all(0),
@@ -67,10 +62,14 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
           backgroundColor: Theme.of(context).cardColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: AlertDialogTitle(
-            title: widget.title
+            title: widget.title,
+            titleColor: Theme.of(context).primaryColor,
           ),
           content: Container(
             padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
+            constraints: BoxConstraints(
+              maxWidth: 600
+            ),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
@@ -85,9 +84,12 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
+                          flex: 5,
                           child: TextFormFieldDialog(
                             controller: numeroComprobanteController,
-                            validator: Validator.notEmptyValidator,
+                            validator: (value){
+                              return Validator.intValidator(value);
+                            },
                             labelText: "Número de comprobante",
                           ),
                         ),
@@ -95,6 +97,7 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                           width: 12,
                         ),
                         Expanded(
+                          flex: 2,
                           child: Container(
                             constraints: BoxConstraints(minWidth: 200),
                             child: Column(
@@ -108,7 +111,6 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                                   child: DropDownMap(
                                     map: Comprobantes().mapTipos(),
                                     addAllOption: false,
-                                    initialValue: "R",
                                     onChanged: (value) {
                                       setState(() {
                                         tipo = value;
@@ -160,12 +162,11 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
                       ZMStdButton(
                         color: Theme.of(mainContext).primaryColor,
                         text: Text(
-                          widget.operacion +" Comprobante",
+                          widget.operacion +" comprobante",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white, 
                             fontWeight: FontWeight.bold,
-                            
                           ),
                         ),
                         onPressed: () async{

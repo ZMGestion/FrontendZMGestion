@@ -212,7 +212,7 @@ class _LineaTareaState extends State<LineaTarea> {
             ),
             ZMTooltip(
               theme: ZMTooltipTheme.BLUE,
-              message: _editando ? "Editar tarea" : "Agregar tarea",
+              message: _editando ? "Modificar tarea" : "Agregar tarea",
               child: IconButtonTableAction(
                 iconData: Icons.check,
                 color: Colors.blue,

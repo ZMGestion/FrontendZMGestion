@@ -20,7 +20,7 @@ class _CrearLineaVentaState extends State<CrearLineaVenta> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      titlePadding: EdgeInsets.all(0),
+      titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
       contentPadding: EdgeInsets.all(0),
       insetPadding: EdgeInsets.all(0),
       actionsPadding: EdgeInsets.all(0),

@@ -57,7 +57,7 @@ class _GruposProductoAlertDialogState extends State<GruposProductoAlertDialog> {
     SizeConfig().init(context);
     return AppLoader(builder: (scheduler) {
       return AlertDialog(
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
           contentPadding: EdgeInsets.all(0),
           insetPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.all(0),
@@ -321,7 +321,7 @@ class _GruposProductoTableState extends State<GruposProductoTable> {
         ZMStdButton(
           color: Colors.green,
           text: Text(
-            "Nuevo grupo",
+            "Crear grupo",
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold),
@@ -524,7 +524,7 @@ class _GruposProductoTableState extends State<GruposProductoTable> {
             ),
           ),
           ZMTooltip(
-            message: "Editar",
+            message: "Modificar",
             visible: idGrupoProducto != 0,
             child: IconButtonTableAction(
               iconData: Icons.edit,

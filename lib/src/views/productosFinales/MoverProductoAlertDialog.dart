@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinbox/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
+import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
@@ -26,7 +28,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
   int cantidad;
   int idUbicacionEntrada;
   int idUbicacionSalida;
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -56,7 +58,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
             children: [
               RichText(
                 text: TextSpan(
-                  text: 'Mover Mueble de Ubicación',
+                  text: 'Mover mueble de ubicación',
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.8),
                     fontWeight: FontWeight.bold,
@@ -72,7 +74,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
               text: "Cancelar",
               color: Theme.of(context).primaryColor,
               onPressed: (){
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
             ),
             SizedBox(
@@ -82,8 +84,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
               text: "Aceptar",
               color: Theme.of(context).primaryColor,
               onPressed: () async{
-                print(productoFinal.toMap());
-                if(cantidad != 0 && idUbicacionEntrada != 0 && idUbicacionSalida != 0){
+                if(_formKey.currentState.validate()){
                   await ProductosFinalesService().doMethod(ProductosFinalesService().moverProductoFinal({
                     "LineasProducto":{
                       "IdProductoFinal": productoFinal.idProductoFinal,
@@ -117,7 +118,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))
             ),
             child: Form(
-              key: formKey,
+              key: _formKey,
               child: Column(
                 children: [
                   Padding(
@@ -133,7 +134,6 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
                             labelName: "Desde",
                             displayedName: "Ubicacion",
                             valueName: "IdUbicacion",
-                            initialValue: idUbicacionSalida,
                             errorMessage: "Debe seleccionar una ubicación",
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(left: 8)
@@ -151,6 +151,7 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
                                   setState(() {
                                     idUbicacionSalida = idSelected;
                                     productoFinal = ProductosFinales().fromMap(response.message);
+                                    cantidad = 0;
                                   });
                                 }
                               });
@@ -173,7 +174,6 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
                             labelName: "Hacia",
                             displayedName: "Ubicacion",
                             valueName: "IdUbicacion",
-                            initialValue: idUbicacionEntrada,
                             errorMessage: "Debe seleccionar una ubicación",
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(left: 8)
@@ -191,28 +191,28 @@ class _MoverProductoAlertDialogState extends State<MoverProductoAlertDialog> {
                   Padding(
                     padding: const EdgeInsets.all(4),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           flex: 2,
-                          child: NumberInputWithIncrementDecrement(
-                            labelText: "Cantidad",
-                            initialValue: cantidad,
-                            textStyle: TextStyle(
-                              color: Colors.black
+                          child: SpinBox(
+                            key: Key(productoFinal.cantidad.toString()),
+                            enabled: idUbicacionEntrada != null && idUbicacionSalida != null ,
+                            direction: Axis.horizontal,
+                            decimals: 0,
+                            max: productoFinal.cantidad.toDouble(),
+                            decoration: InputDecoration(
+                              labelText: "Cantidad"
                             ),
-                            hintStyle: TextStyle(
-                              color: Colors.black
-                            ),
-                            labelStyle: TextStyle(
-                              color: Theme.of(context).primaryColor
-                            ),
+                            validator: (value){
+                              return Validator.greaterValidator(int.parse(value), 0);
+                            },
                             onChanged: (value){
                               setState(() {
-                                cantidad = value;
+                                cantidad = value.toInt();
                               });
-                            } ,
-                          ),
+                            },
+                          )
                         ),
                         SizedBox(
                           width: SizeConfig.blockSizeHorizontal*1,

@@ -228,7 +228,7 @@ class _ProductosFinalesModelViewState extends State<ProductosFinalesModelView> {
                           productoFinal: productoFinal,
                         );
                       },
-                    ).then((value) async{
+                    ).then((value) {
                       if(value){
                         setState(() {
                           _idUbicacion = null;

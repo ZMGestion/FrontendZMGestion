@@ -63,7 +63,7 @@ class _ModificarTelasAlertDialogState extends State<ModificarTelasAlertDialog> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return AlertDialog(
-      titlePadding: EdgeInsets.all(0),
+      titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
       contentPadding: EdgeInsets.all(0),
       insetPadding: EdgeInsets.all(0),
       actionsPadding: EdgeInsets.all(0),
@@ -73,7 +73,8 @@ class _ModificarTelasAlertDialogState extends State<ModificarTelasAlertDialog> {
       backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: AlertDialogTitle(
-        title: widget.title
+        title: widget.title,
+        titleColor: Theme.of(context).primaryColor,
       ),
       content: Container(
         padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

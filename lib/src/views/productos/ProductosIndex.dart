@@ -341,7 +341,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo producto",
+                              "Crear producto",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -613,7 +613,7 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               ),
                             ),
                             ZMTooltip(
-                              message: "Editar",
+                              message: "Modificar",
                               visible: idProducto != 0,
                               child: IconButtonTableAction(
                                 iconData: Icons.edit,

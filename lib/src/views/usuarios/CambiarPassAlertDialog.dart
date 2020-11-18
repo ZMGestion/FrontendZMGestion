@@ -39,7 +39,7 @@ class _CambiarPassAlertDialogState extends State<CambiarPassAlertDialog> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return AlertDialog(
-      titlePadding: EdgeInsets.all(0),
+      titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
       contentPadding: EdgeInsets.all(0),
       insetPadding: EdgeInsets.all(0),
       actionsPadding: EdgeInsets.all(0),
@@ -67,6 +67,7 @@ class _CambiarPassAlertDialogState extends State<CambiarPassAlertDialog> {
                   child: TextFormFieldDialog(
                     controller: oldPassController,
                     labelText: "Contraseña actual",
+                    maxLines: 1,
                     obscureText: !showOldPass,
                     suffixIcon: IconButton(
                       icon: Icon(!showOldPass ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash, size: 15,),
@@ -89,6 +90,7 @@ class _CambiarPassAlertDialogState extends State<CambiarPassAlertDialog> {
                       controller: newPassController,
                       labelText: "Contraseña nueva",
                       obscureText: !showNewPass,
+                      maxLines: 1,
                       suffixIcon: IconButton(
                         icon: Icon(!showNewPass ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash, size: 15,),
                         onPressed: (){

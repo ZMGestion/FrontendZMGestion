@@ -186,7 +186,7 @@ class _VentasModelViewState extends State<VentasModelView> {
                                     children: [
                                       TopLabel(
                                         padding: EdgeInsets.zero,
-                                        labelText: "Usuario",
+                                        labelText: "Empleado",
                                         fontSize: 14,
                                         color: Color(0xff97D2FF).withOpacity(1),
                                       ),
@@ -290,22 +290,6 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 ),
                               ),
                             ],
-                          ),
-                          Divider(
-                            color: Colors.white,
-                            thickness: 2,
-                          ),
-                           Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical:2.5),
-                              child: Text(
-                                "Detalles de venta",
-                                 style: TextStyle(
-                                  color: Color(0xff97D2FF).withOpacity(1),
-                                  fontWeight: FontWeight.bold
-                                ), 
-                              ),
-                            ),
                           ),
                         ],
                       ),

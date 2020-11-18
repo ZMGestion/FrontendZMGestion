@@ -201,7 +201,7 @@ class _TelasIndexState extends State<TelasIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nueva tela",
+                              "Crear tela",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -468,7 +468,7 @@ class _TelasIndexState extends State<TelasIndex> {
                               ),
                             ),
                             ZMTooltip(
-                              message: "Editar",
+                              message: "Modificar",
                               visible: idTela != 0,
                               child: IconButtonTableAction(
                                 iconData: Icons.edit,

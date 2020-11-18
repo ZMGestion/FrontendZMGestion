@@ -102,7 +102,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
       return AppLoader(
         builder: (scheduler){
           return AlertDialog(
-            titlePadding: EdgeInsets.all(0),
+            titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
             contentPadding: EdgeInsets.all(0),
             insetPadding: EdgeInsets.all(0),
             actionsPadding: EdgeInsets.all(0),
@@ -152,7 +152,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                                   barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                                   builder: (BuildContext context) {
                                                     return CrearClientesAlertDialog(
-                                                      title: "Nuevo cliente",
+                                                      title: "Crear cliente",
                                                       onSuccess: () {
                                                         Navigator.of(context).pop(true);
                                                       },

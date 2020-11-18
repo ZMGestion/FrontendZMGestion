@@ -145,14 +145,13 @@ class _DropDownModelViewState extends State<DropDownModelView> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     if (widget.initialValue != null) {
       _tipoSeleccionado = widget.initialValue;
     }
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await _loadItems();
     });
+    super.initState();
   }
 
   @override

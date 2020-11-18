@@ -105,8 +105,7 @@ class _ZMTableState extends State<ZMTable> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
+    
     columnNames = getColumnNames();
     columns = generateColumns(columnNames);
     longitudPagina = widget.pageLength;
@@ -137,6 +136,7 @@ class _ZMTableState extends State<ZMTable> {
     //     models.add(element);
     //   });
     // }
+    super.initState();
   }
 
   _updatePage(Paginaciones pageInfo) {
@@ -237,6 +237,7 @@ class _ZMTableState extends State<ZMTable> {
       paginatedlistMethodConfiguration = widget.listMethodConfiguration;
     }
     return paginatedlistMethodConfiguration;
+    
   }
 
   @override
