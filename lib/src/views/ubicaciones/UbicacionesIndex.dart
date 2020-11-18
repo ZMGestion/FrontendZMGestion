@@ -127,7 +127,7 @@ class _UbicacionesIndexState extends State<UbicacionesIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nueva Ubicación",
+                              "Crear ubicación",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),

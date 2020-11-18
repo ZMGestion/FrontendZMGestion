@@ -24,6 +24,7 @@ import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 
+
 class GenerarRemitoAlertDialog extends StatefulWidget {
   final Ventas venta;
   final Function onSuccess;
@@ -81,10 +82,9 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
     return AppLoader(
       builder: (scheduler){
         return AlertDialog(
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
           contentPadding: EdgeInsets.all(0),
           insetPadding: EdgeInsets.all(0),
-          actionsPadding: EdgeInsets.all(16),
           buttonPadding: EdgeInsets.all(0),
           elevation: 1.5,
           scrollable: true,
@@ -95,45 +95,6 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
             backgroundColor: Theme.of(context).primaryColorLight,
             titleColor: Colors.white,
           ),
-          actions: [
-            ZMStdButton(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              text: Text(
-                "Generar Remito",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600
-                ),
-              ),
-              color: Colors.green,
-              onPressed: () async{
-                List<Map<String, dynamic>> _lineasVenta = new List<Map<String, dynamic>>();
-                if(lineasVentaSeleccionadas.length > 0 && _idDomicilio != null && _idDomicilio != 0){
-                  lineasVentaSeleccionadas.forEach((element) { 
-                    Map<String, dynamic> lineaVentaMap = new Map<String, dynamic>();
-                    lineaVentaMap.addAll({
-                      "IdLineaProducto": element.idLineaProducto,
-                      "IdUbicacion": element.idUbicacion,
-                      "Cantidad": element.cantidad,
-                    });
-                    _lineasVenta.add(lineaVentaMap);
-                  });
-                  await VentasService().doMethod(VentasService().generarRemito({
-                    "Ventas":{
-                      "IdVenta": venta.idVenta,
-                      "IdDomicilio": _idDomicilio,
-                    },
-                    "LineasVenta": _lineasVenta,
-                  })).then((response){
-                    if(response.status == RequestStatus.SUCCESS){
-                      Remitos _remito = Remitos().fromMap(response.message);
-                      final NavigationService _navigationService = locator<NavigationService>();
-                      _navigationService.navigateToWithReplacement('/remitos?IdRemito='+ _remito.idRemito.toString());
-                    }
-                  });
-                }
-              },
-            )
-          ],
           content: Container(
             padding: EdgeInsets.fromLTRB(24, 12, 24, 12),
             width: SizeConfig.blockSizeHorizontal * 90,
@@ -154,7 +115,6 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                 child: detalles()
               ),
                 informacion(scheduler),
-                
               ],
             )
           ),
@@ -257,6 +217,47 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                 ),
               ),
               SizedBox(width: 12,),
+              Container(
+                constraints: BoxConstraints(minWidth: 180),
+                child: ZMStdButton(
+                  padding: EdgeInsets.symmetric(horizontal: 6),
+                  text: Text(
+                    "Generar Remito",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color:Colors.white
+                    ),
+                  ),
+                  color: Colors.green,
+                  disable: lineasVentaSeleccionadas.length == 0 || _idDomicilio == null || _idDomicilio == 0,
+                  disabledColor: Colors.grey,
+                  onPressed: () async{
+                    List<Map<String, dynamic>> _lineasVenta = new List<Map<String, dynamic>>();
+                    lineasVentaSeleccionadas.forEach((element) { 
+                      Map<String, dynamic> lineaVentaMap = new Map<String, dynamic>();
+                      lineaVentaMap.addAll({
+                        "IdLineaProducto": element.idLineaProducto,
+                        "IdUbicacion": element.idUbicacion,
+                        "Cantidad": element.cantidad,
+                      });
+                      _lineasVenta.add(lineaVentaMap);
+                    });
+                    await VentasService().doMethod(VentasService().generarRemito({
+                      "Ventas":{
+                        "IdVenta": venta.idVenta,
+                        "IdDomicilio": _idDomicilio,
+                      },
+                      "LineasVenta": _lineasVenta,
+                    })).then((response){
+                      if(response.status == RequestStatus.SUCCESS){
+                        Remitos _remito = Remitos().fromMap(response.message);
+                        final NavigationService _navigationService = locator<NavigationService>();
+                        _navigationService.navigateToWithReplacement('/remitos?IdRemito='+ _remito.idRemito.toString());
+                      }
+                    });
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -296,8 +297,6 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
       fontSize: 13,
       color: Colors.white.withOpacity(0.8)
     );
-
-
     return Card(
       elevation: 0.5,
       color: Colors.black.withOpacity(0.2),

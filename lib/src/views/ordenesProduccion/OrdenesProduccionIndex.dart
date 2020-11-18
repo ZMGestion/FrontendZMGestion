@@ -612,7 +612,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nueva orden de producción",
+                              "Crear orden de producción",
                               style: TextStyle(
                                 color: Colors.white, fontWeight: FontWeight.bold
                               ),
@@ -629,7 +629,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return OrdenesProduccionAlertDialog(
-                                    title: "Nueva orden de producción",
+                                    title: "Crear orden de producción",
                                   );
                                 },
                               );
@@ -793,7 +793,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                             Opacity(
                               opacity: idOrdenProduccion == 0 ? 0.2 : (estado  != "V" ? 1 : 0.2),
                               child: ZMTooltip(
-                                message: "Editar",
+                                message: "Modificar",
                                 visible: idOrdenProduccion != 0,
                                 child: IconButtonTableAction(
                                   iconData: Icons.edit,

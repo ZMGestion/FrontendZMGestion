@@ -5,22 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
-import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
-import 'package:zmgestion/src/views/clientes/DomiciliosClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/clientes/ModificarClientesAlertDialog.dart';
-import 'package:zmgestion/src/views/usuarios/CrearUsuariosAlertDialog.dart';
-import 'package:zmgestion/src/views/usuarios/ModificarUsuariosAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DropDownMap.dart';
-import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/FilterChoiceChip.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
-import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
@@ -150,7 +144,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TopLabel(
-                                      labelText: "Tipo de Cliente",
+                                      labelText: "Tipo de cliente",
                                     ),
                                     Container(
                                       width: 250,
@@ -468,7 +462,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo Cliente",
+                              "Crear cliente",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -484,7 +478,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return CrearClientesAlertDialog(
-                                    title: "Crear Cliente",
+                                    title: "Crear cliente",
                                     onSuccess: () {
                                       Navigator.of(context).pop(true);
                                       setState(() {
@@ -735,7 +729,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                               ),
                             ),
                             ZMTooltip(
-                              message: "Editar",
+                              message: "Modificar",
                               visible: idCliente != 0,
                               child: IconButtonTableAction(
                                 iconData: Icons.edit,
@@ -791,7 +785,7 @@ class _ClientesIndexState extends State<ClientesIndex> {
                                           .withOpacity(0.5),
                                       builder: (BuildContext context) {
                                         return DeleteAlertDialog(
-                                          title: "Borrar Cliente",
+                                          title: "Borrar cliente",
                                           message:
                                               "¿Está seguro que desea eliminar el cliente?",
                                           onAccept: () async {

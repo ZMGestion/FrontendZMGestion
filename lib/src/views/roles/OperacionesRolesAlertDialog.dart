@@ -41,7 +41,7 @@ class _OperacionesRolesAlertDialogState extends State<OperacionesRolesAlertDialo
         _title = 'Modificar rol';
       }
     }else{
-      _title = 'Crear Rol';
+      _title = 'Crear rol';
     }
     super.initState();
   }

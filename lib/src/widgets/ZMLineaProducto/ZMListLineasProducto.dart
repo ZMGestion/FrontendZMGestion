@@ -207,7 +207,7 @@ class _ZMListLineasProductoState extends State<ZMListLineasProducto> {
           ),
         ),
         ZMTooltip(
-          message: "Editar",
+          message: "Modificar",
           theme: ZMTooltipTheme.WHITE,
           child: IconButton(
             icon: Icon(

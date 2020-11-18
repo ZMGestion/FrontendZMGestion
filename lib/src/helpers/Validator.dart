@@ -34,7 +34,7 @@ abstract class Validator{
   static String intValidator(String text){
     String err;
     RegExp emailRegExp = RegExp(r"^[0-9]*$");
-    if(!emailRegExp.hasMatch(text)){
+    if(!emailRegExp.hasMatch(text) || text == ''){
       err = "Este campo debe ser numérico";
     }
     return err;
@@ -66,5 +66,13 @@ abstract class Validator{
       return _error;
     }
     return null;
+  }
+
+  static String greaterValidator(int value, int min){
+    String err;
+    if(value <= min){
+      err = 'Debe ser mayor a ' + min.toString();
+    }
+    return err;
   }
 }

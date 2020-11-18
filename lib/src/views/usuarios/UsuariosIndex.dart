@@ -476,7 +476,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo empleado",
+                              "Crear empleado",
                               style: TextStyle(
                                   color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -493,7 +493,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                     .withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return CrearUsuariosAlertDialog(
-                                    title: "Crear Empleado",
+                                    title: "Crear empleado",
                                     onSuccess: () {
                                       Navigator.of(context).pop();
                                     },
@@ -726,7 +726,7 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                               ),
                             ),
                             ZMTooltip(
-                              message: "Editar",
+                              message: "Modificar",
                               visible: idUsuario != 0,
                               child: IconButtonTableAction(
                                 iconData: Icons.edit,

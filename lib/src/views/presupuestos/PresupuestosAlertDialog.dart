@@ -58,6 +58,7 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
   LineasProducto _lineaProductoEditando;
   bool _editing = false;
   bool _changed = false;
+  bool creating = false;
 
   List<LineasProducto> _lineasProducto = [];
 
@@ -85,7 +86,7 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
       return AppLoader(
         builder: (scheduler){
           return AlertDialog(
-            titlePadding: EdgeInsets.all(0),
+            titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
             contentPadding: EdgeInsets.all(0),
             insetPadding: EdgeInsets.all(0),
             actionsPadding: EdgeInsets.all(0),
@@ -131,7 +132,7 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                               enabled: presupuesto == null,
                                               actions: [
                                                 ZMTooltip(
-                                                  message: "Nuevo cliente",
+                                                  message: "Crear cliente",
                                                   theme: ZMTooltipTheme.WHITE,
                                                   child: InkWell(
                                                     borderRadius: BorderRadius.circular(25),
@@ -142,7 +143,7 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                                         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                                         builder: (BuildContext context) {
                                                           return CrearClientesAlertDialog(
-                                                            title: "Nuevo cliente",
+                                                            title: "Crear cliente",
                                                             onSuccess: () {
                                                               Navigator.of(context).pop(true);
                                                             },
@@ -436,21 +437,29 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                                       idCliente: _idCliente,
                                                       idUbicacion: _idUbicacion
                                                     );
-                                                    await PresupuestosService().crear(_presupuesto).then(
-                                                      (response){
-                                                        if(response.status == RequestStatus.SUCCESS){
-                                                          Presupuestos _presupuestoCreado = Presupuestos().fromMap(response.message);
-                                                          setState(() {
-                                                            presupuesto = _presupuestoCreado;
-                                                          });
-                                                        }else{
-                                                          success = false;
-                                                          if(widget.onError != null){
-                                                            widget.onError(response.message);
+                                                    if(creating == false){
+                                                      setState(() {
+                                                        creating = true;
+                                                      });
+                                                      await PresupuestosService().crear(_presupuesto).then(
+                                                        (response){
+                                                          if(response.status == RequestStatus.SUCCESS){
+                                                            Presupuestos _presupuestoCreado = Presupuestos().fromMap(response.message);
+                                                            setState(() {
+                                                              presupuesto = _presupuestoCreado;
+                                                            });
+                                                          }else{
+                                                            success = false;
+                                                            if(widget.onError != null){
+                                                              widget.onError(response.message);
+                                                            }
                                                           }
+                                                          setState(() {
+                                                            creating = false;
+                                                          });
                                                         }
-                                                      }
-                                                    );
+                                                      );
+                                                    }
                                                   }
                                                   if(success){
                                                     LineasProducto _lp = LineasProducto(

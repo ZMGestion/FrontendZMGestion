@@ -12,9 +12,6 @@ import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/Remitos.dart';
 import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
-import 'package:zmgestion/src/models/Ventas.dart';
-import 'package:zmgestion/src/router/Locator.dart';
-import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/services/RemitosService.dart';
@@ -29,7 +26,6 @@ import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
-import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
@@ -115,14 +111,14 @@ Map<int, Remitos> remitos = {};
       if (args["IdRemito"] != null){
         idRemito = int.parse(args["IdRemito"]);
         SchedulerBinding.instance.addPostFrameCallback((_) { 
-            verRemito(idRemito);
+            verRemito(idRemito: idRemito);
         });
       }
     }
     super.initState();
   }
 
-  verRemito(int idRemito) async{
+  verRemito({int idRemito, int index, StreamController<ItemAction> itemsController}) async{
     await showDialog(
       context: context,
       barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
@@ -143,9 +139,19 @@ Map<int, Remitos> remitos = {};
     ).then((value){
       if(value != null){
         if (value){
-          setState(() {
-            refreshValue = Random().nextInt(99999);
-          });
+          if(itemsController != null && index != null ){
+            itemsController.add(
+              ItemAction(
+                event: ItemEvents.Update,
+                index: index,
+                updateMethodConfiguration: RemitosService().dameConfiguration(idRemito),
+              )
+            );
+          }else{
+            setState(() {
+              refreshValue ++;
+            });
+          }
         }
       }   
     });
@@ -188,11 +194,11 @@ Map<int, Remitos> remitos = {};
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       TopLabel(
-                                        labelText: "Usuario",
+                                        labelText: "Empleado",
                                       ),
                                       AutoCompleteField(
                                         labelText: "",
-                                        hintText: "Ingrese un usuario",
+                                        hintText: "Ingrese un empleado",
                                         parentName: "Usuarios",
                                         keyName: "Usuario",
                                         service: UsuariosService(),
@@ -670,7 +676,7 @@ Map<int, Remitos> remitos = {};
                         ZMStdButton(
                           color: Colors.green,
                           text: Text(
-                            "Nuevo remito",
+                            "Crear remito",
                             style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold
                             ),
@@ -687,7 +693,7 @@ Map<int, Remitos> remitos = {};
                               barrierDismissible: false,
                               builder: (BuildContext context) {
                                 return OperacionesRemitosAlertDialog(
-                                  title: "Nuevo Remito",
+                                  title: "Crear remito",
                                   onSuccess: () {
                                     Navigator.of(context).pop();
                                     setState(() {
@@ -717,14 +723,14 @@ Map<int, Remitos> remitos = {};
                         }
                         return <Widget>[
                           ZMTooltip(
-                            message: estado != "E" ? "Ver Remito" : "Editar Remito",
+                            message: estado != "E" ? "Ver remito" : "Modificar remito",
                             visible: idRemito != 0,
                             child: IconButtonTableAction(
                               iconData: estado != "E" ? Icons.remove_red_eye : Icons.edit,
                               onPressed: idRemito == 0 ? null : () async{
                                 if (idRemito != 0) {
                                   if(remito.estado != "E"){
-                                    verRemito(idRemito);
+                                    verRemito(idRemito: idRemito, index: index, itemsController: itemsController);
                                   }else{
                                     await RemitosService(scheduler: scheduler).damePor(RemitosService().dameConfiguration(idRemito)).then((response) async{
                                       if(response.status == RequestStatus.SUCCESS){
@@ -737,7 +743,7 @@ Map<int, Remitos> remitos = {};
                                           barrierDismissible: false,
                                           builder: (BuildContext context) {
                                             return OperacionesRemitosAlertDialog(
-                                              title: "Nuevo Remito",
+                                              title: "Modificar remito",
                                               remito: remito,
                                               onSuccess: () {
                                                 Navigator.of(context).pop();
@@ -786,8 +792,9 @@ Map<int, Remitos> remitos = {};
                                               itemsController.add(
                                                 ItemAction(
                                                   event: ItemEvents.Hide,
-                                                  index: index)
-                                                );
+                                                  index: index
+                                                )
+                                              );
                                             }
                                           });
                                           Navigator.pop(context);

@@ -96,7 +96,7 @@ class _RolesIndexState extends State<RolesIndex> {
                   ZMStdButton(
                     color: Colors.green,
                     text: Text(
-                      "Nuevo Rol",
+                      "Crear rol",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
@@ -187,7 +187,7 @@ class _RolesIndexState extends State<RolesIndex> {
                             Row(
                               children: [
                                 ZMTooltip(
-                                  message: "Editar",
+                                  message: "Modificar",
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.edit,

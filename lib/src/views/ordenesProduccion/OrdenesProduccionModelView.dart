@@ -154,7 +154,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                     children: [
                                       TopLabel(
                                         padding: EdgeInsets.zero,
-                                        labelText: "Usuario",
+                                        labelText: "Empleado",
                                         fontSize: 14,
                                         color: Color(0xff97D2FF).withOpacity(1),
                                       ),

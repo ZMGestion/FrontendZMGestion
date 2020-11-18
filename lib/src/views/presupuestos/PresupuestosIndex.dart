@@ -667,7 +667,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                           ZMStdButton(
                             color: Colors.green,
                             text: Text(
-                              "Nuevo presupuesto",
+                              "Crear presupuesto",
                               style: TextStyle(
                                 color: Colors.white, fontWeight: FontWeight.bold
                               ),
@@ -684,7 +684,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                                 barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                                 builder: (BuildContext context) {
                                   return PresupuestosAlertDialog(
-                                    title: "Nuevo presupuesto",
+                                    title: "Crear presupuesto",
                                     updateAllCallback: () {
                                       setState(() {
                                         refreshValue = Random().nextInt(99999);
@@ -873,7 +873,7 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                             Opacity(
                               opacity: idPresupuesto == 0 ? 0.2 : (estado  != "V" ? 1 : 0.2),
                               child: ZMTooltip(
-                                message: "Editar",
+                                message: "Modificar",
                                 visible: idPresupuesto != 0,
                                 child: IconButtonTableAction(
                                   iconData: Icons.edit,

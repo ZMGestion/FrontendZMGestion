@@ -159,7 +159,8 @@ class _MultipleRequestViewState extends State<MultipleRequestView> {
       backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: AlertDialogTitle(
-        title: widget.title
+        title: widget.title,
+        titleColor: Theme.of(context).primaryColor,
       ),
       content: Column(
         children: [

@@ -60,7 +60,7 @@ class _DomiciliosClientesAlertDialogState
     SizeConfig().init(context);
     return AppLoader(builder: (scheduler) {
       return AlertDialog(
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
           contentPadding: EdgeInsets.all(0),
           insetPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.all(0),
@@ -104,7 +104,7 @@ class _DomiciliosClientesAlertDialogState
                         child: ZMStdButton(
                           color: Colors.green,
                           text: Text(
-                            "Nuevo Domicilio",
+                            "Crear Domicilio",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),

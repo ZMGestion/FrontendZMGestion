@@ -8,6 +8,7 @@ class ZMStdButton extends StatelessWidget {
   final Icon icon;
   final Function onPressed;
   final EdgeInsets padding;
+  final bool disable;
 
   const ZMStdButton({
     Key key, 
@@ -16,6 +17,7 @@ class ZMStdButton extends StatelessWidget {
     this.disabledColor = Colors.grey,
     this.icon, 
     this.onPressed,
+    this.disable = false,
     this.padding = const EdgeInsets.all(0)
   }) : super(key: key);
 
@@ -28,7 +30,7 @@ class ZMStdButton extends StatelessWidget {
         )
       ),
       child: MaterialButton(
-        onPressed: onPressed,
+        onPressed: !disable ? onPressed : null,
         color: color,
         disabledColor: disabledColor,
         shape: RoundedRectangleBorder(

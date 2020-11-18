@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinbox/material.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
@@ -23,6 +25,7 @@ class ProductosFinalesStockDialog extends StatefulWidget {
 }
 
 class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialog> {
+  final _formKey = GlobalKey<FormState>();
 
   ProductosFinales productoFinal;
   int idUbicacion;
@@ -38,7 +41,6 @@ class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialo
     if(widget.cantidadSolicitada != null){
       _cantidadSolicitada = widget.cantidadSolicitada;
     }
-    cantidad = 0;
     super.initState();
   }
   @override
@@ -47,7 +49,7 @@ class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialo
     return AppLoader(
       builder: (scheduler) {
         return AlertDialog(
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
           contentPadding: EdgeInsets.all(4),
           insetPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.all(4),
@@ -67,8 +69,10 @@ class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialo
                 ),
               ),
               color: Colors.green,
-              onPressed: idUbicacion != null ? (){
-                if(_cantidadTotal > 0 && _cantidadTotal >= _cantidadSolicitada){
+              disabledColor: Colors.grey,
+              disable: idUbicacion == null || idUbicacion == 0,
+              onPressed: (){
+                if(_formKey.currentState.validate()){
                   Map<String, dynamic> response = new Map<String, dynamic>();
                   response.addAll(
                     {
@@ -79,7 +83,7 @@ class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialo
                   );
                   widget.onAccept(response);
                 }
-              } : null,
+              },
             ),
           ],
           content: Container(
@@ -191,23 +195,25 @@ class _ProductosFinalesStockDialogState extends State<ProductosFinalesStockDialo
                               padding: const EdgeInsets.symmetric(vertical:8),
                               child: Visibility(
                                 visible: idUbicacion != null && idUbicacion != 0 && _cantidadTotal > 0,
-                                child: NumberInputWithIncrementDecrement(
-                                  labelText: "Cantidad",
-                                  initialValue: cantidad,
-                                  textStyle: TextStyle(
-                                    color: Colors.black
+                                child: Form(
+                                  key: _formKey,
+                                  child: SpinBox(
+                                    enabled: idUbicacion != null && idUbicacion != 0 && _cantidadTotal > 0,
+                                    direction: Axis.horizontal,
+                                    max: _cantidadSolicitada.toDouble(),
+                                    decimals: 0,
+                                    validator: (value){
+                                      return Validator.greaterValidator(int.parse(value), 0);
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: "Cantidad"
+                                    ),
+                                    onChanged: (value){
+                                      setState(() {
+                                        cantidad = value.toInt();
+                                      });
+                                    },
                                   ),
-                                  hintStyle: TextStyle(
-                                    color: Colors.black.withOpacity(0.8)
-                                  ),
-                                  labelStyle: TextStyle(
-                                    color: Colors.black.withOpacity(0.8)
-                                  ),
-                                  onChanged:  ((_cantidadTotal != null && _cantidadTotal > 0 ) && cantidad < _cantidadSolicitada) ? (value){
-                                    setState(() {
-                                      cantidad = value;
-                                    });
-                                  } : null,
                                 ),
                               ),
                             )

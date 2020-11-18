@@ -702,7 +702,7 @@ Map<int, Ventas> ventas = {};
                         ZMStdButton(
                           color: Colors.green,
                           text: Text(
-                            "Nueva venta",
+                            "Crear venta",
                             style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold
                             ),
@@ -719,7 +719,7 @@ Map<int, Ventas> ventas = {};
                               barrierDismissible: false,
                               builder: (BuildContext context) {
                                 return OperacionesVentasAlertDialog(
-                                  title: "Nueva venta",
+                                  title: "Crear venta",
                                   operacion: 'Crear',
                                   onSuccess: () {
                                     Navigator.of(context).pop();
@@ -979,7 +979,7 @@ Map<int, Ventas> ventas = {};
                             ),
                           ),
                           ZMTooltip(
-                            message: "Editar",
+                            message: "Modificar",
                             visible: idVenta != 0,
                             child: Opacity(
                               opacity: idVenta == 0 ? 0.2 : (estado  == "E" ? 1 : 0.2),

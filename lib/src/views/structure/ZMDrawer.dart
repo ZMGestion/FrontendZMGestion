@@ -26,11 +26,10 @@ class ZMDrawer extends StatefulWidget {
   }
 }
 
-class ZMDrawerState extends State<ZMDrawer>
-    with SingleTickerProviderStateMixin {
+class ZMDrawerState extends State<ZMDrawer> with SingleTickerProviderStateMixin {
   double maxWidth;
   double minWidth;
-  bool isCollapsed = false;
+  bool isCollapsed = true;
   AnimationController _animationController;
   Animation<double> widthAnimation;
   int currentSelectedIndex = -1;
@@ -44,8 +43,9 @@ class ZMDrawerState extends State<ZMDrawer>
     minWidth = widget.minWidth;
 
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-
     widthAnimation = Tween<double>(begin: maxWidth, end: minWidth).animate(_animationController);
+    
+    _animationController.value = minWidth;
 
     listTitleDefaultTextStyle = TextStyle(
       color: Theme.of(widget.context).primaryTextTheme.caption.color.withOpacity(0.7),
@@ -182,12 +182,12 @@ class ZMDrawerState extends State<ZMDrawer>
           _navigationService.navigateTo("/usuarios");
         },
       ),
-      NavigationModel(
-        title: "Reportes",
-        icon: Icons.insert_chart,
-        size: 32,
-        onTap: () {},
-      ),
+      // NavigationModel(
+      //   title: "Reportes",
+      //   icon: Icons.insert_chart,
+      //   size: 32,
+      //   onTap: () {},
+      // ),
       NavigationModel(
         title: "Ubicaciones",
         icon: Icons.pin_drop,
@@ -209,6 +209,7 @@ class ZMDrawerState extends State<ZMDrawer>
         },
       ),
     ];
+    
     super.initState();
   }
 
@@ -217,18 +218,19 @@ class ZMDrawerState extends State<ZMDrawer>
     SizeConfig().init(context);
     return AnimatedBuilder(
       animation: _animationController,
+
       builder: (context, widget) => Positioned(
-      top: 0,
-      left: 0,
-      width: widthAnimation.value,
-      height: SizeConfig.blockSizeVertical * 100,
-      child: getWidget(context, widget)),
+        top: 0,
+        left: 0,
+        width: widthAnimation.value,
+        height: SizeConfig.blockSizeVertical * 100,
+        child: getWidget(context, widget)
+      ),
     );
   }
 
   Widget getWidget(context, widget) {
-    final UsuariosProvider _usuariosProvider =
-        Provider.of<UsuariosProvider>(context);
+    final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
     Usuarios usuario = _usuariosProvider.usuario;
     return Material(
       elevation: 2.5,
@@ -237,9 +239,7 @@ class ZMDrawerState extends State<ZMDrawer>
         onTap: () {
           setState(() {
             isCollapsed = !isCollapsed;
-            isCollapsed
-                ? _animationController.forward()
-                : _animationController.reverse();
+            isCollapsed ? _animationController.forward() : _animationController.reverse();
           });
         },
         child: Container(
@@ -252,11 +252,10 @@ class ZMDrawerState extends State<ZMDrawer>
                   decoration: BoxDecoration(
                       border: Border(
                           bottom: BorderSide(
-                              color: Theme.of(context)
-                                  .primaryTextTheme
-                                  .caption
-                                  .color
-                                  .withOpacity(0.1)))),
+                            color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.1)
+                          )
+                        )
+                      ),
                   child: CollapsingListTile(
                     title: "ZMGestion",
                     leading: Padding(
@@ -271,21 +270,13 @@ class ZMDrawerState extends State<ZMDrawer>
                     animationController: _animationController,
                     isSelected: false,
                     selectedTextStyle: TextStyle(
-                        color: Theme.of(context)
-                            .primaryTextTheme
-                            .caption
-                            .color
-                            .withOpacity(0.7),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24),
+                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24),
                     unselectedTextStyle: TextStyle(
-                        color: Theme.of(context)
-                            .primaryTextTheme
-                            .caption
-                            .color
-                            .withOpacity(0.7),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24),
+                      color: Theme.of(context).primaryTextTheme.caption.color.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24),
                     width: maxWidth - 40,
                   ),
                 ),
@@ -296,9 +287,7 @@ class ZMDrawerState extends State<ZMDrawer>
                   onTap: () {
                     setState(() {
                       isCollapsed = !isCollapsed;
-                      isCollapsed
-                          ? _animationController.forward()
-                          : _animationController.reverse();
+                      isCollapsed? _animationController.forward() : _animationController.reverse();
                     });
                   },
                   child: SizedBox(
@@ -340,9 +329,7 @@ class ZMDrawerState extends State<ZMDrawer>
                             icon: navigationItems[counter].icon,
                             iconSize: navigationItems[counter].size,
                             animationController: _animationController,
-                            expandable:
-                                navigationItems[counter].animatedBuilder !=
-                                    null,
+                            expandable: navigationItems[counter].animatedBuilder !=  null,
                           ),
                           Visibility(
                             visible: currentSelectedIndex == counter,
