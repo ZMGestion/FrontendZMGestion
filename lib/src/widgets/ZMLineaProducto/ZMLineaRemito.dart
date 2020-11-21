@@ -60,7 +60,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
   void initState() {
     if(widget.tipo != null){
       _tipo = widget.tipo;
-      if (_tipo == "E" || _tipo == "X"){
+      if (_tipo == "E"){
         _disponible = true;
       }else{
         _disponible = false;
@@ -79,7 +79,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
       SchedulerBinding.instance.addPostFrameCallback((_) async{
         Response<Models<dynamic>> responseProducto;
         Response<Models<dynamic>> responseTela;
-        if(widget.lineaProducto != null && (_tipo == "S" || _tipo == "Y")){
+        if(widget.lineaProducto != null && (_tipo == "S")){
           await ProductosFinalesService().doMethod(ProductosFinalesService().dameStock({
             "Ubicaciones":{
               "IdUbicacion": _idUbicacion
@@ -141,7 +141,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
             ),
           ),
           Visibility(
-            visible: _tipo == "S" || _tipo == "Y",
+            visible: _tipo == "S",
             child: Card(
               color: Color(0xff042949).withOpacity(0.55),
               child: Padding(
@@ -185,7 +185,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
             ),
           ),
           Visibility(
-            visible: !_loading && ((_tipo == "E" || _tipo == "X") || _idUbicacion != 0),
+            visible: !_loading && ((_tipo == "E") || _idUbicacion != 0),
             child: Card(
               color: Color(0xff042949).withOpacity(0.55),
               child: Padding(
@@ -371,7 +371,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
                                         setState(() {
                                           _idLustre = idSelected;
                                         });
-                                        if(_tipo == "S" || _tipo == "Y"){
+                                        if(_tipo == "S"){
                                           await ProductosFinalesService().doMethod(ProductosFinalesService().dameStock({
                                             "Ubicaciones":{
                                               "IdUbicacion": _idUbicacion
@@ -454,7 +454,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
                     width: 12,
                   ),
                   Visibility(
-                    visible: _tipo == "S" || _tipo == "Y",
+                    visible: _tipo == "S",
                     child: Expanded(
                       flex: 1,
                         child: Card(

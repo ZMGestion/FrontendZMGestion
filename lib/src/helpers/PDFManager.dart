@@ -816,7 +816,7 @@ abstract class PDFManager{
       index++;
     });
 
-    if(remito.tipo == "E" || remito.tipo == "X"){
+    if(remito.tipo == "E" ){
       if(remito.ubicacion.ubicacion != null){
         direccionEntrega = remito.ubicacion.ubicacion;
       }

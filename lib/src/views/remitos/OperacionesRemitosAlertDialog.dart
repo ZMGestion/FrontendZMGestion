@@ -64,7 +64,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
     if(widget.remito != null){
       remito = widget.remito;
       _tipo = remito.tipo;
-      if(_tipo == "E" || _tipo == "X"){
+      if(_tipo == "E"){
         _idUbicacionEntrada = remito.idUbicacion;
       }
       if(remito.lineasProducto != null){
@@ -150,10 +150,10 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                         ),
                                       ),
                                       SizedBox(width: 10),
-                                      (_tipo == "E" || _tipo == "X") ? 
+                                      (_tipo == "E") ? 
                                         Expanded(
                                           child: Container(
-                                            constraints: BoxConstraints(minWidth:  (_tipo == "E" || _tipo == "X") ? 200 : 0),
+                                            constraints: BoxConstraints(minWidth:  (_tipo == "E") ? 200 : 0),
                                             child: DropDownModelView(
                                               service: UbicacionesService(),
                                               listMethodConfiguration: UbicacionesService().listar(),
@@ -280,7 +280,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                                 ZMTextButton(
                                                   color: Theme.of(context).primaryTextTheme.headline6.color,
                                                   text: "Agregar linea",
-                                                  onPressed: ((_tipo == "S" || _tipo == "Y") || ((_tipo == "E" || _tipo == "X") && _idUbicacionEntrada != 0)) ? (){
+                                                  onPressed: ((_tipo == "S") || ((_tipo == "E") && _idUbicacionEntrada != 0)) ? (){
                                                     setState(() {
                                                       showLineasForm = true;
                                                       editingLine = false;
@@ -318,7 +318,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                                   bool success = true;
                                                   if(remito == null){
                                                     Remitos _remito;
-                                                    if(_tipo == 'E' || _tipo == 'X'){
+                                                    if(_tipo == 'E'){
                                                       _remito = new Remitos(
                                                         tipo: _tipo,
                                                         idUbicacion: _idUbicacionEntrada
@@ -343,7 +343,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                                   if(success){
                                                     LineasProducto _lp = LineasProducto(
                                                       idReferencia: remito.idRemito,
-                                                      idUbicacion: (remito.tipo == "S" || remito.tipo == "Y") ? lp.idUbicacion : 0,
+                                                      idUbicacion: (remito.tipo == "S") ? lp.idUbicacion : 0,
                                                       cantidad: lp.cantidad,
                                                       productoFinal: ProductosFinales(
                                                         idProducto: lp.productoFinal?.idProducto,
@@ -376,7 +376,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                                 LineasProducto _lp = LineasProducto(
                                                     idLineaProducto: lp.idLineaProducto,
                                                     idReferencia: remito.idRemito,
-                                                    idUbicacion: (remito.tipo == "S" || remito.tipo == "Y") ? lp.idUbicacion : 0,
+                                                    idUbicacion: (remito.tipo == "S") ? lp.idUbicacion : 0,
                                                     cantidad: lp.cantidad,
                                                     productoFinal: ProductosFinales(
                                                       idProducto: lp.productoFinal?.idProducto,
