@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (BuildContext context, ThemeState state) {
           return MaterialApp(
-            title: 'Material App',
+            title: 'ZMGestion',
             theme: state.themeData,
             debugShowCheckedModeBanner: false,
             builder: (context, child){
