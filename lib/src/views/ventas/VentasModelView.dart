@@ -1,5 +1,9 @@
+import 'dart:html';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
 import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:intl/intl.dart';
@@ -80,10 +84,10 @@ class _VentasModelViewState extends State<VentasModelView> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Container(
-      width: SizeConfig.blockSizeHorizontal*50,
+      width: SizeConfig.blockSizeHorizontal*60,
       constraints: BoxConstraints(
-        minWidth: 600,
-        maxWidth: 1000,
+        minWidth: 800,
+        maxWidth: 1200,
       ),
       child: Column(
         children: [
@@ -338,7 +342,7 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 )
                               ),
                               Expanded(
-                                flex:1,
+                                flex:2,
                                 child: Text(
                                   ""
                                 )
@@ -358,34 +362,90 @@ class _VentasModelViewState extends State<VentasModelView> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Expanded(
-                                flex: 8,
-                                child: Container()
-                              ),
-                              Expanded(
                                 flex:1,
-                                child: Text(
-                                  "Total: ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Facturado: ",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          "\$" + venta.facturado.toString(),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 )
                               ),
                               Expanded(
-                                flex:2,
-                                child: Text(
-                                  "\$" + venta.precioTotal.toString(),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                flex:1,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Pagado: ",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          "\$" + venta.pagado.toString(),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 )
                               ),
                               Expanded(
                                 flex:1,
-                                child: Text(
-                                  ""
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Total: ",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          "\$" + venta.precioTotal.toString(),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 )
                               ),
                             ],
@@ -512,114 +572,137 @@ class _VentasModelViewState extends State<VentasModelView> {
               child: Text(
                 LineasProducto().mapEstados()[lp.estado??""]??"",
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
+                  fontSize: 12
                 ),
               ),
             ),
             Expanded(
-              flex:1,
-              child: Visibility(
-                visible: lp.estado != 'C' && venta.estado == 'C',
-                child: ZMTooltip(
-                  message: "Cancelar linea",
-                  theme: ZMTooltipTheme.RED,
-                  child: IconButtonTableAction(
-                    iconData: Icons.cancel_outlined,
-                    color: Colors.orange,
-                    onPressed: () async{
-                      await showDialog(
-                        context: context,
-                        barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(
-                              "Cancelar Linea de Venta Venta",
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600
-                              ),
-                            ),
-                            content: Text(
-                              "¿Está seguro que desea cancelar la línea?",                     
-                            ),
-                            actions: [
-                              ZMTextButton(
-                                text: "Aceptar",
-                                color: Theme.of(mainContext).primaryColor,
-                                onPressed: () async{
-                                  if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
-                                    await showDialog(
-                                      context: context,
-                                      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
-                                      builder: (BuildContext context) {
-                                        return OperacionesComprobanteAlertDialog(
-                                          title: "Crear Comprobante",
-                                          comprobante: Comprobantes(idVenta: venta.idVenta,),
-                                          operacion: "Crear",
-                                          
-                                        );
-                                      },
-                                    ).then((value) async{
-                                      await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
-                                        if (response.status == RequestStatus.SUCCESS){
-                                          setState(() {
-                                            _loading = true;
-                                            venta = response.message;
-                                            _lineasVenta = [];
-                                            venta.lineasProducto.forEach((element) {
-                                              _lineasVenta.add(detalleLineaVenta(element, context));
-                                            });
-                                            _loading = false;
+              flex:2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ZMTooltip(
+                    message: "Ver remito",
+                    theme: ZMTooltipTheme.BLUE,
+                    child: IconButtonTableAction(
+                      iconData: FontAwesomeIcons.truck,
+                      iconSize: 12,
+                      disabledBackgroundColor: Colors.black.withOpacity(0.05),
+                      color: Colors.blue,
+                      onPressed: lp.idRemito == null ? null : () async{
+                        final NavigationService _navigationService = locator<NavigationService>();
+                        _navigationService.navigateToWithReplacement('/remitos?IdRemito='+ lp.idRemito.toString());
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: lp.estado != 'C' && venta.estado == 'C',
+                    child: ZMTooltip(
+                      message: "Cancelar linea",
+                      theme: ZMTooltipTheme.RED,
+                      child: IconButtonTableAction(
+                        iconData: Icons.cancel_outlined,
+                        color: Colors.orange,
+                        onPressed: () async{
+                          await showDialog(
+                            context: context,
+                            barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                  "Cancelar Linea de Venta Venta",
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600
+                                  ),
+                                ),
+                                content: Text(
+                                  "¿Está seguro que desea cancelar la línea?",                     
+                                ),
+                                actions: [
+                                  ZMTextButton(
+                                    text: "Aceptar",
+                                    color: Theme.of(mainContext).primaryColor,
+                                    onPressed: () async{
+                                      if((venta.precioTotal - lp.precioUnitario * lp.cantidad) < venta.facturado){
+                                        await showDialog(
+                                          context: context,
+                                          barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                          builder: (BuildContext context) {
+                                            return OperacionesComprobanteAlertDialog(
+                                              title: "Crear Comprobante",
+                                              comprobante: Comprobantes(idVenta: venta.idVenta,),
+                                              operacion: "Crear",
+                                              
+                                            );
+                                          },
+                                        ).then((value) async{
+                                          await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                            if (response.status == RequestStatus.SUCCESS){
+                                              setState(() {
+                                                _loading = true;
+                                                venta = response.message;
+                                                _lineasVenta = [];
+                                                venta.lineasProducto.forEach((element) {
+                                                  _lineasVenta.add(detalleLineaVenta(element, context));
+                                                });
+                                                _loading = false;
+                                              });
+                                            }
                                           });
-                                        }
-                                      });
-                                    });
-                                  }
-                                  Navigator.pop(context, true);
-                                },
-                              ),
-                              ZMTextButton(
-                                text: "Cancelar",
-                                color: Theme.of(mainContext).primaryColor,
-                                onPressed: (){
-                                  Navigator.pop(context, false);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      ).then((value) async{
-                        if(value){
-                          await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
-                            "LineasProducto":{
-                              "IdLineaProducto":lp.idLineaProducto
-                            }
-                          })).then((response) async{
-                            if (response.status == RequestStatus.SUCCESS){
-                              await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                        });
+                                      }
+                                      Navigator.pop(context, true);
+                                    },
+                                  ),
+                                  ZMTextButton(
+                                    text: "Cancelar",
+                                    color: Theme.of(mainContext).primaryColor,
+                                    onPressed: (){
+                                      Navigator.pop(context, false);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          ).then((value) async{
+                            if(value){
+                              await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarLineaVentaConfiguration({
+                                "LineasProducto":{
+                                  "IdLineaProducto":lp.idLineaProducto
+                                }
+                              })).then((response) async{
                                 if (response.status == RequestStatus.SUCCESS){
-                                  setState(() {
-                                    _loading = true;
-                                    venta = response.message;
-                                    _lineasVenta = [];
-                                    venta.lineasProducto.forEach((element) {
-                                      _lineasVenta.add(detalleLineaVenta(element, context));
-                                    });
-                                    _loading = false;
+                                  await VentasService(scheduler: scheduler).damePor(VentasService().dameConfiguration(venta.idVenta)).then((response){
+                                    if (response.status == RequestStatus.SUCCESS){
+                                      setState(() {
+                                        _loading = true;
+                                        venta = response.message;
+                                        _lineasVenta = [];
+                                        venta.lineasProducto.forEach((element) {
+                                          _lineasVenta.add(detalleLineaVenta(element, context));
+                                        });
+                                        _loading = false;
+                                      });
+                                    }
                                   });
                                 }
                               });
                             }
                           });
-                        }
-                      });
-                    },
+                        },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ],

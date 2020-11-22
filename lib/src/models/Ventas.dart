@@ -24,6 +24,7 @@ class Ventas extends Equatable with Models{
   /* -Other-*/
   final double precioTotal;
   final double facturado;
+  final double pagado;
   final List<LineasProducto> lineasProducto;
   final Clientes cliente;
   final Usuarios usuario;
@@ -45,7 +46,8 @@ class Ventas extends Equatable with Models{
     this.ubicacion,
     this.domicilio,
     this.precioTotal,
-    this.facturado
+    this.facturado,
+    this.pagado
   });
 
   @override
@@ -83,6 +85,7 @@ class Ventas extends Equatable with Models{
         estado:         mapModel["Ventas"]["Estado"],
         precioTotal:    mapModel["Ventas"]["_PrecioTotal"] != null ? mapModel["Ventas"]["_PrecioTotal"] : 0.00,
         facturado:      mapModel["Ventas"]["_Facturado"] != null ? mapModel["Ventas"]["_Facturado"] : 0.00,
+        pagado:         mapModel["Ventas"]["_Pagado"] != null ? mapModel["Ventas"]["_Pagado"] : 0.00,
         cliente:        mapModel["Clientes"] != null ? Clientes().fromMap({"Clientes": mapModel["Clientes"]}) : null,
         usuario:        mapModel["Usuarios"] != null ? Usuarios().fromMap({"Usuarios": mapModel["Usuarios"]}) : null,
         ubicacion:      mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
@@ -105,7 +108,8 @@ class Ventas extends Equatable with Models{
         "Observaciones":    this.observaciones,
         "Estado":           this.estado,
         "_PrecioTotal":     this.precioTotal,
-        "_Facturado":       this.facturado
+        "_Facturado":       this.facturado,
+        "_Pagado":          this.pagado
       }
     };
 

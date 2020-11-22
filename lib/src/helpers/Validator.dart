@@ -75,4 +75,12 @@ abstract class Validator{
     }
     return err;
   }
+
+  static String greaterEqualsValidator(int value, int min){
+    String err;
+    if(value <= min){
+      err = 'Debe ser mayor o igual a ' + min.toString();
+    }
+    return err;
+  }
 }
