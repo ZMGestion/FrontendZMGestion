@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:getflutter/components/button/gf_icon_button.dart';
@@ -21,6 +22,7 @@ import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/OrdenesProduccionService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
 import 'package:zmgestion/src/views/comprobantes/OperacionesComprobanteAlertDialog.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/OrdenesProduccionVerificarLinea.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/TareasAlertDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -58,6 +60,8 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
   String domicilio;
   List<Widget> _lineasOrdenProduccion = [];
 
+  Map<int, bool> _idsLineas = Map<int, bool>();
+
   @override
   void initState() {
     if(widget.ordenProduccion != null){
@@ -73,19 +77,86 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
           color = Theme.of(mainContext).primaryColor;
       }
       ordenProduccion.lineasProducto.forEach((element) {
-        _lineasOrdenProduccion.add(detalleLineaOrdenProduccion(element, context));
+        _lineasOrdenProduccion.add(
+          DetalleLineaOrdenProduccion(
+            lineaOrdenProduccion: element,
+            ordenProduccion: ordenProduccion,
+            onChanged: (idLineaOrdenProduccion, selected){
+              if(_idsLineas.containsKey(idLineaOrdenProduccion)){
+                _idsLineas[idLineaOrdenProduccion] = selected;
+              }else{
+                _idsLineas.addAll({idLineaOrdenProduccion: selected});
+              }
+              setState(() {
+                if(_idsLineas.containsValue(true)){
+                  _verifyEnabled = true;
+                }else{
+                  _verifyEnabled = false;
+                }
+              });
+            },
+            reloadFunc: _reload
+          )
+        );
       });
     }
     super.initState();
   }
+
+  _reload() async{
+    await OrdenesProduccionService().damePor(OrdenesProduccionService().dameConfiguration(widget.ordenProduccion.idOrdenProduccion)).then((response){
+      if (response.status == RequestStatus.SUCCESS){
+        OrdenesProduccion _ordenProduccion = response.message;
+        List<Widget> _nuevasLineas = [];
+        _ordenProduccion.lineasProducto.forEach((lop) {
+          _nuevasLineas.add(DetalleLineaOrdenProduccion(
+            lineaOrdenProduccion: lop,
+            ordenProduccion: widget.ordenProduccion,
+            reloadFunc: _reload,
+            onChanged: (idLineaOrdenProduccion, selected){
+              setState(() {
+                if(_idsLineas.containsKey(idLineaOrdenProduccion)){
+                  _idsLineas[idLineaOrdenProduccion] = selected;
+                }else{
+                  _idsLineas.addAll({idLineaOrdenProduccion: selected});
+                }
+                if(_idsLineas.containsValue(true)){
+                  _verifyEnabled = true;
+                }else{
+                  _verifyEnabled = false;
+                }
+              });
+            },
+          ));
+          setState(() {
+            ordenProduccion = _ordenProduccion;
+            _lineasOrdenProduccion = _nuevasLineas;
+          });
+        });
+      }
+    });
+  }
+
+  List<int> _idsLineasOrdenProduccion(Map<int, bool> _idsSelected){
+    List<int> _ids = [];
+    _idsSelected.forEach((id, selected) {
+      if(selected){
+        _ids.add(id);
+      }
+    });
+    return _ids;
+  }
+
+  bool _verifyEnabled = false;
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Container(
-      width: SizeConfig.blockSizeHorizontal*50,
+      width: SizeConfig.blockSizeHorizontal*70,
       constraints: BoxConstraints(
-        minWidth: 500,
-        maxWidth: 800,
+        minWidth: 800,
+        maxWidth: 1200,
       ),
       child: Column(
         children: [
@@ -216,6 +287,10 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                           Row(
                             children: [
                               Expanded(
+                                flex: 1,
+                                child: Container()
+                              ),
+                              Expanded(
                                 flex: 2,
                                 child: Text(
                                   "Cantidad",
@@ -240,7 +315,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                 width: 6,
                               ),
                               Expanded(
-                                flex:1,
+                                flex:2,
                                 child: Text(
                                   ""
                                 )
@@ -257,10 +332,10 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                       ),
                     ),
                   ),
-                  AppLoader(
-                    builder: (RequestScheduler scheduler){ 
-                      return actions(context, scheduler);
-                    }),
+                  Builder(
+                    key: Key(_idsLineas.toString()),
+                    builder: (context) => actions(context, scheduler)
+                  )
                 ],
               ),
             ),
@@ -271,11 +346,45 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
   }
     Widget actions(BuildContext context, RequestScheduler scheduler){
       //final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
+      print(_idsLineas);
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            ZMStdButton(
+              key: Key(_idsLineas.toString()),
+              color: Theme.of(context).primaryColorLight,
+              icon: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+              text: Text(
+                "Verificar",
+                style: TextStyle(
+                  color: Colors.white
+                ),
+              ),
+              onPressed: !_verifyEnabled ? null : ()async{
+                print(_idsLineas);
+                await showDialog(
+                  context: context,
+                  barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return OrdenesProduccionVerificarLinea(
+                      idsLineaOrdenProduccion: _idsLineasOrdenProduccion(_idsLineas),
+                      onSuccess: () async{
+                        await _reload();
+                      },
+                    );
+                  }
+                );
+              },
+            ),
+            SizedBox(
+              width: 8,
+            ),
             ZMStdButton(
               color: Theme.of(context).primaryColorLight,
               icon: Icon(
@@ -308,16 +417,53 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
         ),
       );
     }
-    Widget detalleLineaOrdenProduccion(LineasProducto lp, BuildContext context){
+}
+
+class DetalleLineaOrdenProduccion extends StatefulWidget {
+  final OrdenesProduccion ordenProduccion;
+  final Function(int idSeleccionado, bool value) onChanged;
+  final LineasProducto lineaOrdenProduccion;
+  final Function() reloadFunc;
+
+  const DetalleLineaOrdenProduccion({
+    Key key, 
+    this.ordenProduccion,
+    this.onChanged, 
+    this.lineaOrdenProduccion,
+    this.reloadFunc
+  }) : super(key: key);
+
+  @override
+  _DetalleLineaOrdenProduccionState createState() => _DetalleLineaOrdenProduccionState();
+}
+
+class _DetalleLineaOrdenProduccionState extends State<DetalleLineaOrdenProduccion> {
+  bool value = false;
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
+            flex: 1,
+            child: CircularCheckBox(
+              value: value,
+              onChanged: widget.lineaOrdenProduccion.estado != 'I' ? null : (_value){
+                setState(() {
+                  value = !value;
+                });
+                if(widget.onChanged != null){
+                  widget.onChanged(widget.lineaOrdenProduccion.idLineaProducto, _value);
+                }
+              },
+            ),
+          ),
+          Expanded(
             flex: 2,
             child: Text(
-              lp.cantidad?.toString()??"",
+              widget.lineaOrdenProduccion.cantidad?.toString()??"",
               textAlign: TextAlign.center,
               maxLines: 1,
               style: TextStyle(
@@ -329,9 +475,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
           Expanded(
             flex: 5,
             child: Text(
-              lp.productoFinal.producto.producto + 
-              " " + (lp.productoFinal.tela?.tela??"") +
-              " " + (lp.productoFinal.lustre?.lustre??""),
+              widget.lineaOrdenProduccion.productoFinal.producto.producto + 
+              " " + (widget.lineaOrdenProduccion.productoFinal.tela?.tela??"") +
+              " " + (widget.lineaOrdenProduccion.productoFinal.lustre?.lustre??""),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black87
@@ -345,7 +491,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
               children: [
                 Expanded(
                   child: Text(
-                    LineasProducto().mapEstados()[lp.estado??""]??"",
+                    LineasProducto().mapEstados()[widget.lineaOrdenProduccion.estado??""]??"",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
@@ -360,8 +506,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
             width: 6,
           ),
           Expanded(
-            flex:1,
+            flex:2,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ZMTooltip(
                   message: "Ver tareas",
@@ -374,7 +521,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                         builder: (BuildContext context) {
                           return TareasAlertDialog(
-                            lineaOrdenProduccion: lp,
+                            lineaOrdenProduccion: widget.lineaOrdenProduccion,
                           );
                         },
                       );
@@ -382,11 +529,12 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                   ),
                 ),
                 ZMTooltip(
-                  message: lp.estado == 'C' ? "Reanudar producción" : "Cancelar producción",
-                  theme: lp.estado == 'C' ? ZMTooltipTheme.BLUE : ZMTooltipTheme.RED,
+                  message: widget.lineaOrdenProduccion.estado == 'C' ? "Reanudar producción" : "Cancelar producción",
+                  theme: widget.lineaOrdenProduccion.estado == 'C' ? ZMTooltipTheme.BLUE : ZMTooltipTheme.RED,
                   child: IconButtonTableAction(
-                    iconData: lp.estado == 'C' ? Icons.play_circle_fill : Icons.cancel_outlined,
-                    color: lp.estado == 'C' ? Colors.blue : Colors.orange,
+                    iconData: widget.lineaOrdenProduccion.estado == 'C' ? Icons.play_circle_fill : Icons.cancel_outlined,
+                    color: widget.lineaOrdenProduccion.estado == 'C' ? Colors.blue : Colors.orange,
+                    disabledBackgroundColor: Colors.black.withOpacity(0.05),
                     onPressed: () async{
                       await showDialog(
                         context: context,
@@ -395,7 +543,7 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                         builder: (context) {
                           return AlertDialog(
                             title: Text(
-                              lp.estado == 'C' ? "Reanudar linea de orden de producción" : "Cancelar linea de orden de producción",
+                              widget.lineaOrdenProduccion.estado == 'C' ? "Reanudar linea de orden de producción" : "Cancelar linea de orden de producción",
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 20,
@@ -403,52 +551,35 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                               ),
                             ),
                             content: Text(
-                              lp.estado == 'C' ? "¿Está seguro que desea reanudar la línea?" : "¿Está seguro que desea cancelar la línea?",                 
+                              widget.lineaOrdenProduccion.estado == 'C' ? "¿Está seguro que desea reanudar la línea?" : "¿Está seguro que desea cancelar la línea?",                 
                             ),
                             actions: [
                               ZMTextButton(
                                 text: "Aceptar",
                                 color: Theme.of(mainContext).primaryColor,
                                 onPressed: () async{
-                                  if(lp.estado == 'C'){
-                                    await OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().reanudarLineaOrdenProduccion({
+                                  if(widget.lineaOrdenProduccion.estado == 'C'){
+                                    await OrdenesProduccionService().doMethod(OrdenesProduccionService().reanudarLineaOrdenProduccion({
                                       "LineasProducto":{
-                                        "IdLineaProducto":lp.idLineaProducto
+                                        "IdLineaProducto":widget.lineaOrdenProduccion.idLineaProducto
                                       }
                                     })).then((response) async{
                                       if (response.status == RequestStatus.SUCCESS){
-                                        await OrdenesProduccionService(scheduler: scheduler).damePor(OrdenesProduccionService().dameConfiguration(ordenProduccion.idOrdenProduccion)).then((response){
-                                          if (response.status == RequestStatus.SUCCESS){
-                                            setState(() {
-                                              ordenProduccion = response.message;
-                                              _lineasOrdenProduccion = [];
-                                              ordenProduccion.lineasProducto.forEach((element) {
-                                                _lineasOrdenProduccion.add(detalleLineaOrdenProduccion(element, context));
-                                              });
-                                            });
-                                          }
-                                        });
+                                        if(widget.reloadFunc != null){
+                                          widget.reloadFunc();
+                                        }
                                       }
                                     });
                                   }else{
-                                    await OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().cancelarLineaOrdenProduccio({
+                                    await OrdenesProduccionService().doMethod(OrdenesProduccionService().cancelarLineaOrdenProduccio({
                                       "LineasProducto":{
-                                        "IdLineaProducto":lp.idLineaProducto
+                                        "IdLineaProducto":widget.lineaOrdenProduccion.idLineaProducto
                                       }
                                     })).then((response) async{
                                       if (response.status == RequestStatus.SUCCESS){
-                                        await OrdenesProduccionService(scheduler: scheduler).damePor(OrdenesProduccionService().dameConfiguration(ordenProduccion.idOrdenProduccion)).then((response){
-                                          if (response.status == RequestStatus.SUCCESS){
-                                            ordenProduccion = response.message;
-                                            List<Widget> _nuevasLineas = [];
-                                            ordenProduccion.lineasProducto.forEach((element) {
-                                              _nuevasLineas.add(detalleLineaOrdenProduccion(element, context));
-                                            });
-                                            setState(() {
-                                              _lineasOrdenProduccion = _nuevasLineas;
-                                            });
-                                          }
-                                        });
+                                        if(widget.reloadFunc != null){
+                                          widget.reloadFunc();
+                                        }
                                       }
                                     });
                                   }

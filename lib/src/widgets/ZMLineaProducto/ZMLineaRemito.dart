@@ -8,6 +8,7 @@ import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
+import 'package:zmgestion/src/models/Stock.dart';
 import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
@@ -344,8 +345,6 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
                                       displayedName: "Lustre",
                                       valueName: "IdLustre",
                                       initialValue: _idLustre,
-                                      errorMessage:
-                                        "Debe seleccionar un lustre",
                                       textStyle: TextStyle(
                                         color: Color(0xff87C2F5).withOpacity(0.8),
                                       ),

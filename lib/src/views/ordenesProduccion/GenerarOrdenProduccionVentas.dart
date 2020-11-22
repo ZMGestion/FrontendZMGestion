@@ -717,7 +717,7 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
                             barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                             builder: (BuildContext context) {
                               return CrearLineaOrdenProduccion(
-                                onAccept: (lineaProducto){
+                                onAccept: (lineaProducto, cantidadSolicitadaUbicacion){
                                   setState(() {
                                     _lineasOrdenProduccion.add(lineaProducto);
                                   });

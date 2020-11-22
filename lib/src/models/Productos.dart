@@ -4,7 +4,9 @@ import 'package:zmgestion/src/models/GruposProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zmgestion/src/models/Precios.dart';
+import 'package:zmgestion/src/models/Stock.dart';
 import 'package:zmgestion/src/models/TiposProductos.dart';
+import 'package:zmgestion/src/models/Ubicaciones.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
@@ -26,6 +28,7 @@ class Productos extends Equatable with Models{
 
   /* -Other-*/
   final Precios precio;
+  final List<Stock> stock;
   final GruposProducto grupoProducto;
   final CategoriasProducto categoriaProducto;
   final TiposProducto tipoProducto;
@@ -42,6 +45,7 @@ class Productos extends Equatable with Models{
     this.observaciones,
     this.longitudTela,
     this.precio,
+    this.stock,
     this.grupoProducto,
     this.categoriaProducto,
     this.tipoProducto
@@ -59,27 +63,42 @@ class Productos extends Equatable with Models{
 
   @override
   Productos fromMap(Map<String, dynamic> mapModel) {
+    List<Stock> _stock = new List<Stock>();
+    if (mapModel["Productos"]["Stock"] != null){
+      mapModel["Productos"]["Stock"].forEach((mapModel){
+        Stock _lineaProducto = Stock().fromMap(mapModel);
+        _stock.add(_lineaProducto);
+      });
+    }
+
     return Productos(
-        idProducto:     mapModel["Productos"]["IdProducto"],
-        producto:       mapModel["Productos"]["Producto"],
-        fechaAlta:      mapModel["Productos"]["FechaAlta"] != null ? DateTime.parse(mapModel["Productos"]["FechaAlta"]) : null,
-        fechaBaja:      mapModel["Productos"]["FechaBaja"] != null ? DateTime.parse(mapModel["Productos"]["FechaBaja"]) : null,
-        observaciones:  mapModel["Productos"]["Observaciones"],
-        longitudTela: mapModel["Productos"]["LongitudTela"],
-        estado:         mapModel["Productos"]["Estado"],
-        idGrupoProducto: mapModel["Productos"]["IdGrupoProducto"],
-        idCategoriaProducto: mapModel["Productos"]["IdCategoriaProducto"],
-        idTipoProducto: mapModel["Productos"]["IdTipoProducto"],
-        precio:         mapModel["Precios"] != null ? Precios().fromMap({"Precios": mapModel["Precios"]}) : null,
-        grupoProducto:         mapModel["GruposProducto"] != null ? GruposProducto().fromMap({"GruposProducto": mapModel["GruposProducto"]}) : null,
-        categoriaProducto:         mapModel["CategoriasProducto"] != null ? CategoriasProducto().fromMap({"CategoriasProducto": mapModel["CategoriasProducto"]}) : null,
+        idProducto:           mapModel["Productos"]["IdProducto"],
+        producto:             mapModel["Productos"]["Producto"],
+        fechaAlta:            mapModel["Productos"]["FechaAlta"] != null ? DateTime.parse(mapModel["Productos"]["FechaAlta"]) : null,
+        fechaBaja:            mapModel["Productos"]["FechaBaja"] != null ? DateTime.parse(mapModel["Productos"]["FechaBaja"]) : null,
+        observaciones:        mapModel["Productos"]["Observaciones"],
+        longitudTela:         mapModel["Productos"]["LongitudTela"],
+        estado:               mapModel["Productos"]["Estado"],
+        idGrupoProducto:      mapModel["Productos"]["IdGrupoProducto"],
+        idCategoriaProducto:  mapModel["Productos"]["IdCategoriaProducto"],
+        idTipoProducto:       mapModel["Productos"]["IdTipoProducto"],
+        precio:               mapModel["Precios"] != null ? Precios().fromMap({"Precios": mapModel["Precios"]}) : null,
+        grupoProducto:        mapModel["GruposProducto"] != null ? GruposProducto().fromMap({"GruposProducto": mapModel["GruposProducto"]}) : null,
+        categoriaProducto:    mapModel["CategoriasProducto"] != null ? CategoriasProducto().fromMap({"CategoriasProducto": mapModel["CategoriasProducto"]}) : null,
         tipoProducto:         mapModel["TiposProducto"] != null ? TiposProducto().fromMap({"TiposProducto": mapModel["TiposProducto"]}) : null,
+        stock:                _stock,
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
+    List<Map<String, dynamic>> _stockMap = List<Map<String, dynamic>>();
+    if (this.stock != null){
+      this.stock.forEach((stock) {
+        _stockMap.add(stock.toMap());
+      });
+    }
+
     Map<String, dynamic> productos = {
       "Productos": {
         "IdProducto":           this.idProducto,
@@ -91,7 +110,8 @@ class Productos extends Equatable with Models{
         "Estado":               this.estado,
         "FechaAlta":            this.fechaAlta != null ? this.fechaAlta.toIso8601String() : null,
         "FechaBaja":            this.fechaBaja != null ? this.fechaBaja.toIso8601String() : null,
-        "Observaciones":        this.observaciones
+        "Observaciones":        this.observaciones,
+        "Stock":                _stockMap,
       }
     };
 

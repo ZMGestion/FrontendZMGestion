@@ -20,6 +20,7 @@ class LineasProducto extends Equatable with Models{
   final List<int> idLineasPadres;
 
   /* -Other-*/
+  final int idRemito;
   final double precioUnitarioActual;
   final ProductosFinales productoFinal;
   final Ubicaciones ubicacion;
@@ -39,6 +40,7 @@ class LineasProducto extends Equatable with Models{
     this.precioUnitarioActual,
     this.productoFinal,
     this.idLineasPadres,
+    this.idRemito,
     this.ubicacion,
   });
 
@@ -56,6 +58,7 @@ class LineasProducto extends Equatable with Models{
       "U": "Utilizada en venta",
       "N": "No utilizada",
       "E": "Entregada",
+      "V": "Verificada",
       "W": "Pendiente de producción",
       "I": "En producción"
     };
@@ -79,6 +82,7 @@ class LineasProducto extends Equatable with Models{
         precioUnitarioActual: mapModel["LineasProducto"]["_PrecioUnitarioActual"],
         idLineasPadres: mapModel["LineasProducto"]["_IdLineasPadres"],
         ubicacion: mapModel["Ubicaciones"] != null ? Ubicaciones().fromMap(mapModel) : null,
+        idRemito: mapModel["LineasProducto"]["_IdRemito"]
       );
     }
   
@@ -99,7 +103,8 @@ class LineasProducto extends Equatable with Models{
           "FechaCancelacion":       this.fechaCancelacion!= null ? this.fechaCancelacion.toIso8601String() : null,
           "Estado":                 this.estado,
           "_PrecioUnitarioActual":  this.precioUnitarioActual,
-          "_IdLineasPadres":        this.idLineasPadres
+          "_IdLineasPadres":        this.idLineasPadres,
+          "_IdRemito":              this.idRemito
         }
       };
       

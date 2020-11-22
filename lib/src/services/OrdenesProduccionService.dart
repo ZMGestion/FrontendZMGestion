@@ -122,7 +122,7 @@ class OrdenesProduccionService extends Services{
   }
 
   @override
-  DoMethodConfiguration crearLineaOrdenProduccion(LineasProducto lineaProducto) {
+  DoMethodConfiguration crearLineaOrdenProduccion(LineasProducto lineaProducto, List<Map<String, dynamic>> stockUbicaciones) {
     // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
@@ -135,14 +135,19 @@ class OrdenesProduccionService extends Services{
         showLoading: true,
         successMessage: "La linea de ordenProduccion se ha creado con éxito"
       ),
-      attributes: {
-        "LineasProducto": [
-          "IdReferencia", "Cantidad", "PrecioUnitario"
-        ],
-        "ProductosFinales": [
-          "IdProducto", "IdTela", "IdLustre"
-        ],
-      }
+      payload: {
+        "LineasProducto": {
+          "IdReferencia": lineaProducto.idReferencia,
+          "Cantidad": lineaProducto.cantidad,
+          "PrecioUnitario": lineaProducto.precioUnitario
+        },
+        "ProductosFinales": {
+          "IdProducto": lineaProducto.productoFinal.idProducto,
+          "IdTela": lineaProducto.productoFinal.idTela,
+          "IdLustre": lineaProducto.productoFinal.idLustre,
+        },
+        "Ubicaciones": stockUbicaciones
+      },
     );
   }
 
@@ -163,9 +168,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration reanudarLineaOrdenProduccion(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/reanudar",
@@ -180,9 +183,22 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
+  DoMethodConfiguration verificarLineaOrdenProduccion(Map<String, dynamic> payload) {
+    return DoMethodConfiguration(
+      method: Methods.POST,
+      path: "/ordenesProduccion/lineasOrdenProduccion/verificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      payload: payload,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: true,
+        showLoading: true,
+        successMessage: "La linea de orden de producción se ha verificado con éxito"
+      )
+    );
+  }
+
   DoMethodConfiguration modificarLineaOrdenProduccion(LineasProducto lineaProducto) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/modificar",
@@ -205,9 +221,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration pasarAPendiente(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/pasarAPendiente",
@@ -222,9 +236,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration borrarLineaOrdenProduccion(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/borrar",
@@ -240,7 +252,6 @@ class OrdenesProduccionService extends Services{
   }
 
   ListMethodConfiguration listarTareas(int idLineaOrdenProduccion) {
-    // TODO: implement altaConfiguration
     return ListMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas",
@@ -261,7 +272,6 @@ class OrdenesProduccionService extends Services{
   }
 
   DoMethodConfiguration crearTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/crear",
@@ -277,8 +287,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration eliminarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration eliminarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/borrar",
@@ -294,8 +303,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration ejecutarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration ejecutarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/ejecutar",
@@ -311,8 +319,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration pausarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration pausarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/pausar",
@@ -328,8 +335,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration reanudarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration reanudarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/reanudar",
@@ -345,8 +351,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration cancelarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration cancelarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/cancelar",
@@ -362,8 +367,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration finalizarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration finalizarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/finalizar",
@@ -379,8 +383,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  DoMethodConfiguration verificarTarea(Tareas tarea) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration verificarTarea(Tareas tarea){
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/tareas/verificar",

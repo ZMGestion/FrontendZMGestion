@@ -219,7 +219,6 @@ class _CrearProductosAlertDialogState extends State<CrearProductosFinalesAlertDi
                                         labelName: "Seleccione un lustre",
                                         displayedName: "Lustre",
                                         valueName: "IdLustre",
-                                        errorMessage: "Debe seleccionar un lustre",
                                         //initialValue: UsuariosProvider.idUbicacion,
                                         decoration: InputDecoration(
                                           contentPadding: EdgeInsets.only(left: 8)

@@ -240,7 +240,7 @@ class _OrdenesProduccionNewState extends State<OrdenesProduccionNew> {
                                             showLineasForm = false;
                                           });
                                         },
-                                        onAccept: (lp) async{
+                                        onAccept: (lp, stockUbicacion) async{
                                           if(!showLineasForm){
                                             setState(() {
                                               showLineasForm = true;
@@ -314,7 +314,11 @@ class _OrdenesProduccionNewState extends State<OrdenesProduccionNew> {
                                                       lustre: lp.productoFinal?.lustre
                                                     ),
                                                   );
-                                                  OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().crearLineaOrdenProduccion(_lp)).then(
+                                                  List<Map<String, dynamic>> _ubicaciones = List<Map<String, dynamic>>();
+                                                  stockUbicacion.forEach((idUbicacion, cantidad) {
+                                                    _ubicaciones.add({"IdUbicacion": idUbicacion, "CantidadUbicacion": cantidad});
+                                                  });
+                                                  OrdenesProduccionService(scheduler: scheduler).doMethod(OrdenesProduccionService().crearLineaOrdenProduccion(_lp, _ubicaciones)).then(
                                                     (response){
                                                       if(response.status == RequestStatus.SUCCESS){
                                                         setState(() {

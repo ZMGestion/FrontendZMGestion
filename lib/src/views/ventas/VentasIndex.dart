@@ -809,7 +809,7 @@ Map<int, Ventas> ventas = {};
                           //   width: 15,
                           // ),
                           Visibility(
-                            visible: (!todosBorrables && !generableRemito),
+                            visible: (!todosBorrables && !generableRemito) && estado != "C",
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Text(
@@ -821,10 +821,13 @@ Map<int, Ventas> ventas = {};
                               ),
                             ),
                           ),
+                          SizedBox(
+                            width: 6,
+                          ),
                           Visibility(
-                            visible: true,
+                            visible: estado == "C",
                             child: ZMStdButton(
-                              color: Colors.blue,
+                              color: Colors.teal,
                               text: Text(
                                 "Producir (" + ventas.length.toString() + ")",
                                 style: TextStyle(
@@ -853,6 +856,9 @@ Map<int, Ventas> ventas = {};
                                 }
                               },
                             ),
+                          ),
+                          SizedBox(
+                            width: 6,
                           ),
                           Visibility(
                             visible: todosBorrables,

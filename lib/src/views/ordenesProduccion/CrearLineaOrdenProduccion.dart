@@ -4,7 +4,7 @@ import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProductoSinPrecio/ZMLineaProductoSinPrecio.dart';
 
 class CrearLineaOrdenProduccion extends StatefulWidget {
-  final Function(LineasProducto lp) onAccept;
+  final Function(LineasProducto lp, Map<int, int> cantidadSolicitadaUbicacion) onAccept;
   final Function() onCancel;
 
   const CrearLineaOrdenProduccion({
@@ -44,8 +44,8 @@ class _CrearLineaOrdenProduccionState extends State<CrearLineaOrdenProduccion> {
           color: Theme.of(context).primaryColorLight,
           child: ZMLineaProductoSinPrecio(
             onCancel: widget.onCancel,
-            onAccept: (lineaProducto){
-              widget.onAccept(lineaProducto);
+            onAccept: (lineaProducto, stockUbicacion){
+              widget.onAccept(lineaProducto, stockUbicacion);
               Navigator.of(context).pop();
             },
           )
