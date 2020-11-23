@@ -23,11 +23,13 @@ import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 class TareasAlertDialog extends StatefulWidget{
   final String title;
   final LineasProducto lineaOrdenProduccion;
+  final Function onClose;
 
   const TareasAlertDialog({
     Key key,
     this.title = "Tareas",
-    this.lineaOrdenProduccion
+    this.lineaOrdenProduccion,
+    this.onClose
   }) : super(key: key);
 
   @override
@@ -128,7 +130,7 @@ class _TareasAlertDialogState extends State<TareasAlertDialog> {
       return AppLoader(
         builder: (scheduler){
           return AlertDialog(
-            titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
+            titlePadding: EdgeInsets.fromLTRB(0,0,0,0),
             contentPadding: EdgeInsets.all(0),
             insetPadding: EdgeInsets.all(0),
             actionsPadding: EdgeInsets.all(0),
@@ -168,6 +170,9 @@ class _TareasAlertDialogState extends State<TareasAlertDialog> {
                       iconData: Icons.clear,
                       iconSize: 22,
                       onPressed: (){
+                        if(widget.onClose != null){
+                          widget.onClose();
+                        }
                         Navigator.of(context).pop(true);
                       },
                     ),

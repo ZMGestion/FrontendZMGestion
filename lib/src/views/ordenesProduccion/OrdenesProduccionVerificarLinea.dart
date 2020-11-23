@@ -30,7 +30,7 @@ class _OrdenesProduccionVerificarLineaState extends State<OrdenesProduccionVerif
     SizeConfig().init(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
+      titlePadding: EdgeInsets.fromLTRB(0,0,0,0),
       contentPadding: EdgeInsets.all(0),
       insetPadding: EdgeInsets.all(0),
       actionsPadding: EdgeInsets.all(0),
@@ -49,11 +49,12 @@ class _OrdenesProduccionVerificarLineaState extends State<OrdenesProduccionVerif
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Expanded(
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: Text(
-                    "Seleccione la ubicación destino de los productos fabricados"
+                    "Seleccione la ubicación destino de los productos fabricados",
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),

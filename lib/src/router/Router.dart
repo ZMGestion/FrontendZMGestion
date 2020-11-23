@@ -69,7 +69,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ProductosFinalesRoute:
       return _getPageRoute(ProductosFinalesIndex(), settings);
     case OrdenesProduccionRoute:
-      return _getPageRoute(OrdenesProduccionIndex(), settings);
+      return _getPageRoute(OrdenesProduccionIndex(args: queryParameters,), settings);
     case UbicacionesRoute:
       return _getPageRoute(UbicacionesIndex(), settings);
     case RolesRoute:

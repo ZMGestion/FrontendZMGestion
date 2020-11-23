@@ -3,12 +3,15 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:printing/printing.dart';
 import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Response.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
+import 'package:zmgestion/src/router/Locator.dart';
+import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/OrdenesProduccionService.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:pdf/pdf.dart';
@@ -42,6 +45,24 @@ class _OrdenProduccionCreadaDialogState extends State<OrdenProduccionCreadaDialo
           fontSize: 20,
           fontWeight: FontWeight.w600),
       actions: <Widget>[
+        ZMStdButton(
+          color: Theme.of(context).primaryColor,
+          icon: Icon(
+            FontAwesomeIcons.hammer,
+            size: 15,
+          ),
+          padding: EdgeInsets.only(left: 6),
+          text: Text(
+            "Ver orden de producción",
+            style: TextStyle(
+              color: Theme.of(context).primaryTextTheme.headline6.color
+            ),
+          ),
+          onPressed: (){
+            final NavigationService _navigationService = locator<NavigationService>();
+            _navigationService.navigateTo("/ordenes-produccion?IdOrdenProduccion="+widget.ordenProduccion.idOrdenProduccion.toString());
+          }
+        ),
         ZMStdButton(
           color: Colors.blue,
           icon: Icon(Icons.print_outlined),

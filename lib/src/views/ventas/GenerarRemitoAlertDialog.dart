@@ -82,7 +82,7 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
     return AppLoader(
       builder: (scheduler){
         return AlertDialog(
-          titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
+          titlePadding: EdgeInsets.fromLTRB(0,0,0,0),
           contentPadding: EdgeInsets.all(0),
           insetPadding: EdgeInsets.all(0),
           buttonPadding: EdgeInsets.all(0),

@@ -280,11 +280,20 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                     height: 6,
                   ),
                   Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Column(
-                        children: [
-                          Row(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Color(0xfff7f7f7),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.black.withOpacity(0.1),
+                                width: 1
+                              )
+                            )
+                          ),
+                          child: Row(
                             children: [
                               Expanded(
                                 flex: 1,
@@ -294,6 +303,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                 flex: 2,
                                 child: Text(
                                   "Cantidad",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -301,6 +313,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                 flex: 5,
                                 child: Text(
                                   "Detalle",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -308,6 +323,9 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                                 flex:1,
                                 child: Text(
                                   "Estado",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -322,20 +340,17 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                               ),
                             ],
                           ),
-                          Divider(
-                            thickness: 1,
-                          ),
-                          Column(
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Column(
                             children: _lineasOrdenProduccion,
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  Builder(
-                    key: Key(_idsLineas.toString()),
-                    builder: (context) => actions(context, scheduler)
-                  )
+                  actions(context, scheduler)
                 ],
               ),
             ),
@@ -353,7 +368,6 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             ZMStdButton(
-              key: Key(_idsLineas.toString()),
               color: Theme.of(context).primaryColorLight,
               icon: Icon(
                 Icons.check,
@@ -496,6 +510,7 @@ class _DetalleLineaOrdenProduccionState extends State<DetalleLineaOrdenProduccio
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.black87,
+                      fontSize: 12
                     ),
                   ),
                 ),
@@ -518,10 +533,12 @@ class _DetalleLineaOrdenProduccionState extends State<DetalleLineaOrdenProduccio
                     onPressed: () async{
                       await showDialog(
                         context: context,
+                        barrierDismissible: false,
                         barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                         builder: (BuildContext context) {
                           return TareasAlertDialog(
                             lineaOrdenProduccion: widget.lineaOrdenProduccion,
+                            onClose: widget.reloadFunc,
                           );
                         },
                       );

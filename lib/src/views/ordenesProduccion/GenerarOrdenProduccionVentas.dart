@@ -11,6 +11,7 @@ import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
@@ -18,6 +19,7 @@ import 'package:zmgestion/src/services/VentasService.dart';
 import 'package:zmgestion/src/services/UbicacionesService.dart';
 import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/CrearLineaOrdenProduccion.dart';
+import 'package:zmgestion/src/views/ordenesProduccion/OrdenProduccionCreadaDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AnimatedLoadingWidget.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
@@ -108,7 +110,7 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
     return AppLoader(
       builder: (scheduler){
         return AlertDialog(
-        titlePadding: EdgeInsets.fromLTRB(6,6,6,0),
+        titlePadding: EdgeInsets.fromLTRB(0,0,0,0),
         contentPadding: EdgeInsets.all(0),
         insetPadding: EdgeInsets.all(0),
         actionsPadding: EdgeInsets.all(0),
@@ -231,19 +233,21 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
                         });
                         await VentasService(scheduler: scheduler).doMethod(VentasService().generarOrdenProduccion(_payload)).then((response) async{
                           if(response.status == RequestStatus.SUCCESS){
-                            Navigator.pop(context, true);
+                            print(response.message);
+                            OrdenesProduccion _ordenProduccion = OrdenesProduccion().fromMap(response.message);
                             await showDialog(
                               context: context,
                               barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                               barrierDismissible: false,
                               builder: (BuildContext context) {
-                                //Orden de produccion generada
-                                return AlertDialog(
-                                  content: Text("Success"),
+                                return OrdenProduccionCreadaDialog(
+                                  ordenProduccion: _ordenProduccion,
                                 );
                               },
                             );
-                            widget.onSuccess();
+                            if(widget.onSuccess != null){
+                              widget.onSuccess();
+                            }
                           }
                         });
                         setState(() {
