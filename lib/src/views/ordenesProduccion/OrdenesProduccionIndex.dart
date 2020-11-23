@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
@@ -73,6 +74,7 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
   RegExp dateRegEx;
 
   Map<String, String> breadcrumb = new Map<String, String>();
+  Map<String, dynamic> args = new Map<String, String>();
 
   @override
   void dispose() {
@@ -108,7 +110,46 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
     });
     desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
     hastaController.text = dateFormatShow.format(DateTime.now());
+
+    if (widget.args != null){
+      args.addAll(widget.args);
+      if (args["IdOrdenProduccion"] != null){
+        int idOrdenProduccion = int.parse(args["IdOrdenProduccion"]);
+        SchedulerBinding.instance.addPostFrameCallback((_) { 
+            verOrdenProduccion(idOrdenProduccion);
+        });
+      }
+    }
+
     super.initState();
+  }
+
+  void verOrdenProduccion(int idVenta) async{
+    await showDialog(
+      context: context,
+      barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      builder: (BuildContext context) {
+        return ModelViewDialog(
+          title: "Venta",
+          content: ModelView(
+            service: OrdenesProduccionService(),
+            getMethodConfiguration: OrdenesProduccionService().dameConfiguration(idVenta),
+            isList: false,
+            itemBuilder: (mapModel, index, itemController) {
+              return OrdenesProduccion().fromMap(mapModel).viewModel(context);
+            },
+          ),
+        );
+      },
+    ).then((value){
+      if(value != null){
+        if (value){
+          setState(() {
+            refreshValue = Random().nextInt(99999);
+          });
+        }
+      }   
+    });
   }
 
   @override

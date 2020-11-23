@@ -300,16 +300,29 @@ class _VentasModelViewState extends State<VentasModelView> {
                     ),
                   ),
                   Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Column(
-                        children: [
-                          Row(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Color(0xfff7f7f7),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.black.withOpacity(0.1),
+                                width: 1
+                              )
+                            )
+                          ),
+                          child: Row(
                             children: [
                               Expanded(
                                 flex: 2,
                                 child: Text(
                                   "Cantidad",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black.withOpacity(0.85)
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -317,6 +330,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 flex: 5,
                                 child: Text(
                                   "Detalle",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -324,6 +340,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 flex: 2,
                                 child: Text(
                                   "Precio Unitario",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,  
                                 )
                               ),
@@ -331,6 +350,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 flex: 2,
                                 child: Text(
                                   "Total",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -338,6 +360,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 flex:1,
                                 child: Text(
                                   "Estado",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   textAlign: TextAlign.center,
                                 )
                               ),
@@ -349,16 +374,24 @@ class _VentasModelViewState extends State<VentasModelView> {
                               ),
                             ],
                           ),
-                          Divider(
-                            thickness: 2,
-                          ),
-                          _loading ? CircularProgressIndicator():Column(
+                        ),
+                        _loading ? CircularProgressIndicator(): Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Column(
                             children: _lineasVenta,
                           ),
-                          Divider(
-                            thickness: 2,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xfff7f7f7),
+                            border: Border(
+                              top: BorderSide(
+                                color: Colors.black.withOpacity(0.1),
+                                width: 1
+                              )
+                            )
                           ),
-                          Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Expanded(
@@ -449,9 +482,9 @@ class _VentasModelViewState extends State<VentasModelView> {
                                 )
                               ),
                             ],
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                   AppLoader(

@@ -850,6 +850,9 @@ Map<int, Ventas> ventas = {};
                                     builder: (BuildContext context) {
                                       return GenerarOrdenProduccionVentas(
                                         ventas: ventas,
+                                        onSuccess: (){
+                                          Navigator.of(context).pop(true);
+                                        },
                                       );
                                     },
                                   );
