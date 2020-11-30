@@ -115,8 +115,8 @@ Map<int, Ventas> ventas = {};
         }
       });
     });
-    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 30)));
-    hastaController.text = dateFormatShow.format(DateTime.now());
+    // desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 30)));
+    // hastaController.text = dateFormatShow.format(DateTime.now());
     if (widget.args != null){
       args.addAll(widget.args);
       if (args["IdVenta"] != null){

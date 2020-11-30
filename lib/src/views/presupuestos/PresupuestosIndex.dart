@@ -112,8 +112,8 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
         }
       });
     });
-    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
-    hastaController.text = dateFormatShow.format(DateTime.now());
+    //desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
+    //hastaController.text = dateFormatShow.format(DateTime.now());
     super.initState();
   }
 

@@ -635,7 +635,6 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                             acceptColor: Colors.green,
                                             cancelColor: Colors.red,
                                             onAccept: () async {
-                                              widget.onSuccess();
                                               Navigator.of(context).pop();
                                             },
                                             onCancel: () async {
@@ -644,7 +643,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                             },
                                           );
                                         },
-                                      );
+                                      ).then((value) => Navigator.of(context).pop());
                                     }else{
                                       Navigator.of(context).pop();
                                     }

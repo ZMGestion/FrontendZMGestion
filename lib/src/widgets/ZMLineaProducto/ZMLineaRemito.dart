@@ -60,7 +60,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
   void initState() {
     if(widget.tipo != null){
       _tipo = widget.tipo;
-      if (_tipo == "E"){
+      if (_tipo == "E" ||  _tipo == "Y"){
         _disponible = true;
       }else{
         _disponible = false;
@@ -185,7 +185,7 @@ class _ZMLineaRemitoState extends State<ZMLineaRemito> {
             ),
           ),
           Visibility(
-            visible: !_loading && ((_tipo == "E") || _idUbicacion != 0),
+            visible: !_loading && ((_tipo == "E" ||  _tipo == "Y") || _idUbicacion != 0),
             child: Card(
               color: Color(0xff042949).withOpacity(0.55),
               child: Padding(

@@ -233,7 +233,6 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
                         });
                         await VentasService(scheduler: scheduler).doMethod(VentasService().generarOrdenProduccion(_payload)).then((response) async{
                           if(response.status == RequestStatus.SUCCESS){
-                            print(response.message);
                             OrdenesProduccion _ordenProduccion = OrdenesProduccion().fromMap(response.message);
                             await showDialog(
                               context: context,

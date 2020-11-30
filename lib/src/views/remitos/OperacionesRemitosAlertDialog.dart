@@ -64,7 +64,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
     if(widget.remito != null){
       remito = widget.remito;
       _tipo = remito.tipo;
-      if(_tipo == "E"){
+      if(_tipo == "E" ||  _tipo == "Y"){
         _idUbicacionEntrada = remito.idUbicacion;
       }
       if(remito.lineasProducto != null){
@@ -150,10 +150,10 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                         ),
                                       ),
                                       SizedBox(width: 10),
-                                      (_tipo == "E") ? 
+                                      (_tipo == "E" ||  _tipo == "Y") ? 
                                         Expanded(
                                           child: Container(
-                                            constraints: BoxConstraints(minWidth:  (_tipo == "E") ? 200 : 0),
+                                            constraints: BoxConstraints(minWidth:  (_tipo == "E" ||  _tipo == "Y") ? 200 : 0),
                                             child: DropDownModelView(
                                               service: UbicacionesService(),
                                               listMethodConfiguration: UbicacionesService().listar(),
@@ -280,7 +280,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                                 ZMTextButton(
                                                   color: Theme.of(context).primaryTextTheme.headline6.color,
                                                   text: "Agregar linea",
-                                                  onPressed: ((_tipo == "S") || ((_tipo == "E") && _idUbicacionEntrada != 0)) ? (){
+                                                  onPressed: ((_tipo == "S") || ((_tipo == "E" ||  _tipo == "Y") && _idUbicacionEntrada != 0)) ? (){
                                                     setState(() {
                                                       showLineasForm = true;
                                                       editingLine = false;

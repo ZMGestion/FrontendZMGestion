@@ -58,7 +58,9 @@ class Remitos extends Equatable with Models{
   Map<String, String> mapTipos(){
     return {
       "E": "Entrada",
-      "S": "Salida"
+      "S": "Salida",
+      "Y": "Entrada",
+      "X": "Salida"
     };
   }
 
