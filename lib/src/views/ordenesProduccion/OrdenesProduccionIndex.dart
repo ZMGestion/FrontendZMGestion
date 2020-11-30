@@ -108,8 +108,8 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
         }
       });
     });
-    desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
-    hastaController.text = dateFormatShow.format(DateTime.now());
+    // desdeController.text = dateFormatShow.format(DateTime.now().subtract(Duration(days: 14)));
+    // hastaController.text = dateFormatShow.format(DateTime.now());
 
     if (widget.args != null){
       args.addAll(widget.args);

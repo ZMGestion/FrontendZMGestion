@@ -416,6 +416,7 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                                         if(response.status == RequestStatus.SUCCESS){
                                                           setState(() {
                                                             _changed = true;
+                                                            _lineasProducto.removeWhere((element) => element.idLineaProducto == _lp.idLineaProducto);
                                                             _lineasProducto.add(
                                                               LineasProducto().fromMap(response.message)
                                                             );

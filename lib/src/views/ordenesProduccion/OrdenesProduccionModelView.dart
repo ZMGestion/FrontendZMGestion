@@ -361,7 +361,6 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
   }
     Widget actions(BuildContext context, RequestScheduler scheduler){
       //final UsuariosProvider _usuariosProvider = Provider.of<UsuariosProvider>(context);
-      print(_idsLineas);
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -380,7 +379,6 @@ class _OrdenesProduccionModelViewState extends State<OrdenesProduccionModelView>
                 ),
               ),
               onPressed: !_verifyEnabled ? null : ()async{
-                print(_idsLineas);
                 await showDialog(
                   context: context,
                   barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),

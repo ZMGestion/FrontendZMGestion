@@ -17,6 +17,7 @@ import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
+import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 
 class UsuariosModelView extends StatefulWidget{
@@ -46,8 +47,8 @@ class _UsuariosModelViewState extends State<UsuariosModelView> {
    final TextEditingController cantidadHijosController = TextEditingController();
   final TextEditingController fechaNacimientoController = TextEditingController();
   final TextEditingController fechaInicioController = TextEditingController();
-  int idRol;
-  int idUbicacion;
+  String rol;
+  String ubicacion;
   int idTipoDocumento;
   String estadoCivil;
   int cantidadHijos = 0;
@@ -56,8 +57,8 @@ class _UsuariosModelViewState extends State<UsuariosModelView> {
   initState(){
     nombresController.text = widget.usuario.nombres;
     apellidosController.text = widget.usuario.apellidos;
-    idRol = widget.usuario.idRol;
-    idUbicacion = widget.usuario.idUbicacion;
+    rol = widget.usuario.rol?.rol;
+    ubicacion = widget.usuario.ubicacion?.ubicacion;
     usuarioController.text = widget.usuario.usuario;
     emailController.text = widget.usuario.email;
     idTipoDocumento = widget.usuario.idTipoDocumento;
@@ -70,19 +71,7 @@ class _UsuariosModelViewState extends State<UsuariosModelView> {
     telefonoController.text = widget.usuario.telefono;
     super.initState();
   }
-
-  Future<Null> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -112,35 +101,20 @@ class _UsuariosModelViewState extends State<UsuariosModelView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: DropDownModelView(
-                      service: RolesService(),
-                      listMethodConfiguration: RolesService().listar(),
-                      parentName: "Roles",
-                      labelName: "Seleccione un rol",
-                      displayedName: "Rol",
-                      valueName: "IdRol",
-                      initialValue: idRol,
-                      errorMessage: "Debe seleccionar un rol",
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
+                      child: TextFormFieldDialog(
+                        initialValue: rol,
+                        validator: Validator.notEmptyValidator,
+                        labelText: "Rol",
+                        disabled: true,
                       ),
-                    ),
                   ),
                   SizedBox(width: 12,),
                   Expanded(
-                    child: DropDownModelView(
-                      service: UbicacionesService(),
-                      listMethodConfiguration: UbicacionesService().listar(),
-                      parentName: "Ubicaciones",
-                      labelName: "Seleccione una ubicación",
-                      displayedName: "Ubicacion",
-                      valueName: "IdUbicacion",
-                      initialValue: idUbicacion,
-                      errorMessage: "Debe seleccionar una ubicación",
-                      //initialValue: UsuariosProvider.idUbicacion,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 8)
-                      ),
+                      child: TextFormFieldDialog(
+                        validator: Validator.notEmptyValidator,
+                        initialValue: ubicacion,
+                        labelText: "Ubicación",
+                        disabled: true,
                     ),
                   ),
                 ],
@@ -264,12 +238,11 @@ class _UsuariosModelViewState extends State<UsuariosModelView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: DropDownMap(
-                      map: Usuarios().mapEstadosCivil(),
-                      hint: Text("Estado civil"),
-                      initialValue: estadoCivil,
-
-                    )
+                    child: TextFormFieldDialog(
+                      labelText: "Estado civil",
+                      initialValue: Usuarios().mapEstadosCivil()[estadoCivil],
+                      disabled: true,
+                    ),
                   ),
                   SizedBox(width: 12,),
                   Expanded(

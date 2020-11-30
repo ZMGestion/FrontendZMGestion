@@ -24,7 +24,6 @@ class _VentaRevisionAlertDialogState extends State<VentaRevisionAlertDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
     venta = widget.venta;
     super.initState();
   }
@@ -37,7 +36,7 @@ class _VentaRevisionAlertDialogState extends State<VentaRevisionAlertDialog> {
      if (_usuariosProvider.usuario.idRol == 1){
        content = "La venta requiere autorización. ¿Desea confirmar la venta?";
      }else{
-       content = "La venta requiere de autorización. Contactese con un administrador.";
+       content = "La venta requiere de autorización. Contáctese con un administrador.";
      }
     return AppLoader(
       builder: (RequestScheduler scheduler){
@@ -53,22 +52,6 @@ class _VentaRevisionAlertDialogState extends State<VentaRevisionAlertDialog> {
             Visibility(
               visible: _usuariosProvider.usuario.idRol == 1,
               child: ZMStdButton(
-                color: Colors.red,
-                text: Text(
-                  "No Autorizar",
-                  style: TextStyle(
-                    color: Theme.of(context).primaryTextTheme.headline6.color
-                  ),
-                ),
-                onPressed: () async{
-                  await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarVentaConfiguration(venta.idVenta));
-                  Navigator.of(context).pop();               
-                }
-              ),
-            ),
-            Visibility(
-              visible: _usuariosProvider.usuario.idRol == 1,
-              child: ZMStdButton(
                 color: Colors.green,
                 text: Text(
                   "Autorizar",
@@ -79,6 +62,22 @@ class _VentaRevisionAlertDialogState extends State<VentaRevisionAlertDialog> {
                 onPressed: () async{
                   await VentasService(scheduler: scheduler).doMethod(VentasService().revisarVentaConfiguration(venta.idVenta));
                   Navigator.of(context).pop();   
+                }
+              ),
+            ),
+            Visibility(
+              visible: _usuariosProvider.usuario.idRol == 1,
+              child: ZMStdButton(
+                color: Colors.red,
+                text: Text(
+                  "No Autorizar",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryTextTheme.headline6.color
+                  ),
+                ),
+                onPressed: () async{
+                  await VentasService(scheduler: scheduler).doMethod(VentasService().cancelarVentaConfiguration(venta.idVenta));
+                  Navigator.of(context).pop();               
                 }
               ),
             ),

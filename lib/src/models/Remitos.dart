@@ -59,8 +59,8 @@ class Remitos extends Equatable with Models{
     return {
       "E": "Entrada",
       "S": "Salida",
-      "X": "Transformacion Entrada",
-      "Y": "Transformacion Salida"
+      "Y": "Entrada",
+      "X": "Salida"
     };
   }
 

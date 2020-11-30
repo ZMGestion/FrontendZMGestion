@@ -33,9 +33,11 @@ class _VentaPendienteDialogState extends State<VentaPendienteDialog> {
     if(widget.operacion != null){
       if(widget.operacion == 'Modificar'){
         content = "La venta ha sido modificada con éxito.";
+        title = 'Venta modificada';
       }
       if(widget.operacion == "Crear"){
         content = "La venta ha sido creada con éxito.";
+        title = 'Venta creada';
       }
     }
     super.initState();
@@ -44,7 +46,7 @@ class _VentaPendienteDialogState extends State<VentaPendienteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Enhorabuena!"),
+      title: Text(title),
       content: Text(content),
       titleTextStyle: TextStyle(
           color: Theme.of(context).primaryTextTheme.bodyText1.color,

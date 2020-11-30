@@ -75,7 +75,6 @@ class _LineaTareaState extends State<LineaTarea> {
         ),
       )
     );
-    print(widget.tareas);
     if(widget.tareas != null){
       widget.tareas.forEach((tarea) {
         _items.add(

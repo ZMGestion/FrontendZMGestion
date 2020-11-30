@@ -43,7 +43,7 @@ class _RemitosModelViewState extends State<RemitosModelView> {
     _lineasRemito = new List<Widget>();
     if(widget.remito != null){
       remito = widget.remito;
-      if(remito.tipo == 'E' || remito.tipo == 'X'){
+      if(remito.tipo == 'E'){
         if(remito.ubicacion.ubicacion != null){
           direccionEntrega = remito.ubicacion.ubicacion; 
         }

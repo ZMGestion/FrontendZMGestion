@@ -183,8 +183,6 @@ class _GraficoTareasState extends State<GraficoTareas> {
       if(tarea.idTareaSiguiente != null){
         _idTareaSiguiente = tarea.idTareaSiguiente;
       }
-      print("IdTarea: "+tarea.idTarea.toString());
-      print("IdTareaSiguiente: "+tarea.idTareaSiguiente.toString());
       graph.addEdge(mapNodes[tarea.idTarea], mapNodes[_idTareaSiguiente]);
     });
 

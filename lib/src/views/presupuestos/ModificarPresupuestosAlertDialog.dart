@@ -64,7 +64,6 @@ class _ModificarPresupuestosAlertDialogState extends State<ModificarPresupuestos
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Faker faker = new Faker();
     productoController.text = faker.person.lastName();
