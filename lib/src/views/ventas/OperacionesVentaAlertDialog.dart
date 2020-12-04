@@ -206,7 +206,8 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                           listMethodConfiguration: (searchText){
                                             return ClientesService().buscarClientes({
                                               "Clientes": {
-                                                "Nombres": searchText
+                                                "Nombres": searchText,
+                                                "RazonSocial": searchText
                                               }
                                             });
                                           },

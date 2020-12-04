@@ -198,7 +198,8 @@ class _PresupuestosAlertDialogState extends State<PresupuestosAlertDialog> {
                                               listMethodConfiguration: (searchText){
                                                 return ClientesService().buscarClientes({
                                                   "Clientes": {
-                                                    "Nombres": searchText
+                                                    "Nombres": searchText,
+                                                    "RazonSocial": searchText
                                                   }
                                                 });
                                               },

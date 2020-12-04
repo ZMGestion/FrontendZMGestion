@@ -10,10 +10,14 @@ import 'package:zmgestion/src/widgets/SizeConfig.dart';
 class OrdenesProduccionAlertDialog extends StatefulWidget{
   final String title;
   final OrdenesProduccion ordenProduccion;
+  final Function() updateAllCallback;
+  final Function() updateRowCallback;
 
   const OrdenesProduccionAlertDialog({
     Key key,
     this.title = "Orden de producción",
+    this.updateAllCallback,
+    this.updateRowCallback,
     this.ordenProduccion
   }) : super(key: key);
 
@@ -87,6 +91,8 @@ class _OrdenesProduccionAlertDialogState extends State<OrdenesProduccionAlertDia
                         child: OrdenesProduccionNew(
                           title: "Orden de producción",
                           ordenProduccion: widget.ordenProduccion,
+                          updateRowCallback: widget.updateRowCallback,
+                          updateAllCallback: widget.updateAllCallback,
                         )
                       ),
                     ],

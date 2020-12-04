@@ -181,7 +181,8 @@ class _PresupuestosIndexState extends State<PresupuestosIndex> {
                                           listMethodConfiguration: (searchText){
                                             return ClientesService().buscarClientes({
                                               "Clientes": {
-                                                "Nombres": searchText
+                                                "Nombres": searchText,
+                                                "RazonSocial": searchText
                                               }
                                             });
                                           },

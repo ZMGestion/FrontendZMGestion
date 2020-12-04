@@ -220,7 +220,8 @@ Map<int, Ventas> ventas = {};
                                         listMethodConfiguration: (searchText){
                                           return ClientesService().buscarClientes({
                                             "Clientes": {
-                                              "Nombres": searchText
+                                              "Nombres": searchText,
+                                              "RazonSocial": searchText
                                             }
                                           });
                                         },
@@ -982,7 +983,30 @@ Map<int, Ventas> ventas = {};
                               iconData: Icons.remove_red_eye,
                               onPressed: idVenta == 0 ? null : () async{
                                 if (idVenta != 0) {
-                                  verVenta(idVenta);
+                                  await showDialog(
+                                    context: context,
+                                    barrierColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+                                    builder: (BuildContext context) {
+                                      return ModelViewDialog(
+                                        title: "Venta",
+                                        content: ModelView(
+                                          service: VentasService(),
+                                          getMethodConfiguration: VentasService().dameConfiguration(idVenta),
+                                          isList: false,
+                                          itemBuilder: (mapModel, index, itemController) {
+                                            return Ventas().fromMap(mapModel).viewModel(context);
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  itemsController.add(
+                                    ItemAction(
+                                      event: ItemEvents.Update,
+                                      index: index,
+                                      updateMethodConfiguration: VentasService().dameConfiguration(idVenta)
+                                    )
+                                  );
                                 }
                               }
                             ),
