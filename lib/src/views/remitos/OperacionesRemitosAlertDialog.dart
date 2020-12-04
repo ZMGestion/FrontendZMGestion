@@ -66,6 +66,10 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
       _tipo = remito.tipo;
       if(_tipo == "E" ||  _tipo == "Y"){
         _idUbicacionEntrada = remito.idUbicacion;
+        _tipo = "E";
+      }
+      if(_tipo == "X"){
+        _tipo = "S";
       }
       if(remito.lineasProducto != null){
         remito.lineasProducto.forEach((lineaProducto) {
@@ -128,7 +132,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
                                             ),
                                             Container(
                                               child: DropDownMap(
-                                                map: Remitos().mapTipos(),
+                                                map: Remitos().mapTiposVisibile(),
                                                 addAllOption: false,
                                                 textColor: Color(0xff97D2FF).withOpacity(1),
                                                 dropdownColor: Theme.of(context).primaryColor,

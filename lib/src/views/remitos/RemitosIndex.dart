@@ -709,6 +709,7 @@ Map<int, Remitos> remitos = {};
                       rowActions: (mapModel, index, itemsController) {
                         Remitos remito;
                         String estado = "C";
+                        String tipo;
                         int idRemito = 0;
                         if (mapModel != null) {
                           remito = Remitos().fromMap(mapModel);
@@ -719,6 +720,9 @@ Map<int, Remitos> remitos = {};
                             if (mapModel["Remitos"]["IdRemito"] != null) {
                               idRemito = mapModel["Remitos"]["IdRemito"];
                             }
+                            if (mapModel["Remitos"]["Tipo"] != null) {
+                              tipo = mapModel["Remitos"]["Tipo"];
+                            }
                           }
                         }
                         return <Widget>[
@@ -727,7 +731,7 @@ Map<int, Remitos> remitos = {};
                             visible: idRemito != 0,
                             child: IconButtonTableAction(
                               iconData: estado != "E" ? Icons.remove_red_eye : Icons.edit,
-                              onPressed: idRemito == 0 ? null : () async{
+                              onPressed: idRemito == 0 ? null : estado == "E" && (tipo == "X" || tipo == "Y") ? null : () async{
                                 if (idRemito != 0) {
                                   if(remito.estado != "E"){
                                     verRemito(idRemito: idRemito, index: index, itemsController: itemsController);
