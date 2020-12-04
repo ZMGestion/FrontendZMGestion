@@ -648,7 +648,7 @@ class _VentasModelViewState extends State<VentasModelView> {
                             builder: (context) {
                               return AlertDialog(
                                 title: Text(
-                                  "Cancelar Linea de Venta Venta",
+                                  "Cancelar linea de venta",
                                   style: TextStyle(
                                     color: Colors.black87,
                                     fontSize: 20,

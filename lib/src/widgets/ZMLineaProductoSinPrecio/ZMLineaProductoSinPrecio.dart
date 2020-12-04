@@ -222,6 +222,9 @@ class _ZMLineaProductoSinPrecioState extends State<ZMLineaProductoSinPrecio> {
                           setState(() {
                             //searchIdProducto = 0;
                               _productoSeleccionado = null;
+                              _fromStock = false;
+                              stock = [];
+                              cantidadSolicitadaUbicacion = {};
                           });
                         },
                         listMethodConfiguration: (searchText){
@@ -235,6 +238,9 @@ class _ZMLineaProductoSinPrecioState extends State<ZMLineaProductoSinPrecio> {
                           if(mapModel != null){
                             Productos producto = Productos().fromMap(mapModel);
                             setState(() {
+                              _fromStock = false;
+                              stock = [];
+                              cantidadSolicitadaUbicacion = {};
                               _productoSeleccionado = producto;
                               if(!_productoSeleccionado.esFabricable()){
                                 _telaSeleccionada = null;
@@ -243,9 +249,10 @@ class _ZMLineaProductoSinPrecioState extends State<ZMLineaProductoSinPrecio> {
                                 _telaSeleccionada = null;
                               }
                             });
-                            ProductosService().getMethod(ProductosService().dameConfiguration(_productoSeleccionado?.idProducto)).then(
+                            ProductosService().getMethod(ProductosService().dameConfiguration(producto?.idProducto)).then(
                               (response){
                                 if(response.status == RequestStatus.SUCCESS){
+                                  print(response.message.toMap());
                                   Productos _producto = Productos().fromMap(response.message.toMap());
                                   setState(() {
                                     stock = _producto.stock;

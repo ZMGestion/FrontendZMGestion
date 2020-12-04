@@ -401,9 +401,9 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                         child: IconButton(
                           icon: Icon(
                             Icons.add,
-                            color: Colors.green,
+                            color: _lineaProducto.estado != 'P' ? Colors.grey : Colors.green,
                           ), 
-                          onPressed: () async{
+                          onPressed: _lineaProducto.estado != "P" ? null : () async{
                             ProductosFinales _productoFinal;
                             await ProductosFinalesService().damePor(ProductosFinalesService().dameConfiguration(_lineaProducto.idProductoFinal)).then((response){
                               if(response.status == RequestStatus.SUCCESS){

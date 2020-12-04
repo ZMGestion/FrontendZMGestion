@@ -671,6 +671,11 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                 builder: (BuildContext context) {
                                   return OrdenesProduccionAlertDialog(
                                     title: "Crear orden de producción",
+                                    updateAllCallback: (){
+                                      setState(() {
+                                        refreshValue = Random().nextInt(99999);
+                                      });
+                                    },
                                   );
                                 },
                               );
@@ -854,6 +859,20 @@ class _OrdenesProduccionIndexState extends State<OrdenesProduccionIndex> {
                                                 return OrdenesProduccionAlertDialog(
                                                   title: "Modificar orden de producción",
                                                   ordenProduccion: _ordenProduccion,
+                                                  updateAllCallback: (){
+                                                    setState(() {
+                                                      refreshValue = Random().nextInt(99999);
+                                                    });
+                                                  },
+                                                  updateRowCallback: (){
+                                                    itemsController.add(
+                                                      ItemAction(
+                                                        event: ItemEvents.Update,
+                                                        index: index,
+                                                        updateMethodConfiguration: OrdenesProduccionService().dameConfiguration(idOrdenProduccion)
+                                                      )
+                                                    );
+                                                  }
                                                 );
                                               },
                                             ),
