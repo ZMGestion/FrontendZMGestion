@@ -1540,6 +1540,8 @@ abstract class PDFManager{
     );
     */
 
+    final logo = PdfImage.file(pdf.document, bytes: (await rootBundle.load('ZM.png')).buffer.asUint8List());
+
     pdf.addPage(pw.Page(
       pageFormat: PdfPageFormat.a4,
       margin: pw.EdgeInsets.symmetric(horizontal: 12, vertical: 24),
@@ -1552,13 +1554,8 @@ abstract class PDFManager{
                 pw.Expanded(
                   flex: 1,
                   child: pw.Center(
-                    child: pw.Text(
-                      "ZM",
-                      style: pw.TextStyle(
-                        fontSize: 40,
-                        fontWeight: pw.FontWeight.bold,
-                        color: PdfColor.fromHex("cc1616")
-                      )
+                    child: pw.Image(
+                      logo,
                     )
                   )
                 ),
