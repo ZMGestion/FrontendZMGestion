@@ -56,7 +56,6 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
 
   @override
   void initState() {
-    // TODO: implement initState
     breadcrumb.addAll({
       "Inicio":"/inicio",
       "Empleados": null,
@@ -446,8 +445,9 @@ class _UsuariosIndexState extends State<UsuariosIndex> {
                                   textAlign: TextAlign.center);
                             },
                             "Telefono": (value) {
-                              return Text(value.toString(),
-                                  textAlign: TextAlign.center);
+                              return Text(value != null ? value.toString() : "",
+                                  textAlign: TextAlign.center
+                              );
                             },
                           },
                           "Roles": {

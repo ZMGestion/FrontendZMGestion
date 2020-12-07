@@ -551,13 +551,14 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   }
 
   _crearCliente(RequestScheduler scheduler) {
+    print(_currentPageNotifier.value);
     Clientes cliente = Clientes(
       idPais: idPais,
-      nombres: _currentPageNotifier.value == 0 ? nombresController.text : null,
+      nombres: _personaFisica ? nombresController.text : null,
       apellidos:
-          _currentPageNotifier.value == 0 ? apellidosController.text : null,
+          _personaFisica ? apellidosController.text : null,
       razonSocial:
-          _currentPageNotifier.value == 1 ? razonSocialController.text : null,
+          !_personaFisica ? razonSocialController.text : null,
       idTipoDocumento: idTipoDocumento,
       tipo: !_personaFisica ? "J" : "F",
       documento: documentoController.text,
