@@ -164,40 +164,47 @@ class _CrearProductosAlertDialogState extends State<CrearProductosFinalesAlertDi
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 12,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: AutoCompleteField(
-                                        labelText: "Tela",
-                                        service: TelasService(),
-                                        paginate: true,
-                                        pageLength: 6,
-                                        parentName: "Telas",
-                                        keyName: "Tela",
-                                        listMethodConfiguration: (searchText){
-                                          return TelasService().buscarTelas({
-                                            "Telas": {
-                                              "Tela": searchText
-                                            }
-                                          });
-                                        },
-                                        onClear: (){
-                                          setState(() {
-                                            tela = null;
-                                          });
-                                        },
-                                        onSelect: (mapModel){
-                                          if(mapModel != null){
-                                            Telas _tela = Telas().fromMap(mapModel);
-                                            setState(() {
-                                              tela = _tela;
-                                            });
-                                          }
-                                        },
+                                Visibility(
+                                  visible: producto != null ? (producto.longitudTela > 0) : false,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 12,),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: AutoCompleteField(
+                                              labelText: "Tela",
+                                              service: TelasService(),
+                                              paginate: true,
+                                              pageLength: 6,
+                                              parentName: "Telas",
+                                              keyName: "Tela",
+                                              listMethodConfiguration: (searchText){
+                                                return TelasService().buscarTelas({
+                                                  "Telas": {
+                                                    "Tela": searchText
+                                                  }
+                                                });
+                                              },
+                                              onClear: (){
+                                                setState(() {
+                                                  tela = null;
+                                                });
+                                              },
+                                              onSelect: (mapModel){
+                                                if(mapModel != null){
+                                                  Telas _tela = Telas().fromMap(mapModel);
+                                                  setState(() {
+                                                    tela = _tela;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 SizedBox(height: 12,),
                                 Row(
@@ -269,7 +276,7 @@ class _CrearProductosAlertDialogState extends State<CrearProductosFinalesAlertDi
                                           ),
                                           _cardItem(
                                             title: "Longitud tela",
-                                            content: producto != null ? producto.longitudTela.toString() : "-"
+                                            content: producto != null ? producto.longitudTela.toString()+"m" : "-"
                                           ),
                                           _cardItem(
                                             title: "Tela",
