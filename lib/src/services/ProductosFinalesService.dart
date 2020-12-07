@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
-import 'package:zmgestion/src/models/CategoriasProducto.dart';
 import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/Models.dart';
-import 'package:zmgestion/src/models/Precios.dart';
-import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
-import 'package:zmgestion/src/models/TiposProductos.dart';
 import 'package:zmgestion/src/services/Services.dart';
 
 class ProductosFinalesService extends Services{
@@ -44,7 +40,6 @@ class ProductosFinalesService extends Services{
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productosFinales/darAlta",
@@ -60,7 +55,6 @@ class ProductosFinalesService extends Services{
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productosFinales/darBaja",
@@ -77,7 +71,6 @@ class ProductosFinalesService extends Services{
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productosFinales/borrar",
@@ -94,14 +87,12 @@ class ProductosFinalesService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return ProductosFinales();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
-    return DoMethodConfiguration(
+        return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productosFinales/modificar",
       authorizationHeader: true,

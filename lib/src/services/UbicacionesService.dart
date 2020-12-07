@@ -17,13 +17,10 @@ class UbicacionesService extends Services {
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement crearConfiguration
     throw UnimplementedError();
   }
 
-  DoMethodConfiguration crearUbicacionConfiguration(
-      Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
+  DoMethodConfiguration crearUbicacionConfiguration(Map<String, dynamic> payload) {
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/ubicaciones/crear",
@@ -38,7 +35,6 @@ class UbicacionesService extends Services {
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/ubicaciones/darAlta",
@@ -53,7 +49,6 @@ class UbicacionesService extends Services {
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/ubicaciones/darBaja",
@@ -69,7 +64,6 @@ class UbicacionesService extends Services {
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/ubicaciones/borrar",
@@ -85,13 +79,11 @@ class UbicacionesService extends Services {
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Ubicaciones();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     throw UnimplementedError();
   }
 

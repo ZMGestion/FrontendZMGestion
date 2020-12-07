@@ -1,8 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:printing/printing.dart';
 import 'package:zmgestion/src/helpers/PDFManager.dart';
@@ -14,8 +10,6 @@ import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
 import 'package:zmgestion/src/services/OrdenesProduccionService.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class OrdenProduccionCreadaDialog extends StatefulWidget {
   final OrdenesProduccion ordenProduccion;

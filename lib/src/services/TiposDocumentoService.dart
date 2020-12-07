@@ -18,37 +18,31 @@ class TiposDocumentoService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement crearConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration borraConfiguration() {
-    // TODO: implement borraConfiguration
     throw UnimplementedError();
   }
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return TiposDocumento();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     throw UnimplementedError();
   }
 

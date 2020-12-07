@@ -8,7 +8,6 @@ import 'package:zmgestion/src/views/ubicaciones/CrearUbicacionesAlertDialog.dart
 import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
-import 'package:zmgestion/src/widgets/ModelViewDialog.dart';
 import 'package:zmgestion/src/widgets/MultipleRequestView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TableTitle.dart';

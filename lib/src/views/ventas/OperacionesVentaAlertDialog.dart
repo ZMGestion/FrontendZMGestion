@@ -112,8 +112,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: AlertDialogTitle(
-              title: widget.title, 
-              titleColor: Theme.of(context).primaryColorLight.withOpacity(0.8),
+              title: widget.title,
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),
@@ -594,6 +593,7 @@ class _OperacionesVentasAlertDialogState extends State<OperacionesVentasAlertDia
                                                     );
                                                   },
                                                 );
+                                                Navigator.of(context).pop();
                                               }else{
                                                 await showDialog(
                                                   context: context,

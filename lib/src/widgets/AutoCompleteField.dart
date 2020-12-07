@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zmgestion/src/models/Paginaciones.dart';
-import 'package:zmgestion/src/services/GruposProductoService.dart';
 import 'package:zmgestion/src/services/Services.dart';
 import 'package:zmgestion/src/widgets/ModelView.dart';
-import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
 class AutoCompleteField extends StatefulWidget {
@@ -126,15 +123,7 @@ class _AutoCompleteFieldState extends State<AutoCompleteField> {
     } else {
       paginatedlistMethodConfiguration = widget.listMethodConfiguration(searchText);
     }
-  }
-
-  int _getPageLength(Paginaciones pageInfo){
-    int cantidad = pageInfo.cantidadTotal ~/ pageInfo.longitudPagina;
-    int resto = pageInfo.cantidadTotal % pageInfo.longitudPagina;
-    if(resto > 0){
-      cantidad++;
-    }
-    return cantidad;
+    super.initState();
   }
 
   _updatePage(Paginaciones pageInfo) {
@@ -350,7 +339,6 @@ class __AutoCompleteSuggestOverlayState extends State<_AutoCompleteSuggestOverla
 
   @override
   void initState() {
-    // TODO: implement initState
     pageInfo = widget.pageInfo;
     _textController = widget.textController;
     _focusNode = widget.focusNode;

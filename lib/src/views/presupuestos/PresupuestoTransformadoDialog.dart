@@ -1,21 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:printing/printing.dart';
-import 'package:zmgestion/src/helpers/PDFManager.dart';
-import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/Response.dart';
-import 'package:zmgestion/src/models/Models.dart';
-import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/router/Locator.dart';
 import 'package:zmgestion/src/services/NavigationService.dart';
-import 'package:zmgestion/src/services/PresupuestosService.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class PresupuestoTransformadoDialog extends StatefulWidget {
   final Ventas venta;

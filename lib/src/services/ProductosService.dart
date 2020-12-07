@@ -22,7 +22,6 @@ class ProductosService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/crear",
@@ -46,7 +45,6 @@ class ProductosService extends Services{
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/darAlta",
@@ -62,7 +60,6 @@ class ProductosService extends Services{
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/darBaja",
@@ -79,7 +76,6 @@ class ProductosService extends Services{
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/borrar",
@@ -96,13 +92,11 @@ class ProductosService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Productos();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/modificar",
@@ -116,10 +110,8 @@ class ProductosService extends Services{
     );
   }
   
-  @override
   DoMethodConfiguration modificaPrecioConfiguration(Productos producto) {
-    // TODO: implement modificaConfiguration
-    return DoMethodConfiguration(
+        return DoMethodConfiguration(
       method: Methods.POST,
       path: "/productos/precios/modificar",
       model: producto,

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:circular_check_box/circular_check_box.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';

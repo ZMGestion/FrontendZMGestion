@@ -270,27 +270,23 @@ class _ProductosIndexState extends State<ProductosIndex> {
                           "CategoriasProducto": {
                             "Categoria": (value) {
                               return Text(
-                                  value.toString(),
-                                  textAlign: TextAlign.center);
+                                value.toString(),
+                                textAlign: TextAlign.center
+                              );
                             },
                           },
                           "Precios": {
                             "Precio": (value) {
                               return Text(
-                                  "\$ "+value.toString(),
-                                  textAlign: TextAlign.center);
+                                  value == null ? "-" : "\$ "+value.toString(),
+                                  textAlign: TextAlign.center
+                                );
                             },
                             "FechaAlta": (value){
-                              if(value != null){
-                                return Text(
-                                  Utils.cuteDateTimeText(DateTime.parse(value)),
-                                  textAlign: TextAlign.center);
-                              }else{
-                                return Text(
-                                  "-",
-                                  textAlign: TextAlign.center);
-                              }
-                              
+                              return Text(
+                                value == null ? "-" : Utils.cuteDateTimeText(DateTime.parse(value)),
+                                textAlign: TextAlign.center
+                              );
                             },
                           }
                         },
@@ -299,10 +295,16 @@ class _ProductosIndexState extends State<ProductosIndex> {
                             "LongitudTela": "Longitud tela"
                           },
                           "Precios": {
-                            "FechaAlta": "Última actualización precio"
+                            "FechaAlta": "Última actualización\n precio"
                           },
                           "CategoriasProducto": {
                             "Categoria": "Categoría"
+                          }
+                        },
+                        defaultWeight: 2,
+                        tableWeights: {
+                          "Productos": {
+                            "Producto": 5
                           }
                         },
                         fixedActions: [

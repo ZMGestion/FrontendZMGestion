@@ -35,7 +35,6 @@ class PresupuestosService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/crear",
@@ -56,7 +55,6 @@ class PresupuestosService extends Services{
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/darAlta",
@@ -72,7 +70,6 @@ class PresupuestosService extends Services{
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/darBaja",
@@ -89,7 +86,6 @@ class PresupuestosService extends Services{
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/borrar",
@@ -106,14 +102,12 @@ class PresupuestosService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Presupuestos();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
-    return DoMethodConfiguration(
+        return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/modificar",
       authorizationHeader: true,
@@ -141,9 +135,7 @@ class PresupuestosService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration crearLineaPrespuesto(LineasProducto lineaProducto) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/lineasPresupuesto/crear",
@@ -166,9 +158,7 @@ class PresupuestosService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration modificarLineaPresupuesto(LineasProducto lineaProducto) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/lineasPresupuesto/modificar",
@@ -191,9 +181,7 @@ class PresupuestosService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration pasarACreado(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/pasarACreado",
@@ -208,9 +196,7 @@ class PresupuestosService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration borrarLineaPrespuesto(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/presupuestos/lineasPresupuesto/borrar",

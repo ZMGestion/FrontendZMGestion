@@ -1,7 +1,4 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
@@ -15,7 +12,6 @@ import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
@@ -61,11 +57,8 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    Faker faker = new Faker();
-    productoController.text = faker.person.lastName();
     longitudTelaController.text = "0";
+    super.initState();
   }
 
   @override

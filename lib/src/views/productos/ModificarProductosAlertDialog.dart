@@ -1,7 +1,4 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
@@ -15,7 +12,6 @@ import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
 
@@ -63,16 +59,15 @@ class _ModificarProductosAlertDialogState extends State<ModificarProductosAlertD
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     if(widget.producto != null){
       productoController.text = widget.producto.producto;
       idTipoProducto = widget.producto.idTipoProducto;
       idCategoriaProducto = widget.producto.idCategoriaProducto;
       idGrupoProducto = widget.producto.grupoProducto.idGrupoProducto;
-      precioController.text = widget.producto.precio?.precio.toString();
-      longitudTelaController.text = widget.producto.longitudTela?.toString();
+      precioController.text = widget.producto.precio?.precio?.toString()??"";
+      longitudTelaController.text = widget.producto.longitudTela?.toString()??"";
     }
+    super.initState();
   }
 
   @override

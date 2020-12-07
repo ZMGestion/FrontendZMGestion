@@ -1,14 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:zmgestion/main.dart';
-import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/views/structure/ZMAppBar.dart';
 import 'package:zmgestion/src/views/structure/ZMDrawer.dart';
-import 'package:zmgestion/src/views/structure/ZMNavigationBar.dart';
-import 'package:custom_navigation_drawer/custom_navigation_drawer.dart';
-import 'package:zmgestion/src/widgets/AppLoader.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 
 class BodyTemplate extends StatefulWidget {
@@ -23,14 +16,12 @@ class _BodyTemplateState extends State<BodyTemplate> {
   FocusNode bodyFocusNode;
   @override
   void initState() {
-    // TODO: implement initState
     bodyFocusNode = new FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 

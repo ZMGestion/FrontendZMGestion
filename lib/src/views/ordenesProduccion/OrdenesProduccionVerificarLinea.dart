@@ -41,7 +41,7 @@ class _OrdenesProduccionVerificarLineaState extends State<OrdenesProduccionVerif
       title: AlertDialogTitle(
         width: SizeConfig.blockSizeHorizontal * 30,
         title: "Verificar linea",
-        titleColor: Theme.of(context).primaryColor,
+        
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,

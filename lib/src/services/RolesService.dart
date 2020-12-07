@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
@@ -20,7 +18,6 @@ class RolesService extends Services {
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement crearConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/roles/crear",
@@ -37,19 +34,16 @@ class RolesService extends Services {
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/roles/borrar",
@@ -65,22 +59,22 @@ class RolesService extends Services {
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Roles();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
-        method: Methods.POST,
-        path: "/roles/modificar",
-        authorizationHeader: true,
-        scheduler: scheduler,
-        requestConfiguration: RequestConfiguration(
-            showSuccess: false,
-            showLoading: true,
-            successMessage: "El rol ha sido modificado con éxito"));
+      method: Methods.POST,
+      path: "/roles/modificar",
+      authorizationHeader: true,
+      scheduler: scheduler,
+      requestConfiguration: RequestConfiguration(
+        showSuccess: false,
+        showLoading: true,
+        successMessage: "El rol ha sido modificado con éxito"
+      )
+    );
   }
 
   ListMethodConfiguration listar() {
