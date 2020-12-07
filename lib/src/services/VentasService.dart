@@ -5,8 +5,6 @@ import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Comprobantes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
-import 'package:zmgestion/src/models/Precios.dart';
-import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
 import 'package:zmgestion/src/services/Services.dart';
 
@@ -37,7 +35,6 @@ class VentasService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/crear",
@@ -58,7 +55,6 @@ class VentasService extends Services{
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/borrar",
@@ -75,13 +71,11 @@ class VentasService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Ventas();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/modificar",
@@ -125,9 +119,7 @@ class VentasService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration crearLineaVentaConfiguration(LineasProducto lineaProducto) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/lineasVenta/crear",
@@ -150,9 +142,7 @@ class VentasService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration revisarVentaConfiguration(int idVenta) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/revisar",
@@ -171,9 +161,7 @@ class VentasService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration chequearVentaConfiguration(int idVenta) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/chequearPrecios",
@@ -191,9 +179,7 @@ class VentasService extends Services{
     );
   }
 
-    @override
   DoMethodConfiguration cancelarVentaConfiguration(int idVenta) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/cancelar",
@@ -212,9 +198,7 @@ class VentasService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration borrarLineaVentaConfiguration(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/lineasVenta/borrar",
@@ -229,9 +213,7 @@ class VentasService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration cancelarLineaVentaConfiguration(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ventas/lineasVenta/cancelar",
@@ -276,6 +258,7 @@ class VentasService extends Services{
       ),
     );
   }
+
   DoMethodConfiguration modificarComprobanteConfiguration(Map<String, dynamic> payload){
     return DoMethodConfiguration(
       method: Methods.POST,
@@ -290,6 +273,7 @@ class VentasService extends Services{
       ),
     );
   }
+
   DoMethodConfiguration darAltaComprobanteConfiguration(Map<String, dynamic> payload){
     return DoMethodConfiguration(
       method: Methods.POST,
@@ -319,6 +303,7 @@ class VentasService extends Services{
       ),
     );
   }
+
   GetMethodConfiguration dameComprobanteConfiguration(int idComprobante){
     return GetMethodConfiguration(
       method: Methods.POST,
@@ -333,6 +318,7 @@ class VentasService extends Services{
       },
     );
   }
+
   DoMethodConfiguration borrarComprobanteConfiguration(int idComprobante){
     return DoMethodConfiguration(
       method: Methods.POST,
@@ -422,16 +408,13 @@ class VentasService extends Services{
     );
   }
 
-
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     throw UnimplementedError();
   }
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     throw UnimplementedError();
   }
 

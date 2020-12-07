@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:getflutter/components/button/gf_icon_button.dart';
-import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
@@ -73,18 +71,6 @@ class _ModificarUsuariosAlertDialogState extends State<ModificarUsuariosAlertDia
     super.initState();
   }
 
-  Future<Null> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -100,7 +86,7 @@ class _ModificarUsuariosAlertDialogState extends State<ModificarUsuariosAlertDia
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: AlertDialogTitle(
         title: widget.title,
-        titleColor: Theme.of(context).primaryColor,
+        
       ),
       content: Container(
         padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

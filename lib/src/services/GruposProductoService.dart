@@ -21,7 +21,6 @@ class GruposProductoService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/crear",
@@ -43,7 +42,6 @@ class GruposProductoService extends Services{
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/darAlta",
@@ -59,7 +57,6 @@ class GruposProductoService extends Services{
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/darBaja",
@@ -76,7 +73,6 @@ class GruposProductoService extends Services{
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/borrar",
@@ -93,13 +89,11 @@ class GruposProductoService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return GruposProducto();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/modificar",
@@ -114,7 +108,6 @@ class GruposProductoService extends Services{
   }
 
   DoMethodConfiguration modificarPreciosConfiguration(Map<String, dynamic> payload) {
-    // TODO: implement modificarPreciosConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/gruposProducto/modificarPrecios",

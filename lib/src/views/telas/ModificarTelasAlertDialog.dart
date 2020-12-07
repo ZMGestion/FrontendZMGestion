@@ -1,23 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:getflutter/components/button/gf_icon_button.dart';
-import 'package:getflutter/shape/gf_icon_button_shape.dart';
-import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/Telas.dart';
-import 'package:zmgestion/src/models/Usuarios.dart';
-import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
-import 'package:zmgestion/src/services/TiposDocumentoService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
-import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
-import 'package:zmgestion/src/widgets/DropDownMap.dart';
-import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
@@ -55,7 +42,7 @@ class _ModificarTelasAlertDialogState extends State<ModificarTelasAlertDialog> {
   @override
   initState(){
     telaController.text = widget.tela.tela;
-    precioController.text = widget.tela.precio.precio.toString();
+    precioController.text = widget.tela.precio?.precio?.toString()??"";
     super.initState();
   }
 
@@ -74,7 +61,6 @@ class _ModificarTelasAlertDialogState extends State<ModificarTelasAlertDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: AlertDialogTitle(
         title: widget.title,
-        titleColor: Theme.of(context).primaryColor,
       ),
       content: Container(
         padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

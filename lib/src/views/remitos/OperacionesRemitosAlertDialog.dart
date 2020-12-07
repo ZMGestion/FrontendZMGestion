@@ -95,8 +95,7 @@ class _OperacionesRemitosAlertDialogState extends State<OperacionesRemitosAlertD
             backgroundColor: Theme.of(context).cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: AlertDialogTitle(
-              title: widget.title, 
-              titleColor: Theme.of(context).primaryColorLight.withOpacity(0.8),
+              title: widget.title,
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

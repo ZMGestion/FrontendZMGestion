@@ -1,15 +1,10 @@
-import 'dart:math';
-
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/Response.dart';
-import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/Models.dart';
@@ -23,10 +18,8 @@ import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/LoadingWidget.dart';
-import 'package:zmgestion/src/widgets/ModelView.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
@@ -64,8 +57,6 @@ class _ZMLineaProductoSinPrecioState extends State<ZMLineaProductoSinPrecio> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    
     if(widget.lineaProducto != null){
       _cantidad = widget.lineaProducto.cantidad;
       if(widget.lineaProducto.idLineaProducto != 0){
@@ -118,18 +109,42 @@ class _ZMLineaProductoSinPrecioState extends State<ZMLineaProductoSinPrecio> {
     return _cantidadTotal;
   }
 
-  int _determinarMax(int cantidadActual, int cantidadUbicacion, Map<int, int> _cantidadSolicitadaUbicacion, int idUbicacion){
+  int _determinarMax(int cantidadTotal, int cantidadUbicacion, Map<int, int> _cantidadSolicitadaUbicacion, int idUbicacion){
     int c = 0;
-    if(cantidadActual < cantidadUbicacion){
-      c = cantidadActual;
-    }else{
-      c = cantidadUbicacion;
+    //CantidadActual -> La cantidad en general que se está indicando
+    //CantidadUbicación -> Cuanto hay en stock en la ubicación
+    //CantidadSolicitadaUbicacion -> Map con:
+    /*
+      IdUbicacion: Cantidad
+      {
+        1: 2,
+      }
+    */
+    //Total solicitado
+    // Agarra el map y suma las cantidades
+
+    int csu = 0;
+    if(_cantidadSolicitadaUbicacion.containsKey(idUbicacion)){
+      csu = _cantidadSolicitadaUbicacion[idUbicacion];
     }
-    if(c - _totalSolicitado(_cantidadSolicitadaUbicacion) <= 0){
-      if(_cantidadSolicitadaUbicacion.containsKey(idUbicacion)){
-        c = _cantidadSolicitadaUbicacion[idUbicacion];
+
+    if(cantidadTotal - _totalSolicitado(_cantidadSolicitadaUbicacion) > 0){
+      int restanteLocal = cantidadUbicacion - csu; 
+      if(restanteLocal > 0){
+        if(cantidadUbicacion > restanteLocal){
+          return cantidadUbicacion;
+        }else{
+          return restanteLocal;
+        }
+      }
+    }else{
+      if(cantidadTotal < cantidadUbicacion){
+        c = cantidadTotal;
       }else{
-        return 0;
+        c = cantidadUbicacion;
+      }
+      if(c - _totalSolicitado(_cantidadSolicitadaUbicacion) <= 0){
+        return csu;
       }
     }
     return c;

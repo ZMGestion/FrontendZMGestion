@@ -1,38 +1,21 @@
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/helpers/Validator.dart';
-import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/providers/UsuariosProvider.dart';
-import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/OrdenesProduccionService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
-import 'package:zmgestion/src/views/clientes/CrearClientesAlertDialog.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/OrdenProduccionCreadaDialog.dart';
-import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
-import 'package:zmgestion/src/widgets/AutoCompleteField.dart';
 import 'package:zmgestion/src/widgets/ConfirmationAlertDialog.dart';
 import 'package:zmgestion/src/widgets/DeleteAlertDialog.dart';
-import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
-import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
-import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMLineaProducto.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProducto/ZMListLineasProducto.dart';
 import 'package:zmgestion/src/widgets/ZMLineaProductoSinPrecio/ZMLineaProductoSinPrecio.dart';
-import 'package:zmgestion/src/widgets/ZMTooltip.dart';
 
 class OrdenesProduccionNew extends StatefulWidget{
   final String title;
@@ -56,8 +39,7 @@ class OrdenesProduccionNew extends StatefulWidget{
 
 class _OrdenesProduccionNewState extends State<OrdenesProduccionNew> {
   final _formKey = GlobalKey<FormState>();
-  
-  int _idVenta;
+
   bool ubicacionCargada = false;
   Usuarios usuario;
   OrdenesProduccion ordenProduccion;
@@ -65,9 +47,6 @@ class _OrdenesProduccionNewState extends State<OrdenesProduccionNew> {
   LineasProducto _lineaProductoEditando;
   bool _editing = false;
   bool _changed = false;
-
-  bool _showCodigoVenta = false;
-  TextEditingController _codigoVentaController = TextEditingController();
 
   List<LineasProducto> _lineasProducto = [];
 
@@ -78,15 +57,6 @@ class _OrdenesProduccionNewState extends State<OrdenesProduccionNew> {
       _editing = true;
       _lineasProducto = widget.ordenProduccion.lineasProducto;
     }
-    _codigoVentaController.addListener(() {
-      int _newIdVenta;
-      if(_codigoVentaController.text != ""){
-        _newIdVenta = int.parse(_codigoVentaController.text);
-      }
-      setState(() {
-        _idVenta = _newIdVenta;
-      });
-    });
     super.initState();
   }
 

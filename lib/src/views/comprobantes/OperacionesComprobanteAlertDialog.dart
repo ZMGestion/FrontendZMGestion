@@ -63,7 +63,6 @@ class _OperacionesComprobanteAlertDialogState extends State<OperacionesComproban
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: AlertDialogTitle(
             title: widget.title,
-            titleColor: Theme.of(context).primaryColor,
           ),
           content: Container(
             padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

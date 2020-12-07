@@ -1,16 +1,11 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
-import 'package:zmgestion/src/helpers/ScreenMessage.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/Models.dart';
-import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/Services.dart';
-import 'package:zmgestion/src/views/ZMLoader.dart';
 
 class ClientesService extends Services {
   RequestScheduler scheduler;
@@ -23,13 +18,11 @@ class ClientesService extends Services {
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
-    return DoMethodConfiguration();
+    return null;
   }
 
   DoMethodConfiguration crearClienteConfiguration(
       Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/clientes/crear",
@@ -44,7 +37,6 @@ class ClientesService extends Services {
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/clientes/darAlta",
@@ -59,7 +51,6 @@ class ClientesService extends Services {
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/clientes/darBaja",
@@ -75,7 +66,6 @@ class ClientesService extends Services {
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/clientes/borrar",
@@ -91,13 +81,11 @@ class ClientesService extends Services {
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return Clientes();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
         method: Methods.POST,
         path: "/clientes/modificar",

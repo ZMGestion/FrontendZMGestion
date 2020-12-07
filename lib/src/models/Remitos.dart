@@ -59,8 +59,8 @@ class Remitos extends Equatable with Models{
     return {
       "E": "Entrada",
       "S": "Salida",
-      "Y": "Transformación entrada",
-      "X": "Transformación salida"
+      "Y": "Transformación salida",
+      "X": "Transformación entrada"
     };
   }
   Map<String, String> mapTiposVisibile(){

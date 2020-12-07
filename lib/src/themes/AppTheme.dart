@@ -24,7 +24,7 @@ final appThemeData = {
         color: Color(0xffffffff)
       ),
       headline1: TextStyle(
-        color: Color(0xffB34741)
+        color: Color(0xff0066a5)
       ),
       headline6: TextStyle(
         color: Color(0xfff7f7f7)
@@ -41,7 +41,7 @@ final appThemeData = {
     primaryColorLight: Color(0xff0066a5),
     primaryTextTheme: TextTheme(
       headline1: TextStyle(
-        color: Color(0xffc14949)
+        color: Color(0xff0066a5)
       ),
       headline6: TextStyle(
         color: Color(0xfff7f7f7)

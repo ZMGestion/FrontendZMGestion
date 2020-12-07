@@ -50,17 +50,12 @@ class ZMTableOld extends StatefulWidget {
 class _ZMTableOldState extends State<ZMTableOld> {
   int _rowsPerPage;
   int _sortColumnIndex;
-  bool _sortAscending;
   ModelDataSource _modelDataSource;
-  List<String> _columnNames;
   List<DataColumn> columns = new List<DataColumn>();
   List<Models> models = List<Models>();
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-
     widget.service.listMethod(widget.listMethodConfiguration).then(
       (response){
         if(response.status == RequestStatus.SUCCESS){
@@ -86,6 +81,7 @@ class _ZMTableOldState extends State<ZMTableOld> {
         );
       });
     });
+    super.initState();
   }
   
   @override
@@ -105,7 +101,6 @@ class _ZMTableOldState extends State<ZMTableOld> {
     _modelDataSource.sort<T>(getField, ascending);
     setState((){
       _sortColumnIndex = columnIndex;
-      _sortAscending = ascending;
     });
   }
 

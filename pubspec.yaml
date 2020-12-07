@@ -36,7 +36,6 @@ dependencies:
   oktoast: ^2.3.2
   circular_check_box: ^1.0.2
   jiffy: ^3.0.1
-  faker: ^1.2.1 #Solo durante desarrollo
   intl: ^0.16.1
   progress_state_button: ^1.0.1
   country_code_picker: ^1.4.0

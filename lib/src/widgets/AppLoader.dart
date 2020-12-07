@@ -30,7 +30,6 @@ class _AppLoaderState extends State<AppLoader> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     loaderStreamController.close();
     //requestScheduler.close();
     requestScheduler.requests.forEach((request) async{
@@ -42,8 +41,6 @@ class _AppLoaderState extends State<AppLoader> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
     if(widget.mainLoaderStreamController != null){
       loaderStreamController = widget.mainLoaderStreamController;
     }else{
@@ -101,7 +98,6 @@ class _AppLoaderState extends State<AppLoader> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Stack(
       children: <Widget>[
         WillPopScope(

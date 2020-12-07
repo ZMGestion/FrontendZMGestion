@@ -232,7 +232,7 @@ class _LineaTareaState extends State<LineaTarea> {
                   null
                   :
                   (){
-
+                    
                   }
                 ) 
                 : (

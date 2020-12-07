@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -53,8 +52,6 @@ class _CrearTelasAlertDialogState extends State<CrearTelasAlertDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Faker faker = new Faker();
-    telaController.text = faker.person.lastName();
   }
 
   @override

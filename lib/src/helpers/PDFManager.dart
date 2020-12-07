@@ -1,26 +1,13 @@
-import 'dart:html';
 import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
-import 'package:zmgestion/src/models/Clientes.dart';
-import 'package:zmgestion/src/models/Domicilios.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
-import 'package:zmgestion/src/models/Lustres.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/Presupuestos.dart';
-import 'package:zmgestion/src/models/Productos.dart';
-import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Remitos.dart';
-import 'package:zmgestion/src/models/Telas.dart';
-import 'package:zmgestion/src/models/Ubicaciones.dart';
-import 'package:image/image.dart' as img;
 
 abstract class PDFManager{
   

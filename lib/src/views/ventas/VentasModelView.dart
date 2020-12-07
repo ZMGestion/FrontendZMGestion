@@ -619,6 +619,20 @@ class _VentasModelViewState extends State<VentasModelView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ZMTooltip(
+                    message: "Ver orden de producción",
+                    theme: ZMTooltipTheme.BLUE,
+                    child: IconButtonTableAction(
+                      iconData: FontAwesomeIcons.hammer,
+                      iconSize: 12,
+                      disabledBackgroundColor: Colors.black.withOpacity(0.05),
+                      color: Colors.blue,
+                      onPressed: lp.idOrdenProduccion == null ? null : () async{
+                        final NavigationService _navigationService = locator<NavigationService>();
+                        _navigationService.navigateTo("/ordenes-produccion?IdOrdenProduccion="+lp.idOrdenProduccion.toString());
+                      },
+                    ),
+                  ),
+                  ZMTooltip(
                     message: "Ver remito",
                     theme: ZMTooltipTheme.BLUE,
                     child: IconButtonTableAction(

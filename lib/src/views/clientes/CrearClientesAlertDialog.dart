@@ -1,38 +1,20 @@
-import 'dart:math';
-
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:page_view_indicators/page_view_indicators.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:getflutter/components/button/gf_icon_button.dart';
-import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/Domicilios.dart';
-import 'package:zmgestion/src/models/Paises.dart';
-import 'package:zmgestion/src/models/Provincias.dart';
-import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/PaisesService.dart';
-import 'package:zmgestion/src/services/PaisesService.dart';
 import 'package:zmgestion/src/services/ProvinciasService.dart';
-import 'package:zmgestion/src/services/RolesService.dart';
 import 'package:zmgestion/src/services/TiposDocumentoService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
-import 'package:zmgestion/src/services/UsuariosService.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
-import 'package:zmgestion/src/widgets/DropDownMap.dart';
 import 'package:zmgestion/src/widgets/DropDownModelView.dart';
-import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
 import 'package:zmgestion/src/widgets/TopLabel.dart';
@@ -57,7 +39,6 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   DateTime selectedDate = DateTime.now();
   final _formKey = GlobalKey<FormState>();
   final _domicilioFormKey = GlobalKey<FormState>();
-  PageController _pageController;
   final _currentPageNotifier = ValueNotifier<int>(0);
 
   final TextEditingController nombresController = TextEditingController();
@@ -95,7 +76,6 @@ class _CrearClientesAlertDialogState extends State<CrearClientesAlertDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _pageController = new PageController();
     idPais = "AR";
     idPaisDireccion = "AR";
     _showAddress = false;

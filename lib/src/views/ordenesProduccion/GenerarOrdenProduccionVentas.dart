@@ -1,35 +1,20 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
-import 'package:speech_bubble/speech_bubble.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
 import 'package:zmgestion/src/helpers/RequestScheduler.dart';
-import 'package:zmgestion/src/models/Clientes.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/Ventas.dart';
-import 'package:zmgestion/src/models/Ventas.dart';
-import 'package:zmgestion/src/services/ClientesService.dart';
 import 'package:zmgestion/src/services/VentasService.dart';
-import 'package:zmgestion/src/services/UbicacionesService.dart';
-import 'package:zmgestion/src/views/domicilios/CrearDomiciliosAlertDialog.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/CrearLineaOrdenProduccion.dart';
 import 'package:zmgestion/src/views/ordenesProduccion/OrdenProduccionCreadaDialog.dart';
 import 'package:zmgestion/src/widgets/AlertDialogTitle.dart';
-import 'package:zmgestion/src/widgets/AnimatedLoadingWidget.dart';
 import 'package:zmgestion/src/widgets/AppLoader.dart';
-import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/TopLabel.dart';
 import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMTextButton.dart';
-import 'package:zmgestion/src/widgets/ZMTable/ZMTable.dart';
 
 class GenerarOrdenProduccionVentas extends StatefulWidget {
   final List<Models> ventas;
@@ -51,10 +36,7 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
   List<LineasProducto> _lineasOrdenProduccion = List<LineasProducto>();
   TextEditingController _observacionesController = TextEditingController();
 
-  int _idUbicacion;
-  int _idDomicilio;
   bool creatingVenta = false;
-  double _total = 0;
   int refreshDomicilios = 0;
 
   @override

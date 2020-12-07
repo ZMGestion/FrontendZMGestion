@@ -4,7 +4,6 @@ import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/SendRequest.dart';
 import 'package:zmgestion/src/models/LineasProducto.dart';
 import 'package:zmgestion/src/models/Models.dart';
-import 'package:zmgestion/src/models/Precios.dart';
 import 'package:zmgestion/src/models/OrdenesProduccion.dart';
 import 'package:zmgestion/src/models/Tareas.dart';
 import 'package:zmgestion/src/services/Services.dart';
@@ -36,7 +35,6 @@ class OrdenesProduccionService extends Services{
 
   @override
   DoMethodConfiguration crearConfiguration() {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/crear",
@@ -57,19 +55,16 @@ class OrdenesProduccionService extends Services{
 
   @override
   DoMethodConfiguration altaConfiguration() {
-    // TODO: implement altaConfiguration
     return null;
   }
 
   @override
   DoMethodConfiguration bajaConfiguration() {
-    // TODO: implement bajaConfiguration
     return null;
   }
 
   @override
   DoMethodConfiguration borraConfiguration({Map<String, dynamic> payload}) {
-    // TODO: implement borraConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/borrar",
@@ -86,13 +81,11 @@ class OrdenesProduccionService extends Services{
 
   @override
   Models getModel() {
-    // TODO: implement getModel
     return OrdenesProduccion();
   }
 
   @override
   DoMethodConfiguration modificaConfiguration() {
-    // TODO: implement modificaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/modificar",
@@ -121,9 +114,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration crearLineaOrdenProduccion(LineasProducto lineaProducto, List<Map<String, dynamic>> stockUbicaciones) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/crear",
@@ -151,9 +142,7 @@ class OrdenesProduccionService extends Services{
     );
   }
 
-  @override
   DoMethodConfiguration cancelarLineaOrdenProduccio(Map<String, dynamic> payload) {
-    // TODO: implement altaConfiguration
     return DoMethodConfiguration(
       method: Methods.POST,
       path: "/ordenesProduccion/lineasOrdenProduccion/cancelar",

@@ -1,15 +1,9 @@
-import 'dart:math';
-
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:getflutter/components/button/gf_icon_button.dart';
-import 'package:getflutter/shape/gf_icon_button_shape.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:zmgestion/src/helpers/DateTextFormatter.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
-import 'package:zmgestion/src/helpers/RequestScheduler.dart';
 import 'package:zmgestion/src/helpers/Validator.dart';
 import 'package:zmgestion/src/models/Usuarios.dart';
 import 'package:zmgestion/src/services/RolesService.dart';
@@ -23,7 +17,6 @@ import 'package:zmgestion/src/widgets/DropDownModelView.dart';
 import 'package:zmgestion/src/widgets/NumberInputWithIncrementDecrement.dart';
 import 'package:zmgestion/src/widgets/SizeConfig.dart';
 import 'package:zmgestion/src/widgets/TextFormFieldDialog.dart';
-import 'package:zmgestion/src/widgets/ZMButtons/ZMStdButton.dart';
 
 class CrearUsuariosAlertDialog extends StatefulWidget{
   final String title;
@@ -95,7 +88,6 @@ class _CrearUsuariosAlertDialogState extends State<CrearUsuariosAlertDialog> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: AlertDialogTitle(
               title: widget.title,
-              titleColor: Theme.of(context).primaryColor,
             ),
             content: Container(
               padding: EdgeInsets.fromLTRB(24, 12, 24, 24),

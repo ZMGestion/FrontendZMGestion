@@ -182,19 +182,27 @@ class _TelasIndexState extends State<TelasIndex> {
                           "Precios": {
                             "Precio": (value) {
                               return Text(
-                                  "\$ "+value.toString(),
-                                  textAlign: TextAlign.center);
+                                value == null ? "-" : "\$ "+value.toString(),
+                                textAlign: TextAlign.center
+                              );
                             },
                             "FechaAlta": (value){
                               return Text(
-                                  Utils.cuteDateTimeText(DateTime.parse(value)),
-                                  textAlign: TextAlign.center);
+                                value == null ? "-" : Utils.cuteDateTimeText(DateTime.parse(value)),
+                                textAlign: TextAlign.center
+                              );
                             },
                           }
                         },
                         tableLabels: {
                           "Precios": {
                             "FechaAlta": "Última actualización"
+                          }
+                        },
+                        defaultWeight: 2,
+                        tableWeights: {
+                          "Telas": {
+                            "Tela": 5
                           }
                         },
                         fixedActions: [
