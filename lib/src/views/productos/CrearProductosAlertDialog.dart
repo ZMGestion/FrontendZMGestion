@@ -209,7 +209,7 @@ class _CrearProductosAlertDialogState extends State<CrearProductosAlertDialog> {
                                   longitudTelaController.text = "0";
                                   return null;
                                 },
-                                labelText: "Longitud tela",
+                                labelText: "Longitud tela (m)",
                             ),
                           ),
                         ],
