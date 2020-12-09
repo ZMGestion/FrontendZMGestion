@@ -1,12 +1,17 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Response.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
 import 'package:zmgestion/src/models/GruposProducto.dart';
+import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/services/GruposProductoService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
+import 'package:zmgestion/src/services/ReportesService.dart';
 import 'package:zmgestion/src/views/productos/CrearProductosAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/GruposProductoAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/ModificarProductosAlertDialog.dart';
@@ -372,7 +377,38 @@ class _ProductosIndexState extends State<ProductosIndex> {
                               );
                             },
                           ),
-                          
+                          SizedBox(
+                            width: 6,
+                          ),
+                          ZMStdButton(
+                            color: Theme.of(context).primaryColor,
+                            text: Text(
+                              "Lista de precios productos",
+                              style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            icon: Icon(
+                              Icons.request_quote,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () async{
+                              Response<List<Models<dynamic>>> response;
+                              response = await ReportesService().listarPor(ReportesService().listaPreciosProductos());
+
+                              if(response?.status == RequestStatus.SUCCESS){
+                                List<Productos> productos = List<Productos>();
+                                response.message.forEach((element) {
+                                  productos.add(Productos().fromMap(element.toMap()));
+                                });
+                                await Printing.layoutPdf(onLayout: (format) => PDFManager.generarListaPreciosProductos(
+                                  format, 
+                                  productos
+                                ));
+                              }
+                            },
+                          ),
                         ],
                         onSelectActions: (productos) {
                           bool estadosIguales = true;

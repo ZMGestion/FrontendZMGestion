@@ -1,12 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Response.dart';
+import 'package:zmgestion/src/models/Models.dart';
+import 'package:zmgestion/src/models/Presupuestos.dart';
 import 'package:zmgestion/src/models/Productos.dart';
 import 'package:zmgestion/src/models/ProductosFinales.dart';
 import 'package:zmgestion/src/models/Telas.dart';
 import 'package:zmgestion/src/services/ProductosFinalesService.dart';
 import 'package:zmgestion/src/services/ProductosService.dart';
+import 'package:zmgestion/src/services/ReportesService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/views/productos/CrearProductosAlertDialog.dart';
 import 'package:zmgestion/src/views/productos/ModificarProductosAlertDialog.dart';
@@ -348,7 +354,108 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                               );
                             },
                           ),
-                          
+                          SizedBox(
+                            width: 6,
+                          ),
+                          ZMStdButton(
+                            color: Theme.of(context).primaryColor,
+                            text: Text(
+                              "Lista de precios productos",
+                              style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            icon: Icon(
+                              Icons.request_quote,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () async{
+                              Response<List<Models<dynamic>>> response;
+                              response = await ReportesService().listarPor(ReportesService().listaPreciosProductos());
+
+                              if(response?.status == RequestStatus.SUCCESS){
+                                List<Productos> productos = List<Productos>();
+                                response.message.forEach((element) {
+                                  productos.add(Productos().fromMap(element.toMap()));
+                                });
+                                await Printing.layoutPdf(onLayout: (format) => PDFManager.generarListaPreciosProductos(
+                                  format, 
+                                  productos
+                                ));
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          ZMStdButton(
+                            color: Color.lerp(
+                              Theme.of(context).primaryColor, 
+                              Colors.blue, 
+                              0.5
+                            ),
+                            text: Text(
+                              "Lista de precios telas",
+                              style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            icon: Icon(
+                              Icons.request_quote,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () async{
+                              Response<List<Models<dynamic>>> response;
+                              response = await ReportesService().listarPor(ReportesService().listaPreciosTelas());
+                              if(response?.status == RequestStatus.SUCCESS){
+                                List<Telas> telas = List<Telas>();
+                                response.message.forEach((element) {
+                                  telas.add(Telas().fromMap(element.toMap()));
+                                });
+                                await Printing.layoutPdf(onLayout: (format) => PDFManager.generarListaPreciosTelas(
+                                  format, 
+                                  telas
+                                ));
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          ZMStdButton(
+                            color: Colors.blue,
+                            text: Text(
+                              "Reporte de stock",
+                              style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            icon: Icon(
+                              Icons.analytics,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () async{
+                              Response<List<Models<dynamic>>> response;
+                              response = await ReportesService().listarPor(ReportesService().stockMuebles());
+
+                              if(response?.status == RequestStatus.SUCCESS){
+                                List<ProductosFinales> productosFinales = List<ProductosFinales>();
+                                response.message.forEach((element) {
+                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
+                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
+                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
+                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
+                                });
+                                await Printing.layoutPdf(onLayout: (format) => PDFManager.generarStock(
+                                  format, 
+                                  productosFinales
+                                ));
+                              }
+                            },
+                          ),   
                         ],
                         onSelectActions: (productos) {
                           bool estadosIguales = true;

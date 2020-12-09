@@ -1,8 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+import 'package:zmgestion/src/helpers/PDFManager.dart';
 import 'package:zmgestion/src/helpers/Request.dart';
+import 'package:zmgestion/src/helpers/Response.dart';
 import 'package:zmgestion/src/helpers/Utils.dart';
+import 'package:zmgestion/src/models/Models.dart';
 import 'package:zmgestion/src/models/Telas.dart';
+import 'package:zmgestion/src/services/ReportesService.dart';
 import 'package:zmgestion/src/services/TelasService.dart';
 import 'package:zmgestion/src/views/telas/CrearTelasAlertDialog.dart';
 import 'package:zmgestion/src/views/telas/ModificarTelasAlertDialog.dart';
@@ -237,7 +242,38 @@ class _TelasIndexState extends State<TelasIndex> {
                                 },
                               );
                             },
-                          )
+                          ),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          ZMStdButton(
+                            color: Theme.of(context).primaryColor,
+                            text: Text(
+                              "Lista de precios telas",
+                              style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            icon: Icon(
+                              Icons.request_quote,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () async{
+                              Response<List<Models<dynamic>>> response;
+                              response = await ReportesService().listarPor(ReportesService().listaPreciosTelas());
+                              if(response?.status == RequestStatus.SUCCESS){
+                                List<Telas> telas = List<Telas>();
+                                response.message.forEach((element) {
+                                  telas.add(Telas().fromMap(element.toMap()));
+                                });
+                                await Printing.layoutPdf(onLayout: (format) => PDFManager.generarListaPreciosTelas(
+                                  format, 
+                                  telas
+                                ));
+                              }
+                            },
+                          ),
                         ],
                         onSelectActions: (telas) {
                           bool estadosIguales = true;
