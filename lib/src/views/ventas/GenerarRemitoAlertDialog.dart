@@ -385,15 +385,44 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                       ),
                       Expanded(
                         flex: 5,
-                        child: Text(
-                          _lineaProducto.productoFinal.producto.producto + 
-                          " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                          " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _lineaProducto.productoFinal.producto.producto + 
+                                " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                                " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontWeight: FontWeight.w600
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: _lineaProducto.estado != null,
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 6,),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black26,
+                                      borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: Text(
+                                      LineasProducto().mapEstados()[_lineaProducto.estado]??(_lineaProducto.estado??""),
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.8),
+                                        fontSize: 11
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
@@ -561,14 +590,44 @@ class _GenerarRemitoAlertDialogState extends State<GenerarRemitoAlertDialog> {
                       ),
                       Expanded(
                         flex: 5,
-                        child: Text(
-                          _lineaProducto.productoFinal.producto.producto + 
-                          " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                          " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _lineaProducto.productoFinal.producto.producto + 
+                                " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                                " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                  fontWeight: FontWeight.w600
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: _lineaProducto.estado != null,
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 6,),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: Text(
+                                      LineasProducto().mapEstados()[_lineaProducto.estado]??(_lineaProducto.estado??""),
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.8),
+                                        fontSize: 11
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
