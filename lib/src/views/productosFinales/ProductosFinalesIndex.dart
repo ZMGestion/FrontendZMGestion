@@ -445,9 +445,6 @@ class _ProductosIndexState extends State<ProductosFinalesIndex> {
                                 List<ProductosFinales> productosFinales = List<ProductosFinales>();
                                 response.message.forEach((element) {
                                   productosFinales.add(ProductosFinales().fromMap(element.toMap()));
-                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
-                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
-                                  productosFinales.add(ProductosFinales().fromMap(element.toMap()));
                                 });
                                 await Printing.layoutPdf(onLayout: (format) => PDFManager.generarStock(
                                   format, 

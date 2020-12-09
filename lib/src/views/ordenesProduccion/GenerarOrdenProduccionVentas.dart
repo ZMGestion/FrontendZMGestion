@@ -384,14 +384,16 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    _lineaProducto.productoFinal.producto.producto + 
-                                    " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                                    " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontWeight: FontWeight.w600
+                                  Expanded(
+                                    child: Text(
+                                      _lineaProducto.productoFinal.producto.producto + 
+                                      " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                                      " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontWeight: FontWeight.w600
+                                      ),
                                     ),
                                   ),
                                   Visibility(
@@ -581,14 +583,16 @@ class _GenerarOrdenProduccionVentasState extends State<GenerarOrdenProduccionVen
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              _lineaProducto.productoFinal.producto.producto + 
-                              " " + (_lineaProducto.productoFinal.tela?.tela??"") +
-                              " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
-                                fontWeight: FontWeight.w600
+                            Expanded(
+                              child: Text(
+                                _lineaProducto.productoFinal.producto.producto + 
+                                " " + (_lineaProducto.productoFinal.tela?.tela??"") +
+                                " " + (_lineaProducto.productoFinal.lustre?.lustre??""),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryTextTheme.bodyText1.color.withOpacity(1),
+                                  fontWeight: FontWeight.w600
+                                ),
                               ),
                             ),
                             Visibility(

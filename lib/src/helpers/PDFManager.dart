@@ -62,13 +62,20 @@ abstract class PDFManager{
             decoration: pw.BoxDecoration(
               color: PdfColor.fromHex(_color),
             ),
-            child: pw.Center(
-              child: pw.Text(
-                lp.precioUnitario.toString(),
-                style: pw.TextStyle(
-                  fontSize: 10
-                ),
-              )
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.end,
+              children: [
+                pw.Padding(
+                  padding: pw.EdgeInsets.only(right: 5),
+                    child: pw.Text(
+                    "\$" + lp.precioUnitario?.toStringAsFixed(2)??"-",
+                    textAlign: pw.TextAlign.right,
+                    style: pw.TextStyle(
+                      fontSize: 10
+                    ),
+                  )
+                )
+              ]
             )
           )
         ),
@@ -78,13 +85,20 @@ abstract class PDFManager{
             decoration: pw.BoxDecoration(
               color: PdfColor.fromHex(_color),
             ),
-            child: pw.Center(
-              child: pw.Text(
-                (lp.cantidad * lp.precioUnitario).toString(),
-                style: pw.TextStyle(
-                  fontSize: 10
-                ),
-              )
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.end,
+              children: [
+                pw.Padding(
+                  padding: pw.EdgeInsets.only(right: 5),
+                    child: pw.Text(
+                    "\$" + (lp.precioUnitario * lp.cantidad)?.toStringAsFixed(2)??"-",
+                    textAlign: pw.TextAlign.right,
+                    style: pw.TextStyle(
+                      fontSize: 10
+                    ),
+                  )
+                )
+              ]
             )
           )
         ),
@@ -1899,13 +1913,20 @@ abstract class PDFManager{
             decoration: pw.BoxDecoration(
               color: PdfColor.fromHex(_color),
             ),
-            child: pw.Center(
-              child: pw.Text(
-                "\$" + p.precio?.precio?.toStringAsFixed(2)??"-",
-                style: pw.TextStyle(
-                  fontSize: 10
-                ),
-              )
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.end,
+              children: [
+                pw.Padding(
+                  padding: pw.EdgeInsets.only(right: 5),
+                    child: pw.Text(
+                    "\$" + p.precio?.precio?.toStringAsFixed(2)??"-",
+                    textAlign: pw.TextAlign.right,
+                    style: pw.TextStyle(
+                      fontSize: 10
+                    ),
+                  )
+                )
+              ]
             )
           )
         ),
@@ -1943,13 +1964,20 @@ abstract class PDFManager{
             decoration: pw.BoxDecoration(
               color: PdfColor.fromHex(_color),
             ),
-            child: pw.Center(
-              child: pw.Text(
-                "\$" + t.precio?.precio?.toStringAsFixed(2)??"-",
-                style: pw.TextStyle(
-                  fontSize: 10
-                ),
-              )
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.end,
+              children: [
+                pw.Padding(
+                  padding: pw.EdgeInsets.only(right: 5),
+                    child: pw.Text(
+                    "\$" + t.precio?.precio?.toStringAsFixed(2)??"-",
+                    textAlign: pw.TextAlign.right,
+                    style: pw.TextStyle(
+                      fontSize: 10
+                    ),
+                  )
+                )
+              ]
             )
           )
         ),
